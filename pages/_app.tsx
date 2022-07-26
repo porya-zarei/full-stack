@@ -1,8 +1,18 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import "@/styles/globals.scss";
+import DefaultLayout from "@/components/layouts/default";
+import {ViewContextProvider} from "@/contexts/view-context";
+import {NextAppProps} from "@/types/pages";
+import {NextPage} from "next";
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
-}
+const App = ({Component, pageProps}: NextAppProps) => {
+    const getLayout =
+        Component.getLayout ||
+        ((page: NextPage) => <DefaultLayout>{page}</DefaultLayout>);
+    return (
+        <ViewContextProvider>
+            {getLayout(<Component {...pageProps} />)}
+        </ViewContextProvider>
+    );
+};
 
-export default MyApp
+export default App;
