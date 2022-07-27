@@ -1,3 +1,5 @@
+import {Product} from "@prisma/client";
+
 export enum ERole {
     CREATOR,
     ADMIN,
@@ -12,7 +14,7 @@ export enum EStatus {
 }
 
 export interface IUser {
-    id: number;
+    id: string;
     fullName: string;
     email: string;
     password: string;
@@ -23,18 +25,35 @@ export interface IUser {
 }
 
 export interface IProduct {
-    id: number;
+    id: string;
+    name: string;
+    price: number;
+    date: string;
+}
+
+export interface IDBProduct {
+    id: string;
     name: string;
     price: number;
     date: string;
 }
 
 export interface IOrder {
-    id: number;
+    id: string;
     user: IUser;
     products: IProduct[];
     description: string;
     date: string;
     status: EStatus;
     supervisor: IUser;
+}
+
+export interface IDBOrder {
+    id: string;
+    user: string;
+    products: IProduct[];
+    description: string;
+    date: string;
+    status: EStatus;
+    supervisor: string;
 }
