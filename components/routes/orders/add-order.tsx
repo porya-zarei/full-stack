@@ -1,9 +1,10 @@
 import {FC, useState} from "react";
-import {HiOutlineX} from "react-icons/hi";
+import {HiTrash} from "react-icons/hi";
 import RouteContainer from "@/components/core/containers/route-container";
 import FrameContainer from "@/components/core/containers/frame-container";
 import CInput from "@/components/core/inputs";
 import CTextArea from "@/components/core/inputs/text-area";
+import CSelectOption from "@/components/core/inputs/select";
 
 interface AddOrderRouteProps {}
 
@@ -137,8 +138,10 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                     onClick={() =>
                                         handleRemoveOrderRow(order.id)
                                     }
-                                    className="bg-danger text-white px-2 py-2 text-xl hover:rotate-90 transition-transform rounded-full">
-                                    <HiOutlineX />
+                                    className="bg-danger text-white peer hover:rotate-45 px-2 py-2 transition-all rounded-full">
+                                    <div className="text-xl">
+                                        <HiTrash />
+                                    </div>
                                 </button>
                             </div>
                         ))}
@@ -150,13 +153,36 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                             className="bg-primary text-white px-2 py-2 hover:bg-opacity-90 rounded-md">
                             اضافه کردن سطر
                         </button>
-                        
+                    </div>
+                    <div className="w-full flex items-center justify-start p-3 flex-wrap">
+                        <CSelectOption
+                            containerClassName="rounded-md border-2 border-gray p-2"
+                            placeholder="انتخاب سر پرست مرتبط"
+                            value={description}
+                            name={"description"}
+                            onChange={(e) => setDescription(e.target.value)}
+                            options={[
+                                {
+                                    value: "1",
+                                    label: "سر پرست 1",
+                                },
+                                {
+                                    value: "2",
+                                    label: "سر پرست 2",
+                                },
+                                {
+                                    value: "3",
+                                    label: "سر پرست 3",
+                                },
+                            ]}
+                        />
                     </div>
                     <div className="w-full flex items-center justify-start p-3 flex-wrap">
                         <CTextArea
                             containerClassName="rounded-md border-2 border-gray p-2"
                             rows={3}
                             title="توضیحات"
+                            placeholder=""
                             value={description}
                             name={"description"}
                             onChange={(e) => setDescription(e.target.value)}

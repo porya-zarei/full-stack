@@ -48,7 +48,7 @@ const CInput: FC<CInputProps> = ({
             )}
             <div className="w-full flex items-center justify-center">
                 <input
-                    className={`w-full outline-none border-none ${className}`}
+                    className={`w-full bg-transparent outline-none border-none ${className}`}
                     type={type}
                     name={name}
                     placeholder={placeholder}

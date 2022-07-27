@@ -1,4 +1,5 @@
 import { NextPageWithLayout } from "@/types/pages";
+import LoginRoute from "@/components/routes/auth/login";
 
 interface LoginPageProps {
     
@@ -6,8 +7,8 @@ interface LoginPageProps {
  
 const LoginPage: NextPageWithLayout<LoginPageProps> = () => {
     return ( 
-        <div className="w-full min-h-screen h-full flex items-center justify-center">
-            
+        <div className="w-full flex items-center justify-center">
+            <LoginRoute/>
         </div>
      );
 }

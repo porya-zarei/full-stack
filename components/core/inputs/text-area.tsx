@@ -48,7 +48,7 @@ const CTextArea: FC<CTextAreaProps> = ({
             )}
             <div className="w-full flex items-center justify-center">
                 <textarea
-                    className={`w-full outline-none border-none ${className}`}
+                    className={`w-full bg-transparent outline-none border-none ${className}`}
                     name={name}
                     placeholder={placeholder}
                     value={value}
