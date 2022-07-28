@@ -1,6 +1,7 @@
 import {IAPIResult, ILoginData} from "@/types/api";
-import {IUser} from "@/types/data";
+import {ERole, ICreateUser, IUser} from "@/types/data";
 import {NextApiHandler} from "next";
+import {SassString} from "sass";
 import {
     addUser,
     deleteUser,
@@ -10,18 +11,13 @@ import {
     registerUser,
     updateUser,
 } from "../actions/users";
-import {
-    addToJsonFile,
-    deleteFromJsonFile,
-    getAllFromJsonFile,
-    getFromJsonFile,
-    updateInJsonFile,
-} from "../utils/json-database";
+import {getToken} from "../utils/jwt-helper";
 import {logger} from "../utils/logger";
+import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getAllUsersHandler: NextApiHandler = async (req, res) => {
     try {
-        const result = getAllUsers();
+        const result = await getAllUsers();
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
@@ -37,7 +33,7 @@ export const getAllUsersHandler: NextApiHandler = async (req, res) => {
 export const getUserHandler: NextApiHandler = async (req, res) => {
     try {
         const id = req.query.id?.toString() ?? "";
-        const result = getUser(id);
+        const result = await getUser(id);
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
@@ -52,8 +48,14 @@ export const getUserHandler: NextApiHandler = async (req, res) => {
 
 export const addUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const user = req.body as IUser;
-        const result = addUser(user);
+        const userdata = req.body as ICreateUser;
+        const user: IUser = {
+            ...userdata,
+            id: uuidGenerator(),
+            joinedAt: new Date().toISOString(),
+            role: ERole.USER,
+        };
+        const result = await addUser(user);
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
@@ -68,16 +70,24 @@ export const addUserHandler: NextApiHandler = async (req, res) => {
 
 export const updateUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const user = req.body as IUser;
-        const result = updateUser(user);
+        const user = req.body as Partial<IUser> & {id: string};
+        const result = await updateUser(user);
         res.status(200).json(result);
-    } catch (error) {}
+    } catch (error) {
+        logger.error(error);
+        const result: IAPIResult<IUser | null> = {
+            data: null,
+            ok: false,
+            error: "Error updating user",
+        };
+        res.status(500).json(result);
+    }
 };
 
 export const deleteUserHandler: NextApiHandler = async (req, res) => {
     try {
         const id = req.query.id?.toString() ?? "";
-        const result = deleteUser(id);
+        const result = await deleteUser(id);
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
@@ -92,8 +102,17 @@ export const deleteUserHandler: NextApiHandler = async (req, res) => {
 
 export const registerUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const user = req.body as IUser;
-        const result = registerUser(user);
+        const userData = req.body as ICreateUser;
+        const user: IUser = {
+            ...userData,
+            id: uuidGenerator(),
+            joinedAt: new Date().toISOString(),
+            role: ERole.USER,
+        };
+        const result = await registerUser(user);
+        const token = getToken(result.data);
+        result.token = token;
+        res.setHeader("Set-Cookie", `token=${token}; Path=/`);
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
@@ -108,8 +127,13 @@ export const registerUserHandler: NextApiHandler = async (req, res) => {
 
 export const loginUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const user = req.body as ILoginData;
-        const result = loginUser(user);
+        const loginData = req.body as ILoginData;
+        logger.log("loginData => " + JSON.stringify(loginData));
+        const result = await loginUser(loginData);
+        logger.log("result => " + JSON.stringify(result));
+        const token = getToken(result.data);
+        result.token = token;
+        res.setHeader("Set-Cookie", `token=${token}; Path=/`);
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);

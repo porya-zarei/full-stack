@@ -1,14 +1,45 @@
 import CInput from "@/components/core/inputs";
 import CCheckbox from "@/components/core/inputs/checkbox";
+import {useUserContext} from "@/contexts/user-context";
+import useNotification from "@/hooks/useNotification";
+import {handleLogin} from "@/services/auth";
+import {ILoginData} from "@/types/api";
 import Link from "next/link";
+import {useRouter} from "next/router";
 import {FC, useState} from "react";
 
 interface LoginRouteProps {}
 
 const LoginRoute: FC<LoginRouteProps> = () => {
+    const router = useRouter();
+    const {changeToken, changeUser} = useUserContext();
+    const {notify} = useNotification();
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(true);
+    const handleSubmit = async () => {
+        console.log(userName, password, rememberMe);
+        if (userName.length > 5 && password.length > 5) {
+            const loginData: ILoginData = {
+                userName,
+                password,
+            };
+            const result = await handleLogin(loginData);
+            if (result.data && result.token) {
+                changeToken(result.token);
+                changeUser(result.data);
+                if (rememberMe) {
+                    localStorage.setItem("token", result.token);
+                }
+                notify("Login successful");
+                router.push("/");
+            } else {
+                notify("Login failed: " + result.error);
+            }
+        } else {
+            notify("Login failed: username or password too short");
+        }
+    };
     return (
         <div className="w-full min-h-screen h-full flex items-center justify-center bg-slate-200 p-2">
             <div className="w-96 max-w-md flex flex-wrap items-center justify-center rounded-2xl border-primary border-4 border-dashed p-5">
@@ -52,9 +83,7 @@ const LoginRoute: FC<LoginRouteProps> = () => {
                         <button
                             type="button"
                             className="w-full flex justify-center items-center m-1 bg-primary text-white font-bold py-2 px-4 rounded-md hover:brightness-90 transition-all"
-                            onClick={() => {
-                                console.log(userName, password);
-                            }}>
+                            onClick={handleSubmit}>
                             ورود
                         </button>
                         <Link href="/auth/register" passHref>

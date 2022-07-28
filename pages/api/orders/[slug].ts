@@ -5,8 +5,10 @@ import {
     getAllOrdersHandler,
     getOrderHandler,
     getPendingOrdersHandler,
+    getUserOrdersHandler,
     updateOrderHandler,
 } from "@/server/controllers/orders";
+import {IAPIResult} from "@/types/api";
 
 const HANDLERS: Record<string, NextApiHandler> = {
     addOrder: addOrderHandler,
@@ -15,12 +17,20 @@ const HANDLERS: Record<string, NextApiHandler> = {
     getOrder: getOrderHandler,
     getPendingOrders: getPendingOrdersHandler,
     updateOrder: updateOrderHandler,
+    userOrders: getUserOrdersHandler,
 };
 
-const handler: NextApiHandler = (req, res) => {
+const handler: NextApiHandler = async (req, res) => {
     const {slug} = req.query;
     if (typeof slug === "string" && slug in HANDLERS) {
-        HANDLERS[slug](req, res);
+        await HANDLERS[slug](req, res);
+    } else {
+        const result: IAPIResult<string> = {
+            data: "",
+            ok: false,
+            error: "Invalid slug",
+        };
+        res.status(400).json(result);
     }
 };
 

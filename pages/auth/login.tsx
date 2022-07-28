@@ -1,18 +1,17 @@
-import { NextPageWithLayout } from "@/types/pages";
+import {NextPageWithLayout} from "@/types/pages";
 import LoginRoute from "@/components/routes/auth/login";
+import {ReactNode} from "react";
 
-interface LoginPageProps {
-    
-}
- 
+interface LoginPageProps {}
+
 const LoginPage: NextPageWithLayout<LoginPageProps> = () => {
-    return ( 
+    return (
         <div className="w-full flex items-center justify-center">
-            <LoginRoute/>
+            <LoginRoute />
         </div>
-     );
-}
+    );
+};
 
-LoginPage.getLayout = (page: NextPageWithLayout) => <div>{page}</div>;
+LoginPage.getLayout = (page: ReactNode) => <div>{page}</div>;
 
 export default LoginPage;

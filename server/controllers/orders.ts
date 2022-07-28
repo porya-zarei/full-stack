@@ -7,6 +7,7 @@ import {
     getAllOrders,
     getOrder,
     getPendingOrders,
+    getUserOrders,
     updateOrder,
 } from "../actions/orders";
 import {logger} from "../utils/logger";
@@ -104,3 +105,19 @@ export const getPendingOrdersHandler: NextApiHandler = async (req, res) => {
         res.status(500).json(result);
     }
 };
+
+export const getUserOrdersHandler: NextApiHandler = async (req, res) => {
+    try {
+        const userId = req.query.id?.toString() ?? "";
+        const result = await getUserOrders(userId);
+        res.status(200).json(result);
+    } catch (error) {
+        logger.error(error);
+        const result: IAPIResult<string> = {
+            data: "",
+            ok: false,
+            error: "Error getting user orders",
+        };
+        res.status(500).json(result);
+    }
+}

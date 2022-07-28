@@ -1,5 +1,6 @@
 import {NextPageWithLayout} from "@/types/pages";
 import RegisterRoute from "@/components/routes/auth/register";
+import { ReactNode } from "react";
 
 interface RegisterPageProps {}
 
@@ -11,6 +12,6 @@ const RegisterPage: NextPageWithLayout<RegisterPageProps> = () => {
     );
 };
 
-RegisterPage.getLayout = (page: NextPageWithLayout) => <div>{page}</div>;
+RegisterPage.getLayout = (page: ReactNode) => <div>{page}</div>;
 
 export default RegisterPage;

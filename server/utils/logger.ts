@@ -3,6 +3,7 @@ class Logger {
         console.log(message);
     }
     public error(message: string | unknown) {
+        console.log("in error logger\n");
         console.error(message);
     }
 }

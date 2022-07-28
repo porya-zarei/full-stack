@@ -8,6 +8,7 @@ import {
     loginUserHandler,
     registerUserHandler,
 } from "@/server/controllers/users";
+import {IAPIResult} from "@/types/api";
 
 const HANDLERS: Record<string, NextApiHandler> = {
     addUser: addUserHandler,
@@ -19,10 +20,17 @@ const HANDLERS: Record<string, NextApiHandler> = {
     registerUser: registerUserHandler,
 };
 
-const handler: NextApiHandler = (req, res) => {
+const handler: NextApiHandler = async (req, res) => {
     const {slug} = req.query;
     if (typeof slug === "string" && slug in HANDLERS) {
-        HANDLERS[slug](req, res);
+        await HANDLERS[slug](req, res);
+    } else {
+        const result: IAPIResult<string> = {
+            data: "",
+            ok: false,
+            error: "Invalid slug",
+        };
+        res.status(400).json(result);
     }
 };
 

@@ -1,16 +1,23 @@
 import "@/styles/globals.scss";
+import "react-toastify/dist/ReactToastify.css";
+
 import DefaultLayout from "@/components/layouts/default";
 import {ViewContextProvider} from "@/contexts/view-context";
 import {NextAppProps} from "@/types/pages";
-import {NextPage} from "next";
+import {UserContextProvider} from "@/contexts/user-context";
+import {ReactNode} from "react";
+import {ToastContainer} from "react-toastify";
 
 const App = ({Component, pageProps}: NextAppProps) => {
     const getLayout =
         Component.getLayout ||
-        ((page: NextPage) => <DefaultLayout>{page}</DefaultLayout>);
+        ((page: ReactNode) => <DefaultLayout>{page}</DefaultLayout>);
     return (
         <ViewContextProvider>
-            {getLayout(<Component {...pageProps} />)}
+            <UserContextProvider>
+                {getLayout(<Component {...pageProps} />)}
+                <ToastContainer />
+            </UserContextProvider>
         </ViewContextProvider>
     );
 };

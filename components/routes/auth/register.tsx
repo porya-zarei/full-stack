@@ -1,17 +1,62 @@
 import CInput from "@/components/core/inputs";
 import CCheckbox from "@/components/core/inputs/checkbox";
+import {useUserContext} from "@/contexts/user-context";
+import useNotification from "@/hooks/useNotification";
+import {handleRegister} from "@/services/auth";
+import {ICreateUser} from "@/types/data";
+import {isEmailValid, isPhoneNumberValid, isValid} from "@/utils/validations";
 import Link from "next/link";
+import {useRouter} from "next/router";
 import {FC, useState} from "react";
 
 interface RegisterRouteProps {}
 
 const RegisterRoute: FC<RegisterRouteProps> = () => {
+    const {notify} = useNotification();
+    const router = useRouter();
+    const {changeToken, changeUser} = useUserContext();
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(true);
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [fullName, setFullName] = useState("");
+    const handleSubmit = async () => {
+        console.log(
+            userName,
+            password,
+            rememberMe,
+            email,
+            phoneNumber,
+            fullName,
+        );
+        if (
+            isEmailValid(email) &&
+            isValid([userName, password, fullName]) &&
+            isPhoneNumberValid(phoneNumber)
+        ) {
+            const data: ICreateUser = {
+                userName,
+                password,
+                email,
+                phoneNumber,
+                fullName,
+            };
+            const result = await handleRegister(data);
+            console.log(result);
+            if (result && result.ok && result.token && result.data) {
+                changeToken(result.token);
+                changeUser(result.data);
+                if (rememberMe) {
+                    localStorage.setItem("token", result.token);
+                }
+                notify("ثبت نام با موفقیت انجام شد");
+                router.push("/");
+            }
+        } else {
+            notify("لطفا اطلاعات را به صورت صحیح وارد کنید");
+        }
+    };
     return (
         <div className="w-full min-h-screen h-full flex items-center justify-center bg-slate-200 p-2">
             <div className="w-96 max-w-md flex flex-wrap items-center justify-center rounded-2xl border-primary border-4 border-dashed p-5">
@@ -85,9 +130,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                         <button
                             type="button"
                             className="w-full flex justify-center items-center m-1 bg-primary text-white font-bold py-2 px-4 rounded-md hover:brightness-90 transition-all"
-                            onClick={() => {
-                                console.log(userName, password);
-                            }}>
+                            onClick={handleSubmit}>
                             ثبت نام
                         </button>
                         <Link href="/auth/login" passHref>

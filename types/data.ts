@@ -24,6 +24,14 @@ export interface IUser {
     phoneNumber: string;
 }
 
+export interface ICreateUser {
+    fullName: string;
+    email: string;
+    password: string;
+    userName: string;
+    phoneNumber: string;
+}
+
 export interface IProduct {
     id: string;
     name: string;

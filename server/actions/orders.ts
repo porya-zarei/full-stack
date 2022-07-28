@@ -1,25 +1,28 @@
 import {IAPIResult} from "@/types/api";
 import {EStatus, IOrder, IUser, IDBOrder, IProduct} from "@/types/data";
 import {
+    ORDERS_JSON_DB_FILE,
+    USERS_JSON_DB_FILE,
+} from "../constants/json-db-files";
+import {
     addToJsonFile,
     deleteFromJsonFile,
     getAllFromJsonFile,
     getFromJsonFile,
     updateInJsonFile,
 } from "../utils/json-database";
-import {logger} from "../utils/logger";
 
 export const getUserAndSupervisor = (order: IDBOrder) => {
-    const user = getFromJsonFile<IUser>("../local-db/users.json", order.user);
+    const user = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, order.user);
     const supervisor = getFromJsonFile<IUser>(
-        "../local-db/users.json",
+        USERS_JSON_DB_FILE,
         order.supervisor,
     );
     return {user, supervisor};
 };
 
 export const getAllOrders = async () => {
-    const orders = getAllFromJsonFile<IDBOrder>("../local-db/orders.json");
+    const orders = getAllFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE);
     const newOrders = orders.map((order) => {
         const {user, supervisor} = getUserAndSupervisor(order);
         const newOrder: Partial<IOrder> = {
@@ -38,7 +41,7 @@ export const getAllOrders = async () => {
 };
 
 export const getOrder = async (id: string) => {
-    const order = getFromJsonFile<IDBOrder>("../local-db/orders.json", id);
+    const order = getFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE, id);
     const {user, supervisor} = getUserAndSupervisor(order);
     const newOrder: Partial<IOrder> = {
         ...order,
@@ -54,7 +57,7 @@ export const getOrder = async (id: string) => {
 };
 
 export const addOrder = async (order: IDBOrder) => {
-    addToJsonFile("../local-db/orders.json", order);
+    addToJsonFile(ORDERS_JSON_DB_FILE, order);
     const {user, supervisor} = getUserAndSupervisor(order);
     const newOrder: Partial<IOrder> = {
         ...order,
@@ -70,7 +73,7 @@ export const addOrder = async (order: IDBOrder) => {
 };
 
 export const updateOrder = async (order: IDBOrder) => {
-    updateInJsonFile("../local-db/orders.json", order, order.id);
+    updateInJsonFile(ORDERS_JSON_DB_FILE, order, order.id);
     const {user, supervisor} = getUserAndSupervisor(order);
     const newOrder: Partial<IOrder> = {
         ...order,
@@ -86,7 +89,7 @@ export const updateOrder = async (order: IDBOrder) => {
 };
 
 export const deleteOrder = async (id: string) => {
-    deleteFromJsonFile("../local-db/orders.json", id);
+    deleteFromJsonFile(ORDERS_JSON_DB_FILE, id);
     const result: IAPIResult<string> = {
         data: "ok",
         ok: true,
@@ -96,8 +99,8 @@ export const deleteOrder = async (id: string) => {
 };
 
 export const getPendingOrders = async (id: string) => {
-    const user = getFromJsonFile<IUser>("../local-db/users.json", id);
-    const orders = getAllFromJsonFile<IDBOrder>("../local-db/orders.json");
+    const user = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, id);
+    const orders = getAllFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE);
     const result: IAPIResult<Partial<IOrder>[]> = {
         data: orders
             .filter((order) => order.supervisor === user.id)
@@ -118,8 +121,8 @@ export const getPendingOrders = async (id: string) => {
 };
 
 export const getUserOrders = async (id: string) => {
-    const user = getFromJsonFile<IUser>("../local-db/users.json", id);
-    const orders = getAllFromJsonFile<IDBOrder>("../local-db/orders.json");
+    const user = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, id);
+    const orders = getAllFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE);
     const result: IAPIResult<Partial<IOrder>[]> = {
         data: orders
             .filter((order) => order.user === user.id)
