@@ -29,7 +29,7 @@ export const getAllOrdersHandler: NextApiHandler = async (req, res) => {
 
 export const getOrderHandler: NextApiHandler = async (req, res) => {
     try {
-        const id = req.query.id?.toString() ?? "";
+        const {id} = req.body as {id: string};
         const result = await getOrder(id);
         res.status(200).json(result);
     } catch (error) {
@@ -77,8 +77,9 @@ export const updateOrderHandler: NextApiHandler = async (req, res) => {
 
 export const deleteOrderHandler: NextApiHandler = async (req, res) => {
     try {
-        const id = req.query.id?.toString() ?? "";
+        const {id} = req.body as {id: string};
         const result = await deleteOrder(id);
+        res.status(200).json(result);
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {
@@ -92,15 +93,17 @@ export const deleteOrderHandler: NextApiHandler = async (req, res) => {
 
 export const getPendingOrdersHandler: NextApiHandler = async (req, res) => {
     try {
-        const userId = req.query.id?.toString() ?? "";
+        const {id: userId} = req.body as {id: string};
         const result = await getPendingOrders(userId);
+        logger.log(`Pending orders: ${result.ok} for user ${userId}`);
+        logger.log(`${result.data.length}`);
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {
             data: "",
             ok: false,
-            error: "Error getting not confirmed orders",
+            error: "Error getting pending orders",
         };
         res.status(500).json(result);
     }
@@ -109,6 +112,7 @@ export const getPendingOrdersHandler: NextApiHandler = async (req, res) => {
 export const getUserOrdersHandler: NextApiHandler = async (req, res) => {
     try {
         const userId = req.query.id?.toString() ?? "";
+        logger.log(`Getting orders for user ${userId}`);
         const result = await getUserOrders(userId);
         res.status(200).json(result);
     } catch (error) {
@@ -120,4 +124,4 @@ export const getUserOrdersHandler: NextApiHandler = async (req, res) => {
         };
         res.status(500).json(result);
     }
-}
+};

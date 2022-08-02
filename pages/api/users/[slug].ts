@@ -7,6 +7,8 @@ import {
     updateUserHandler,
     loginUserHandler,
     registerUserHandler,
+    changeUserGroupHandler,
+    changeUserRoleHandler,
 } from "@/server/controllers/users";
 import {IAPIResult} from "@/types/api";
 
@@ -18,6 +20,8 @@ const HANDLERS: Record<string, NextApiHandler> = {
     updateUser: updateUserHandler,
     loginUser: loginUserHandler,
     registerUser: registerUserHandler,
+    changeUserGroup: changeUserGroupHandler,
+    changeUserRole: changeUserRoleHandler,
 };
 
 const handler: NextApiHandler = async (req, res) => {

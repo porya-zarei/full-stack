@@ -1,9 +1,10 @@
 import {IAPIResult, ILoginData} from "@/types/api";
-import {ERole, ICreateUser, IUser} from "@/types/data";
+import {EGroup, ERole, ICreateUser, IUser} from "@/types/data";
 import {NextApiHandler} from "next";
-import {SassString} from "sass";
 import {
     addUser,
+    changeUserGroup,
+    changeUserRole,
     deleteUser,
     getAllUsers,
     getUser,
@@ -11,13 +12,20 @@ import {
     registerUser,
     updateUser,
 } from "../actions/users";
-import {getToken} from "../utils/jwt-helper";
+import {
+    getToken,
+    getUserFromToken,
+    getUserRoleFromToken,
+} from "../utils/jwt-helper";
 import {logger} from "../utils/logger";
 import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getAllUsersHandler: NextApiHandler = async (req, res) => {
     try {
-        const result = await getAllUsers();
+        const {id: role} = req.body as {id: string};
+        const result = await getAllUsers(
+            Number(role) ? (Number(role) as ERole) : null,
+        );
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
@@ -32,7 +40,7 @@ export const getAllUsersHandler: NextApiHandler = async (req, res) => {
 
 export const getUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const id = req.query.id?.toString() ?? "";
+        const {id} = req.body as {id: string};
         const result = await getUser(id);
         res.status(200).json(result);
     } catch (error) {
@@ -86,7 +94,7 @@ export const updateUserHandler: NextApiHandler = async (req, res) => {
 
 export const deleteUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const id = req.query.id?.toString() ?? "";
+        const {id} = req.body as {id: string};
         const result = await deleteUser(id);
         res.status(200).json(result);
     } catch (error) {
@@ -141,6 +149,42 @@ export const loginUserHandler: NextApiHandler = async (req, res) => {
             data: null,
             ok: false,
             error: "Error loging user",
+        };
+        res.status(500).json(result);
+    }
+};
+
+export const changeUserGroupHandler: NextApiHandler = async (req, res) => {
+    try {
+        const token = req.headers?.cookie?.split(";")[0].split("=")[1] ?? "";
+        const user = getUserFromToken(token);
+        const {id, group} = req.body as {id: string; group: EGroup};
+        const result = await changeUserGroup(id, group, user);
+        res.status(200).json(result);
+    } catch (error) {
+        logger.error(error);
+        const result: IAPIResult<IUser | null> = {
+            data: null,
+            ok: false,
+            error: "Error changing user group",
+        };
+        res.status(500).json(result);
+    }
+};
+
+export const changeUserRoleHandler: NextApiHandler = async (req, res) => {
+    try {
+        const token = req.headers?.cookie?.split(";")[0].split("=")[1] ?? "";
+        const user = getUserFromToken(token);
+        const {id, role} = req.body as {id: string; role: ERole};
+        const result = await changeUserRole(id, role, user);
+        res.status(200).json(result);
+    } catch (error) {
+        logger.error(error);
+        const result: IAPIResult<IUser | null> = {
+            data: null,
+            ok: false,
+            error: "Error changing user role",
         };
         res.status(500).json(result);
     }

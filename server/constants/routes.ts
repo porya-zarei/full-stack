@@ -16,5 +16,7 @@ export const API_ROUTES = {
         updateUser: "/users/updateUser",
         loginUser: "/users/loginUser",
         registerUser: "/users/registerUser",
+        changeUserGroup: "/users/changeUserGroup",
+        changeUserRole: "/users/changeUserRole",
     },
 };

@@ -22,6 +22,7 @@ const HANDLERS: Record<string, NextApiHandler> = {
 
 const handler: NextApiHandler = async (req, res) => {
     const {slug} = req.query;
+    console.log("slug => ",slug);
     if (typeof slug === "string" && slug in HANDLERS) {
         await HANDLERS[slug](req, res);
     } else {
@@ -30,7 +31,7 @@ const handler: NextApiHandler = async (req, res) => {
             ok: false,
             error: "Invalid slug",
         };
-        res.status(400).json(result);
+        res.status(404).json(result);
     }
 };
 

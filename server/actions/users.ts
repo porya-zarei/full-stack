@@ -1,5 +1,5 @@
 import {IAPIResult, ILoginData} from "@/types/api";
-import {IUser} from "@/types/data";
+import {EGroup, ERole, IUser} from "@/types/data";
 import {
     addToJsonFile,
     deleteFromJsonFile,
@@ -9,11 +9,12 @@ import {
 } from "../utils/json-database";
 import {USERS_JSON_DB_FILE} from "../constants/json-db-files";
 import {logger} from "../utils/logger";
+import {isUserCanChangeGroup, isUserCanChangeRole} from "../utils/premissions";
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (role?: ERole | null) => {
     const users = getAllFromJsonFile<IUser>(USERS_JSON_DB_FILE);
     const result: IAPIResult<IUser[]> = {
-        data: users,
+        data: role ? users.filter((user) => user.role === role) : users,
         ok: true,
         error: "",
     };
@@ -117,4 +118,78 @@ export const loginUser = async (loginData: ILoginData) => {
         error: "",
     };
     return result;
+};
+
+export const changeUserGroup = async (
+    userId: string,
+    group: EGroup,
+    user: IUser | null,
+) => {
+    const modifiedUser = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, userId);
+    if (modifiedUser && user) {
+        if (isUserCanChangeGroup(user, modifiedUser)) {
+            const updatedUser = {
+                ...modifiedUser,
+                group,
+            };
+            updateInJsonFile(USERS_JSON_DB_FILE, updatedUser, modifiedUser.id);
+            const result: IAPIResult<IUser> = {
+                data: modifiedUser,
+                ok: true,
+                error: "",
+            };
+            return result;
+        } else {
+            const result: IAPIResult<IUser> = {
+                data: modifiedUser,
+                ok: false,
+                error: "You can't change group",
+            };
+            return result;
+        }
+    } else {
+        const result: IAPIResult<IUser> = {
+            data: {} as IUser,
+            ok: false,
+            error: "User not found",
+        };
+        return result;
+    }
+};
+
+export const changeUserRole = async (
+    userId: string,
+    role: ERole,
+    user: IUser | null,
+) => {
+    const modifiedUser = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, userId);
+    if (modifiedUser && user) {
+        if (isUserCanChangeRole(user, modifiedUser)) {
+            const updatedUser = {
+                ...modifiedUser,
+                role,
+            };
+            updateInJsonFile(USERS_JSON_DB_FILE, updatedUser, modifiedUser.id);
+            const result: IAPIResult<IUser> = {
+                data: modifiedUser,
+                ok: true,
+                error: "",
+            };
+            return result;
+        } else {
+            const result: IAPIResult<IUser> = {
+                data: modifiedUser,
+                ok: false,
+                error: "You can't change role",
+            };
+            return result;
+        }
+    } else {
+        const result: IAPIResult<IUser> = {
+            data: {} as IUser,
+            ok: false,
+            error: "User not found",
+        };
+        return result;
+    }
 };

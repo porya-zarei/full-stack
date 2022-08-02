@@ -1,41 +1,52 @@
-import {FC, useState} from "react";
+import {FC, lazy, useState} from "react";
 import {HiTrash} from "react-icons/hi";
 import RouteContainer from "@/components/core/containers/route-container";
 import FrameContainer from "@/components/core/containers/frame-container";
 import CInput from "@/components/core/inputs";
 import CTextArea from "@/components/core/inputs/text-area";
 import CSelectOption from "@/components/core/inputs/select";
-
+import {useUsers} from "@/hooks/useUsers";
+import {ICreateOrder, IOrder, IProduct} from "@/types/data";
+import {useUserContext} from "@/contexts/user-context";
+import {createOrder} from "@/services/orders";
+import useNotification from "@/hooks/useNotification";
+import dynamic from "next/dynamic";
+import CCheckbox from "@/components/core/inputs/checkbox";
+import {getGeorgianDateFromJalali} from "@/utils/date-helper";
+const DatePickerInput = dynamic(
+    () => import("@/components/core/date-picker/date-picker-input"),
+    {
+        ssr: false,
+    },
+);
 interface AddOrderRouteProps {}
+interface OrderDataProduct {
+    id: number;
+    name: string;
+    valueName: string;
+    valuePrice: string;
+    valueDate: string;
+    valueCount: string;
+}
 
 const AddOrderRoute: FC<AddOrderRouteProps> = () => {
-    const [ordersData, setOrdersData] = useState([
-        {
-            id: 1,
-            name: "order-1",
+    const {users} = useUsers();
+    const {user} = useUserContext();
+    const {notify} = useNotification();
+    const [ordersData, setOrdersData] = useState<OrderDataProduct[]>(
+        [1, 2, 3].map((id) => ({
+            id,
+            name: `order-${id}`,
             valueName: "",
             valuePrice: "",
             valueDate: "",
-        },
-        {
-            id: 2,
-            name: "order-2",
-            valueName: "",
-            valuePrice: "",
-            valueDate: "",
-        },
-        {
-            id: 3,
-            name: "order-3",
-            valueName: "",
-            valuePrice: "",
-            valueDate: "",
-        },
-    ]);
+            valueCount: "",
+        })),
+    );
 
     const [description, setDescription] = useState("");
-
-    const today = new Date().toLocaleDateString("fa-IR");
+    const [supervisor, setSupervisor] = useState("");
+    const [officialBill, setOfficialBill] = useState(false);
 
     const handleChange =
         (type = "name") =>
@@ -55,9 +66,14 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                   ...order,
                                   valuePrice: value,
                               }
-                            : {
+                            : type === "date"
+                            ? {
                                   ...order,
                                   valueDate: value,
+                              }
+                            : {
+                                  ...order,
+                                  valueCount: value,
                               };
                     }
                     return order;
@@ -75,6 +91,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                 valueName: "",
                 valuePrice: "",
                 valueDate: "",
+                valueCount: "",
             },
         ]);
     };
@@ -83,8 +100,67 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
         setOrdersData(ordersData.filter((order) => order.id !== id));
     };
 
+    const resetOrdersData = () => {
+        setOrdersData(
+            [1, 2, 3].map((id) => ({
+                id,
+                name: `order-${id}`,
+                valueName: "",
+                valuePrice: "",
+                valueDate: "",
+                valueCount: "",
+            })),
+        );
+        setDescription("");
+        setSupervisor("");
+    };
+
     const handleSendOrder = async () => {
         console.log("send order");
+        if (supervisor.length > 0 && ordersData.length > 0) {
+            const data: ICreateOrder = {
+                officialBill,
+                description,
+                products: ordersData
+                    .filter(
+                        (product) =>
+                            product.valueName !== "" &&
+                            product.valuePrice !== "" &&
+                            product.valueDate !== "",
+                    )
+                    .map(
+                        (product) =>
+                            ({
+                                id: String(product.id),
+                                name: product.valueName,
+                                price: product.valuePrice,
+                                date: getGeorgianDateFromJalali(
+                                    product.valueDate,
+                                ).toString(),
+                                count: Number(product.valueCount),
+                            } as IProduct),
+                    ),
+                supervisor: supervisor,
+                user: user.id,
+            };
+
+            const result = await createOrder(data);
+            console.log(result);
+            if (result && result.ok && result.data) {
+                notify("ثبت سفارش با موفقیت انجام شد", {
+                    type: "success",
+                });
+                resetOrdersData();
+            } else {
+                notify("ثبت سفارش با خطا مواجه شد", {
+                    type: "error",
+                });
+            }
+        } else {
+            notify("لطفا فیلد ها را به درستی پر کنید", {
+                type: "error",
+            });
+        }
     };
 
     return (
@@ -102,7 +178,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                 key={order.id}
                                 className="w-full flex flex-wrap md:flex-nowrap items-center justify-evenly mb-4">
                                 <span className="font-bold">- {index + 1}</span>
-                                <div className="w-10/12 md:w-5/12 flex items-center justify-center">
+                                <div className="w-11/12 md:w-3/12 flex items-center justify-center">
                                     <CInput
                                         containerClassName="rounded-md border-2 border-gray p-2"
                                         type="text"
@@ -112,7 +188,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                         placeholder="نام کالا"
                                     />
                                 </div>
-                                <div className="w-5/12 md:w-2/12 flex items-center justify-center">
+                                <div className="w-5/12 md:w-1/12 flex items-center justify-center">
                                     <CInput
                                         containerClassName="rounded-md border-2 border-gray p-2"
                                         type="number"
@@ -122,14 +198,32 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                         placeholder="قیمت"
                                     />
                                 </div>
-                                <div className="w-5/12 md:w-2/12 flex items-center justify-center">
+                                <div className="w-3/12 md:w-1/12 flex items-center justify-center">
+                                    <CInput
+                                        containerClassName="rounded-md border-2 border-gray p-2"
+                                        type="number"
+                                        value={order.valueCount}
+                                        name={order.name}
+                                        onChange={handleChange("count")}
+                                        placeholder="تعداد"
+                                    />
+                                </div>
+                                <div className="w-4/12 md:w-1/12 flex items-center justify-center">
+                                    <span className="text-center">
+                                        {order.valueCount.length &&
+                                            order.valuePrice.length &&
+                                            Number(order.valueCount) *
+                                                Number(order.valuePrice)}
+                                    </span>
+                                </div>
+                                <div className="w-10/12 md:w-3/12 flex items-center justify-center">
                                     <CInput
                                         containerClassName="rounded-md border-2 border-gray p-2"
                                         type="text"
                                         value={order.valueDate}
                                         name={order.name}
                                         onChange={handleChange("date")}
-                                        placeholder={`تاریخ:${today}`}
+                                        placeholder={`تاریخ با فرمت: 1401/01/01`}
                                     />
                                 </div>
                                 <button
@@ -158,23 +252,27 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                         <CSelectOption
                             containerClassName="rounded-md border-2 border-gray p-2"
                             placeholder="انتخاب سر پرست مرتبط"
-                            value={description}
+                            value={supervisor}
                             name={"description"}
-                            onChange={(e) => setDescription(e.target.value)}
-                            options={[
-                                {
-                                    value: "1",
-                                    label: "سر پرست 1",
-                                },
-                                {
-                                    value: "2",
-                                    label: "سر پرست 2",
-                                },
-                                {
-                                    value: "3",
-                                    label: "سر پرست 3",
-                                },
-                            ]}
+                            onChange={(e) => setSupervisor(e.target.value)}
+                            options={
+                                users?.length > 0
+                                    ? users?.map((user) => ({
+                                          value: user.id,
+                                          label: user.fullName,
+                                      }))
+                                    : []
+                            }
+                        />
+                    </div>
+                    <div className="w-full flex items-center justify-start p-3 flex-wrap">
+                        <CCheckbox
+                            placeholder="دارای فاکتور رسمی ؟"
+                            name="official-bill"
+                            title="دارای فاکتور رسمی ؟"
+                            value={officialBill}
+                            onChange={(e) => setOfficialBill(e.target.checked)}
+                            containerClassName="rounded-md p-2"
                         />
                     </div>
                     <div className="w-full flex items-center justify-start p-3 flex-wrap">

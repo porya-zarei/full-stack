@@ -1,9 +1,9 @@
 import {API_ROUTES} from "@/server/constants/routes";
 import {IAPIResult} from "@/types/api";
-import {IOrder} from "@/types/data";
+import {ICreateOrder, IOrder} from "@/types/data";
 import {axios_instance} from "./axios";
 
-export const createOrder = async (order: IOrder) => {
+export const createOrder = async (order: ICreateOrder) => {
     try {
         const result = await axios_instance.post<IAPIResult<IOrder>>(
             API_ROUTES.orders.addOrder,
@@ -40,8 +40,9 @@ export const getOrders = async () => {
 
 export const getOrder = async (id: string) => {
     try {
-        const result = await axios_instance.get<IAPIResult<IOrder>>(
-            API_ROUTES.orders.getOrder + "/" + id,
+        const result = await axios_instance.post<IAPIResult<IOrder>>(
+            API_ROUTES.orders.getOrder,
+            {id},
         );
         return result.data;
     } catch (error) {
@@ -57,8 +58,9 @@ export const getOrder = async (id: string) => {
 
 export const getPendingOrders = async (userId: string) => {
     try {
-        const result = await axios_instance.get<IAPIResult<IOrder[]>>(
-            API_ROUTES.orders.getPendingOrders + "/" + userId,
+        const result = await axios_instance.post<IAPIResult<IOrder[]>>(
+            API_ROUTES.orders.getPendingOrders,
+            {id: userId},
         );
         return result.data;
     } catch (error) {
@@ -74,8 +76,9 @@ export const getPendingOrders = async (userId: string) => {
 
 export const getUserOrders = async (userId: string) => {
     try {
-        const result = await axios_instance.get<IAPIResult<IOrder[]>>(
-            API_ROUTES.orders.userOrders + "/" + userId,
+        const result = await axios_instance.post<IAPIResult<IOrder[]>>(
+            API_ROUTES.orders.userOrders,
+            {id: userId},
         );
         return result.data;
     } catch (error) {

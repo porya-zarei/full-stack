@@ -1,9 +1,10 @@
 import CInput from "@/components/core/inputs";
 import CCheckbox from "@/components/core/inputs/checkbox";
+import CSelectOption from "@/components/core/inputs/select";
 import {useUserContext} from "@/contexts/user-context";
 import useNotification from "@/hooks/useNotification";
 import {handleRegister} from "@/services/auth";
-import {ICreateUser} from "@/types/data";
+import {EGroup, EGROUPS_NAMES, ICreateUser} from "@/types/data";
 import {isEmailValid, isPhoneNumberValid, isValid} from "@/utils/validations";
 import Link from "next/link";
 import {useRouter} from "next/router";
@@ -21,6 +22,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [fullName, setFullName] = useState("");
+    const [group, setGroup] = useState("");
     const handleSubmit = async () => {
         console.log(
             userName,
@@ -41,6 +43,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                 email,
                 phoneNumber,
                 fullName,
+                group: Number(group) as EGroup,
             };
             const result = await handleRegister(data);
             console.log(result);
@@ -73,7 +76,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             name="full-name"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            containerClassName="rounded-md border-2 border-gray-light active:border-primary hover:border-primary p-2 transition-all"
+                            containerClassName="rounded-md border-2 border-gray-light focus:border-primary hover:border-primary p-2 transition-all"
                         />
                     </div>
                     <div className="w-full flex justify-center items-center my-2">
@@ -83,7 +86,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             name="user-name"
                             value={userName}
                             onChange={(e) => setUserName(e.target.value)}
-                            containerClassName="rounded-md border-2 border-gray-light active:border-primary hover:border-primary p-2 transition-all"
+                            containerClassName="rounded-md border-2 border-gray-light focus:border-primary hover:border-primary p-2 transition-all"
                         />
                     </div>
                     <div className="w-full flex justify-center items-center my-2">
@@ -93,7 +96,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             name="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            containerClassName="rounded-md border-2 border-gray-light active:border-primary hover:border-primary p-2 transition-all"
+                            containerClassName="rounded-md border-2 border-gray-light focus:border-primary hover:border-primary p-2 transition-all"
                         />
                     </div>
                     <div className="w-full flex justify-center items-center my-2">
@@ -103,7 +106,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             name="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            containerClassName="rounded-md border-2 border-gray-light active:border-primary hover:border-primary p-2 transition-all"
+                            containerClassName="rounded-md border-2 border-gray-light focus:border-primary hover:border-primary p-2 transition-all"
                         />
                     </div>
                     <div className="w-full flex justify-center items-center my-2">
@@ -113,7 +116,29 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             name="phone-number"
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
-                            containerClassName="rounded-md border-2 border-gray-light active:border-primary hover:border-primary p-2 transition-all"
+                            containerClassName="rounded-md border-2 border-gray-light focus:border-primary hover:border-primary p-2 transition-all"
+                        />
+                    </div>
+                    <div className="w-full flex justify-center items-center my-2">
+                        <CSelectOption
+                            containerClassName="rounded-md border-2 border-gray p-2"
+                            placeholder="گروه شما"
+                            value={group}
+                            name={"group"}
+                            onChange={(e) => setGroup(e.target.value)}
+                            options={[
+                                {
+                                    label: "همه",
+                                    value: String(-1),
+                                    selected: true,
+                                },
+                                ...Object.keys(EGroup)
+                                    .filter((g) => !isNaN(Number(g)))
+                                    .map((g) => ({
+                                        value: g,
+                                        label: EGROUPS_NAMES[Number(g)],
+                                    })),
+                            ]}
                         />
                     </div>
                     <div className="w-full flex justify-between items-center my-2">

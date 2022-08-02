@@ -1,7 +1,7 @@
 import {FC} from "react";
 
 interface CSelectOptionProps {
-    options: {value: string; label: string}[];
+    options: {value: string; label: string; selected?: boolean}[];
     name: string;
     placeholder: string;
     value: string;
@@ -53,11 +53,17 @@ const CSelectOption: FC<CSelectOptionProps> = ({
                     title={placeholder}
                     value={value}
                     onChange={onChange}>
-                    <option disabled selected value="">
+                    <option
+                        disabled
+                        selected={options.some((op) => op?.selected)}
+                        value="">
                         {placeholder}
                     </option>
                     {options.map((option) => (
-                        <option key={option.label} value={option.value}>
+                        <option
+                            selected={option?.selected}
+                            key={option.label}
+                            value={option.value}>
                             {option.label}
                         </option>
                     ))}

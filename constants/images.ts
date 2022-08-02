@@ -1,5 +1,7 @@
 import logo from "assets/images/logo.svg";
-const images = {
+import orderImage from "assets/images/order.svg";
+const IMAGES = {
     logo,
+    orderImage,
 };
-export default images;
+export default IMAGES;
