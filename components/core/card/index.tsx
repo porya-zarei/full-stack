@@ -1,13 +1,13 @@
-import {FC} from "react";
+import {FC, MouseEvent, ReactElement} from "react";
 
 interface CardProps {
-    onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    onClick?: (e: MouseEvent<HTMLDivElement>) => void;
     className?: string;
     primaryContainerClassName?: string;
     secondaryContainerClassName?: string;
     title: string;
     titleClassName?: string;
-    icon?: React.ReactElement;
+    icon?: ReactElement;
     iconClassName?: string;
     content: string;
     contentClassName?: string;
@@ -29,9 +29,10 @@ interface CardProps {
     successBtnClassName?: string;
     dangerBtnText?: string;
     successBtnText?: string;
-    onDangerBtnClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-    onSuccessBtnClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    onDangerBtnClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+    onSuccessBtnClick?: (e: MouseEvent<HTMLButtonElement>) => void;
     titleContainerClassName?: string;
+    renderFooter?: boolean;
 }
 
 const Card: FC<CardProps> = ({
@@ -57,6 +58,7 @@ const Card: FC<CardProps> = ({
     onDangerBtnClick,
     onSuccessBtnClick,
     titleContainerClassName,
+    renderFooter=false,
 }) => {
     return (
         <div
@@ -104,7 +106,7 @@ const Card: FC<CardProps> = ({
                         {content}
                     </p>
                 </div>
-                {(dangerBtnText || successBtnClassName) && (
+                {renderFooter && (
                     <div
                         className={`w-full flex justify-center items-center ${btnsContainerClassName}`}>
                         <button

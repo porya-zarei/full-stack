@@ -23,7 +23,7 @@ const OrderPage: NextPage<OrderPageProps> = ({order}) => {
     }, []);
     return (
         <div className="w-full flex justify-start items-start">
-            <OrderRoute order={order} />
+            <OrderRoute orderData={order} />
         </div>
     );
 };

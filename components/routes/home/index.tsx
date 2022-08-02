@@ -1,6 +1,8 @@
 import {FC} from "react";
 import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
+import Image from "next/image";
+import IMAGES from "@/constants/images";
 
 interface HomeRouteProps {}
 
@@ -8,10 +10,21 @@ const HomeRoute: FC<HomeRouteProps> = () => {
     return (
         <RouteContainer>
             <FrameContainer className="min-h-[82vh] m-4 border-primary">
-                1
-            </FrameContainer>
-            <FrameContainer className="min-h-[82vh] m-4 border-primary">
-                2
+                <div className="w-full flex justify-center items-center flex-wrap">
+                    <div className="w-full flex justify-center items-center flex-wrap">
+                        <Image
+                            src={IMAGES.besmellahImage}
+                            alt="بسم الله"
+                            width={500}
+                            height={200}
+                        />
+                    </div>
+                    <div className="w-full flex justify-center items-center flex-wrap">
+                        <p className="text-center text-xl">
+                            داشبورد مدیریت سفارشات شرکت امید فضا
+                        </p>
+                    </div>
+                </div>
             </FrameContainer>
         </RouteContainer>
     );

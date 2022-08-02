@@ -1,12 +1,21 @@
-import {IOrder} from "@/types/data";
-import {FC} from "react";
+import {EStatus, ESTATUS_NAMES, IOrder} from "@/types/data";
+import {FC, useState} from "react";
 
 interface OrderProps {
     order: IOrder;
     className?: string;
+    renderFooter?: boolean;
+    handleConfirm?: () => void;
+    handleCancel?: () => void;
 }
 
-const Order: FC<OrderProps> = ({order, className}) => {
+const Order: FC<OrderProps> = ({
+    order,
+    className,
+    renderFooter = false,
+    handleCancel,
+    handleConfirm,
+}) => {
     return (
         <article
             className={`w-full max-w-sm p-3 md:p-5 rounded-2xl shadow-around flex justify-center items-start flex-wrap ${className}`}>
@@ -44,18 +53,30 @@ const Order: FC<OrderProps> = ({order, className}) => {
                                 <td className="px-2 py-1">{product.name}</td>
                                 <td className="px-2 py-1">{product.price}</td>
                                 <td className="px-2 py-1">{product.count}</td>
-                                <td className="px-2 py-1">{(new Date(product.date)).toLocaleDateString("fa-IR")}</td>
+                                <td className="px-2 py-1">
+                                    {new Date(product.date).toLocaleDateString(
+                                        "fa-IR",
+                                    )}
+                                </td>
                             </tr>
                         ))}
-                        <tr key={"sum"} className="text-center border-t-2 border-primary">
+                        <tr
+                            key={"sum"}
+                            className="text-center border-t-2 border-primary">
                             <td className="px-2 py-1">
-                                تعداد : {order.products.reduce((sum, product) => sum + product.count, 0)}
+                                تعداد :{" "}
+                                {order.products.reduce(
+                                    (sum, product) => sum + product.count,
+                                    0,
+                                )}
                             </td>
                             <td className="px-2 py-1">جمع کل :</td>
                             <td className="px-2 py-1">
                                 {order.products.reduce(
                                     (sum, product) =>
-                                        sum + Number(product.price) * Number(product.count),
+                                        sum +
+                                        Number(product.price) *
+                                            Number(product.count),
                                     0,
                                 )}
                             </td>
@@ -65,20 +86,39 @@ const Order: FC<OrderProps> = ({order, className}) => {
             </div>
             <div className="w-full flex justify-center items-center flex-wrap border-t-2 border-gray-light border-dashed py-1">
                 <div className="w-full flex justify-start items-center my-2">
+                    وضعیت : {ESTATUS_NAMES[order.status]}
+                </div>
+                <div className="w-full flex justify-start items-center my-2">
                     توضیحات :
                 </div>
                 <p className="w-full flex justify-center items-center flex-wrap">
                     {order.description}
                 </p>
             </div>
-            <div className="w-full mt-2 flex justify-evenly items-center flex-wrap border-t-2 border-gray-light border-dashed py-2">
-                <button className="w-full md:w-auto my-1 md:my-0 bg-primary text-white text-center py-2 px-4 rounded-2xl">
-                    تایید سفارش
-                </button>
-                <button className="w-full md:w-auto my-1 md:my-0 bg-secondary text-white text-center py-2 px-4 rounded-2xl">
-                    رد سفارش
-                </button>
-            </div>
+            {renderFooter && (
+                <div className="w-full mt-2 flex justify-evenly items-center flex-wrap border-t-2 border-gray-light border-dashed py-2">
+                    <button
+                        type="button"
+                        onClick={
+                            order.status == EStatus.COMPLETED
+                                ? () => {}
+                                : handleConfirm
+                        }
+                        className="w-full md:w-auto my-1 md:my-0 bg-primary text-white text-center py-2 px-4 rounded-2xl">
+                        تایید سفارش
+                    </button>
+                    <button
+                        type="button"
+                        onClick={
+                            order.status == EStatus.CANCELED
+                                ? () => {}
+                                : handleCancel
+                        }
+                        className="w-full md:w-auto my-1 md:my-0 bg-secondary text-white text-center py-2 px-4 rounded-2xl">
+                        رد سفارش
+                    </button>
+                </div>
+            )}
         </article>
     );
 };

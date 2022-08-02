@@ -27,8 +27,9 @@ export enum EStatus {
     PENDING_FOR_FINANCIAL_MANAGER,
     PENDING_FOR_PAYMENT,
     COMPLETED,
-    CANCELLED,
+    CANCELED,
     FAILED,
+    REJECTED
 }
 
 export const ESTATUS_NAMES = [
@@ -38,6 +39,7 @@ export const ESTATUS_NAMES = [
     "تکمیل شده",
     "لغو شده",
     "ناموفق",
+    "رد شده",
 ];
 
 export interface IUser {

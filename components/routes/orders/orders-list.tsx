@@ -2,17 +2,35 @@ import Card from "@/components/core/card";
 import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
 import {useUserContext} from "@/contexts/user-context";
+import useNotification from "@/hooks/useNotification";
 import {useOrders} from "@/hooks/useOrders";
-import {IOrder} from "@/types/data";
+import {updateOrderStatus} from "@/services/orders";
+import {ERole, IOrder} from "@/types/data";
 import {useRouter} from "next/router";
-import {FC} from "react";
+import {FC, MouseEvent} from "react";
 
 interface OrdersListRouteProps {}
 
 const OrdersListRoute: FC<OrdersListRouteProps> = () => {
     const {user} = useUserContext();
     const router = useRouter();
-    const {orders, error, loading} = useOrders(user.id, "pending");
+    const {notify} = useNotification();
+    const {orders, error, loading, refetch} = useOrders(user.id, "pending");
+    const handleUpdateStatus =
+        (confirmed: boolean, order: IOrder) =>
+        async (e: MouseEvent<HTMLButtonElement>) => {
+            const result = await updateOrderStatus(order.id, confirmed);
+            if (result.ok && result?.data && result?.data?.status) {
+                await refetch();
+                notify("Order status updated", {
+                    type: "success",
+                });
+            } else {
+                notify("Error updating order status", {
+                    type: "error",
+                });
+            }
+        };
     return (
         <RouteContainer>
             <FrameContainer className="m-4 border-primary">
@@ -39,14 +57,21 @@ const OrdersListRoute: FC<OrdersListRouteProps> = () => {
                                                             acc +
                                                             Number(
                                                                 product.price,
-                                                            ) * product.count,
+                                                            ) *
+                                                                product.count,
                                                         0,
                                                     )
                                                     .toString(),
                                                 label: "مجموع هزینه ها",
                                             },
                                             {
-                                                value: order.products.length.toString(),
+                                                value: order.products
+                                                    .reduce(
+                                                        (acc, product) =>
+                                                            acc + product.count,
+                                                        0,
+                                                    )
+                                                    .toString(),
                                                 label: "تعداد محصولات",
                                             },
                                         ]}
@@ -56,19 +81,20 @@ const OrdersListRoute: FC<OrdersListRouteProps> = () => {
                                         primaryContainerClassName="rounded-xl overflow-hidden shadow-around transition-all hover:scale-105 cursor-pointer"
                                         secondaryContainerClassName="h-full bg-white relative overflow-y-auto custom-scrollbar"
                                         contentClassName="px-3 py-2 text-center"
+                                        renderFooter={user.role !== ERole.USER}
                                         dangerBtnText="برگشت"
                                         btnsContainerClassName="sticky bottom-0 z-10 bg-white"
                                         dangerBtnClassName="bg-white hover:bg-warning hover:text-white transition-all border-2 border-warning text-warning font-bold py-2 px-4 rounded-md"
-                                        onDangerBtnClick={(e) => {
-                                            e.stopPropagation();
-                                            console.log("delete");
-                                        }}
+                                        onDangerBtnClick={handleUpdateStatus(
+                                            false,
+                                            order,
+                                        )}
                                         successBtnText="تایید"
                                         successBtnClassName="bg-white hover:bg-info  hover:text-white transition-all border-2 border-info text-info font-bold py-2 px-4 rounded-md"
-                                        onSuccessBtnClick={(e) => {
-                                            e.stopPropagation();
-                                            console.log("success");
-                                        }}
+                                        onSuccessBtnClick={handleUpdateStatus(
+                                            true,
+                                            order,
+                                        )}
                                         dataClassName="border-b-2 border-solid border-gray-light rounded-md m-1"
                                         onClick={() => {
                                             router.push(`/orders/${order.id}`);

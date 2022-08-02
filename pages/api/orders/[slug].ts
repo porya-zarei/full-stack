@@ -7,6 +7,7 @@ import {
     getPendingOrdersHandler,
     getUserOrdersHandler,
     updateOrderHandler,
+    updateOrderStatusHandler,
 } from "@/server/controllers/orders";
 import {IAPIResult} from "@/types/api";
 
@@ -18,6 +19,7 @@ const HANDLERS: Record<string, NextApiHandler> = {
     getPendingOrders: getPendingOrdersHandler,
     updateOrder: updateOrderHandler,
     userOrders: getUserOrdersHandler,
+    updateOrderStatus: updateOrderStatusHandler,
 };
 
 const handler: NextApiHandler = async (req, res) => {

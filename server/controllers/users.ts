@@ -14,6 +14,7 @@ import {
 } from "../actions/users";
 import {
     getToken,
+    getTokenFromRequest,
     getUserFromToken,
     getUserRoleFromToken,
 } from "../utils/jwt-helper";
@@ -156,11 +157,29 @@ export const loginUserHandler: NextApiHandler = async (req, res) => {
 
 export const changeUserGroupHandler: NextApiHandler = async (req, res) => {
     try {
-        const token = req.headers?.cookie?.split(";")[0].split("=")[1] ?? "";
-        const user = getUserFromToken(token);
-        const {id, group} = req.body as {id: string; group: EGroup};
-        const result = await changeUserGroup(id, group, user);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const user = await getUserFromToken(token);
+            if (user) {
+                const {id, group} = req.body as {id: string; group: EGroup};
+                const result = await changeUserGroup(id, group, user);
+                res.status(200).json(result);
+            } else {
+                const result: IAPIResult<IUser | null> = {
+                    data: null,
+                    ok: false,
+                    error: "Error changing user role",
+                };
+                res.status(500).json(result);
+            }
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Error changing user group",
+            };
+            res.status(500).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {
@@ -174,11 +193,29 @@ export const changeUserGroupHandler: NextApiHandler = async (req, res) => {
 
 export const changeUserRoleHandler: NextApiHandler = async (req, res) => {
     try {
-        const token = req.headers?.cookie?.split(";")[0].split("=")[1] ?? "";
-        const user = getUserFromToken(token);
-        const {id, role} = req.body as {id: string; role: ERole};
-        const result = await changeUserRole(id, role, user);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const user = await getUserFromToken(token);
+            if (user) {
+                const {id, role} = req.body as {id: string; role: ERole};
+                const result = await changeUserRole(id, role, user);
+                res.status(200).json(result);
+            } else {
+                const result: IAPIResult<IUser | null> = {
+                    data: null,
+                    ok: false,
+                    error: "Error changing user role",
+                };
+                res.status(500).json(result);
+            }
+        } else {
+            const result: IAPIResult<IUser | null> = {
+                data: null,
+                ok: false,
+                error: "Error changing user role",
+            };
+            res.status(500).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {

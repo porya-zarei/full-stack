@@ -1,4 +1,4 @@
-import {NextPage} from "next";
+import {GetServerSideProps, NextPage} from "next";
 import OrdersRoute from "@/components/routes/orders";
 import { useUserContext } from "@/contexts/user-context";
 import { useEffect } from "react";
@@ -25,3 +25,9 @@ const OrdersPage: NextPage<OrdersPageProps> = () => {
 };
 
 export default OrdersPage;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+    return {
+        props: {},
+    };
+};

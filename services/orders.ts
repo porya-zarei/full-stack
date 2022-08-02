@@ -91,3 +91,21 @@ export const getUserOrders = async (userId: string) => {
         return result;
     }
 };
+
+export const updateOrderStatus = async (id: string, confirmed: boolean) => {
+    try {
+        const result = await axios_instance.post<IAPIResult<IOrder>>(
+            API_ROUTES.orders.updateOrderStatus,
+            {id, confirmed},
+        );
+        return result.data;
+    } catch (error) {
+        console.log("error in update order status => ", error);
+        const result: IAPIResult<IOrder | null> = {
+            data: null,
+            error: "error in update order status",
+            ok: false,
+        };
+        return result;
+    }
+}

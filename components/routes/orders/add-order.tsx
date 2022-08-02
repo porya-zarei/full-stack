@@ -269,7 +269,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                         <CCheckbox
                             placeholder="دارای فاکتور رسمی ؟"
                             name="official-bill"
-                            title="دارای فاکتور رسمی ؟"
+                            title="ایا فروشنده فاکتور رسمی ارائه می کند ؟"
                             value={officialBill}
                             onChange={(e) => setOfficialBill(e.target.checked)}
                             containerClassName="rounded-md p-2"

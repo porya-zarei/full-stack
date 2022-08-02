@@ -17,12 +17,6 @@ export const isUserCanChangeGroup = (user: IUser, modifiedUser: IUser) => {
 };
 
 export const isUserCanChangeRole = (user: IUser, modifiedUser: IUser) => {
-    if (
-        user.email === modifiedUser.email &&
-        user.password === modifiedUser.password
-    ) {
-        return true;
-    }
     if (user.role === ERole.CREATOR && modifiedUser.role !== ERole.CREATOR) {
         return true;
     }

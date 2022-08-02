@@ -50,9 +50,9 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
                 path: "/users/add-user",
             },
             {
-                name:"ویرایش نقش",
+                name:"ویرایش کاربران",
                 icon: <HiOutlineUserCircle />,
-                path: "/users/edit-role-user",
+                path: "/users/change-users",
             }
         ],
     }

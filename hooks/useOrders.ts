@@ -41,5 +41,5 @@ export const useOrders = (userId?: string | null, type?: "pending" | null) => {
         getOrdersHandler();
     }, [userId]);
 
-    return {orders, loading, error};
+    return {orders, loading, error, refetch: getOrdersHandler};
 };

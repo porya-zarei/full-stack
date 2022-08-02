@@ -7,6 +7,7 @@ export const API_ROUTES = {
         getPendingOrders: "/orders/getPendingOrders",
         updateOrder: "/orders/updateOrder",
         userOrders: "/orders/userOrders",
+        updateOrderStatus: "/orders/updateOrderStatus",
     },
     users: {
         addUser: "/users/addUser",

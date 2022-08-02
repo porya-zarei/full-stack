@@ -18,7 +18,7 @@ import {
     getFromJsonFile,
     updateInJsonFile,
 } from "../utils/json-database";
-import { logger } from "../utils/logger";
+import {logger} from "../utils/logger";
 import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getUserAndSupervisor = (
@@ -138,9 +138,13 @@ export const getPendingOrders = async (id: string = "") => {
     });
     const result: IAPIResult<Partial<IOrder>[]> = {
         data: fullOrders
-            .filter((order) => Number(order.user?.group) === Number(user?.group))
+            .filter(
+                (order) => Number(order.user?.group) === Number(user?.group),
+            )
             .filter((order) => {
-                logger.log(`order status: ${order.status},user role: ${user.role}`);
+                logger.log(
+                    `order status: ${order.status},user role: ${user.role}`,
+                );
                 if (user.role === ERole.CREATOR) {
                     return (
                         order.status === EStatus.PENDING_FOR_FINANCIAL_MANAGER
@@ -153,8 +157,8 @@ export const getPendingOrders = async (id: string = "") => {
             })
             .map((order) => {
                 const {user, supervisor} = getUserAndSupervisor({
-                    user: order.user?.id??"",
-                    supervisor: order.supervisor?.id??"",
+                    user: order.user?.id ?? "",
+                    supervisor: order.supervisor?.id ?? "",
                 });
                 const newOrder: Partial<IOrder> = {
                     ...order,
@@ -184,6 +188,24 @@ export const getUserOrders = async (id: string = "") => {
                 };
                 return newOrder;
             }),
+        ok: true,
+        error: "",
+    };
+    return result;
+};
+
+export const changeOrderStatus = async (id: string = "", status: EStatus) => {
+    const order = getFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE, id);
+    order.status = status;
+    updateInJsonFile(ORDERS_JSON_DB_FILE, order, id);
+    const {user, supervisor} = getUserAndSupervisor(order);
+    const newOrder: Partial<IOrder> = {
+        ...order,
+        user,
+        supervisor,
+    };
+    const result: IAPIResult<Partial<IOrder>> = {
+        data: newOrder,
         ok: true,
         error: "",
     };

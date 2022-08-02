@@ -1,8 +1,9 @@
 import {IAPIResult} from "@/types/api";
-import {EStatus, IOrder, IUser, IDBOrder} from "@/types/data";
+import {EStatus, IOrder, IUser, IDBOrder, ERole} from "@/types/data";
 import {NextApiHandler} from "next";
 import {
     addOrder,
+    changeOrderStatus,
     deleteOrder,
     getAllOrders,
     getOrder,
@@ -10,6 +11,7 @@ import {
     getUserOrders,
     updateOrder,
 } from "../actions/orders";
+import {getTokenFromRequest, getUserFromToken} from "../utils/jwt-helper";
 import {logger} from "../utils/logger";
 
 export const getAllOrdersHandler: NextApiHandler = async (req, res) => {
@@ -121,6 +123,59 @@ export const getUserOrdersHandler: NextApiHandler = async (req, res) => {
             data: "",
             ok: false,
             error: "Error getting user orders",
+        };
+        res.status(500).json(result);
+    }
+};
+
+export const updateOrderStatusHandler: NextApiHandler = async (req, res) => {
+    try {
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const {id, confirmed} = req.body as {
+                id: string;
+                confirmed: boolean;
+            };
+            const order = await getOrder(id);
+            const user = await getUserFromToken(token);
+            let status = EStatus.PENDING_FOR_SUPERVISOR;
+            if (confirmed) {
+                if (
+                    order.data.status === EStatus.PENDING_FOR_SUPERVISOR &&
+                    user?.role === ERole.ADMIN
+                ) {
+                    status = EStatus.PENDING_FOR_FINANCIAL_MANAGER;
+                } else if (
+                    order.data.status ===
+                        EStatus.PENDING_FOR_FINANCIAL_MANAGER &&
+                    user?.role === ERole.CREATOR
+                ) {
+                    status = EStatus.PENDING_FOR_PAYMENT;
+                } else if (
+                    order.data.status === EStatus.PENDING_FOR_PAYMENT &&
+                    user?.role === ERole.CREATOR
+                ) {
+                    status = EStatus.COMPLETED;
+                }
+            } else {
+                status = EStatus.REJECTED;
+            }
+            const result = await changeOrderStatus(id, status);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Error updating order status",
+            };
+            res.status(500).json(result);
+        }
+    } catch (error) {
+        logger.error(error);
+        const result: IAPIResult<string> = {
+            data: "",
+            ok: false,
+            error: "Error updating order",
         };
         res.status(500).json(result);
     }

@@ -1,6 +1,5 @@
 import type {GetServerSideProps, NextPage} from "next";
 import HomeRoute from "@/components/routes/home";
-import {IUser} from "@/types/data";
 import {useUserContext} from "@/contexts/user-context";
 import {useEffect} from "react";
 import {autoLoginClient} from "@/utils/auth";
