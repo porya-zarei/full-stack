@@ -61,6 +61,7 @@ export interface ICreateUser {
     userName: string;
     phoneNumber: string;
     group: EGroup;
+    key: string;
 }
 
 export interface IProduct {

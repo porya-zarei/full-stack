@@ -4,20 +4,21 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = "file:./app.db"
 }
 
 model Product {
-  id    String @id @default(uuid())
+  id    String @id @map("_id") @default(uuid())
   name  String
   price String
   date  String
-  order Order  @relation(fields: [id], references: [id])
+  count Int
+  order Order @relation(fields: [id], references: [id])
 }
 
 model User {
-  id              String  @id @default(uuid())
+  id              String  @id @map("_id") @default(uuid())
   fullName        String?
   email           String  @unique
   password        String
@@ -25,16 +26,15 @@ model User {
   role            Int     @default(2)
   joinedAt        String
   phoneNumber     String?
-  orders          Order[] @relation(name: "creator")
-  ordersToConfirm Order[] @relation(name: "supervisor")
 }
 
 model Order {
-  id          String    @id @default(uuid())
-  user        User      @relation(name: "creator", fields: [id], references: [id])
-  supervisor  User      @relation(name: "supervisor", fields: [id], references: [id])
+  id          String    @id @map("_id") @default(uuid())
+  user        String
+  supervisor  String      
   products    Product[]
   description String
   date        String
   status      Int       @default(0)
+  officialBill Boolean   @default(true)
 }

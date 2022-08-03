@@ -16,18 +16,27 @@ import {
     getToken,
     getTokenFromRequest,
     getUserFromToken,
-    getUserRoleFromToken,
 } from "../utils/jwt-helper";
 import {logger} from "../utils/logger";
 import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getAllUsersHandler: NextApiHandler = async (req, res) => {
     try {
-        const {id: role} = req.body as {id: string};
-        const result = await getAllUsers(
-            Number(role) ? (Number(role) as ERole) : null,
-        );
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const {id: role} = req.body as {id: string};
+            const result = await getAllUsers(
+                Number(role) ? (Number(role) as ERole) : null,
+            );
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser[]> = {
@@ -41,9 +50,19 @@ export const getAllUsersHandler: NextApiHandler = async (req, res) => {
 
 export const getUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const {id} = req.body as {id: string};
-        const result = await getUser(id);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const {id} = req.body as {id: string};
+            const result = await getUser(id);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {
@@ -57,15 +76,25 @@ export const getUserHandler: NextApiHandler = async (req, res) => {
 
 export const addUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const userdata = req.body as ICreateUser;
-        const user: IUser = {
-            ...userdata,
-            id: uuidGenerator(),
-            joinedAt: new Date().toISOString(),
-            role: ERole.USER,
-        };
-        const result = await addUser(user);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const userdata = req.body as ICreateUser;
+            const user: IUser = {
+                ...userdata,
+                id: uuidGenerator(),
+                joinedAt: new Date().toISOString(),
+                role: ERole.USER,
+            };
+            const result = await addUser(user);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {
@@ -79,9 +108,19 @@ export const addUserHandler: NextApiHandler = async (req, res) => {
 
 export const updateUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const user = req.body as Partial<IUser> & {id: string};
-        const result = await updateUser(user);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const user = req.body as Partial<IUser> & {id: string};
+            const result = await updateUser(user);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {
@@ -95,9 +134,19 @@ export const updateUserHandler: NextApiHandler = async (req, res) => {
 
 export const deleteUserHandler: NextApiHandler = async (req, res) => {
     try {
-        const {id} = req.body as {id: string};
-        const result = await deleteUser(id);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const {id} = req.body as {id: string};
+            const result = await deleteUser(id);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {
@@ -108,21 +157,31 @@ export const deleteUserHandler: NextApiHandler = async (req, res) => {
         res.status(500).json(result);
     }
 };
-
+const SECRET_KEY =
+    "94c2a5aaa35c259469a3d050a4d51e2df931113cf977bde8cdd377156038980c";
 export const registerUserHandler: NextApiHandler = async (req, res) => {
     try {
         const userData = req.body as ICreateUser;
-        const user: IUser = {
-            ...userData,
-            id: uuidGenerator(),
-            joinedAt: new Date().toISOString(),
-            role: ERole.USER,
-        };
-        const result = await registerUser(user);
-        const token = getToken(result.data);
-        result.token = token;
-        res.setHeader("Set-Cookie", `token=${token}; Path=/`);
-        res.status(200).json(result);
+        if (userData.key === SECRET_KEY) {
+            const user: IUser = {
+                ...userData,
+                id: uuidGenerator(),
+                joinedAt: new Date().toISOString(),
+                role: ERole.USER,
+            };
+            const result = await registerUser(user);
+            const token = getToken(result.data);
+            result.token = token;
+            res.setHeader("Set-Cookie", `token=${token}; Path=/`);
+            res.status(200).json(result);
+        }else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Please do not try to register",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {

@@ -17,7 +17,8 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
     const {orders, error, loading, refetch} = useOrders();
     const {notify} = useNotification();
     const handleUpdateStatus =
-        (confirmed: boolean, order: IOrder) => async (e:MouseEvent<HTMLButtonElement>) => {
+        (confirmed: boolean, order: IOrder) =>
+        async (e: MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
             const result = await updateOrderStatus(order.id, confirmed);
             if (result.ok && result?.data && result?.data?.status) {
@@ -57,14 +58,24 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                                             acc +
                                                             Number(
                                                                 product.price,
-                                                            ),
+                                                            ) *
+                                                                product.count,
                                                         0,
                                                     )
                                                     .toString(),
                                                 label: "مجموع هزینه ها",
                                             },
                                             {
-                                                value: order.products.length.toString(),
+                                                value: order.products
+                                                    .reduce(
+                                                        (acc, product) =>
+                                                            acc +
+                                                            Number(
+                                                                product.count,
+                                                            ),
+                                                        0,
+                                                    )
+                                                    .toString(),
                                                 label: "تعداد محصولات",
                                             },
                                         ]}

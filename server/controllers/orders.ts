@@ -16,8 +16,18 @@ import {logger} from "../utils/logger";
 
 export const getAllOrdersHandler: NextApiHandler = async (req, res) => {
     try {
-        const result = await getAllOrders();
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const result = await getAllOrders();
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {
@@ -31,9 +41,19 @@ export const getAllOrdersHandler: NextApiHandler = async (req, res) => {
 
 export const getOrderHandler: NextApiHandler = async (req, res) => {
     try {
-        const {id} = req.body as {id: string};
-        const result = await getOrder(id);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const {id} = req.body as {id: string};
+            const result = await getOrder(id);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IOrder | null> = {
@@ -47,9 +67,19 @@ export const getOrderHandler: NextApiHandler = async (req, res) => {
 
 export const addOrderHandler: NextApiHandler = async (req, res) => {
     try {
-        const order = req.body as IDBOrder;
-        const result = await addOrder(order);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const order = req.body as IDBOrder;
+            const result = await addOrder(order);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {
@@ -63,9 +93,19 @@ export const addOrderHandler: NextApiHandler = async (req, res) => {
 
 export const updateOrderHandler: NextApiHandler = async (req, res) => {
     try {
-        const order = req.body as IDBOrder;
-        const result = await updateOrder(order);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const order = req.body as IDBOrder;
+            const result = await updateOrder(order);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {
@@ -79,9 +119,19 @@ export const updateOrderHandler: NextApiHandler = async (req, res) => {
 
 export const deleteOrderHandler: NextApiHandler = async (req, res) => {
     try {
-        const {id} = req.body as {id: string};
-        const result = await deleteOrder(id);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const {id} = req.body as {id: string};
+            const result = await deleteOrder(id);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {
@@ -95,11 +145,21 @@ export const deleteOrderHandler: NextApiHandler = async (req, res) => {
 
 export const getPendingOrdersHandler: NextApiHandler = async (req, res) => {
     try {
-        const {id: userId} = req.body as {id: string};
-        const result = await getPendingOrders(userId);
-        logger.log(`Pending orders: ${result.ok} for user ${userId}`);
-        logger.log(`${result.data.length}`);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const {id: userId} = req.body as {id: string};
+            const result = await getPendingOrders(userId);
+            logger.log(`Pending orders: ${result.ok} for user ${userId}`);
+            logger.log(`${result.data.length}`);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {
@@ -113,10 +173,20 @@ export const getPendingOrdersHandler: NextApiHandler = async (req, res) => {
 
 export const getUserOrdersHandler: NextApiHandler = async (req, res) => {
     try {
-        const userId = req.query.id?.toString() ?? "";
-        logger.log(`Getting orders for user ${userId}`);
-        const result = await getUserOrders(userId);
-        res.status(200).json(result);
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const userId = req.query.id?.toString() ?? "";
+            logger.log(`Getting orders for user ${userId}`);
+            const result = await getUserOrders(userId);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<string> = {

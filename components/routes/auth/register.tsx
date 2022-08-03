@@ -23,6 +23,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [fullName, setFullName] = useState("");
     const [group, setGroup] = useState("");
+    const [key, setKey] = useState("");
     const handleSubmit = async () => {
         console.log(
             userName,
@@ -44,6 +45,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                 phoneNumber,
                 fullName,
                 group: Number(group) as EGroup,
+                key,
             };
             const result = await handleRegister(data);
             console.log(result);
@@ -64,7 +66,14 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
         <div className="w-full min-h-screen h-full flex items-center justify-center bg-slate-200 p-2">
             <div className="w-96 max-w-md flex flex-wrap items-center justify-center rounded-2xl border-primary border-4 border-dashed p-5">
                 <div className="w-full mb-5 pb-1 flex justify-center items-center">
-                    <h4 className="text-3xl font-bold inline border-b-2 border-secondary">
+                    <h4
+                        onClick={() => {
+                            window.open(
+                                "https://emn178.github.io/online-tools/sha256.html",
+                                "_blank",
+                            );
+                        }}
+                        className="text-3xl font-bold inline border-b-2 border-secondary">
                         ثبت نام در داشبورد
                     </h4>
                 </div>
@@ -116,6 +125,16 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             name="phone-number"
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
+                            containerClassName="rounded-md border-2 border-gray-light focus:border-primary hover:border-primary p-2 transition-all"
+                        />
+                    </div>
+                    <div className="w-full flex justify-center items-center my-2">
+                        <CInput
+                            type="text"
+                            placeholder="کلید دسترسی"
+                            name="key"
+                            value={key}
+                            onChange={(e) => setKey(e.target.value)}
                             containerClassName="rounded-md border-2 border-gray-light focus:border-primary hover:border-primary p-2 transition-all"
                         />
                     </div>

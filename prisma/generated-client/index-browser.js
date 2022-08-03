@@ -91,7 +91,8 @@ exports.Prisma.ProductScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
   price: 'price',
-  date: 'date'
+  date: 'date',
+  count: 'count'
 });
 
 exports.Prisma.UserScalarFieldEnum = makeEnum({
@@ -109,7 +110,8 @@ exports.Prisma.OrderScalarFieldEnum = makeEnum({
   id: 'id',
   description: 'description',
   date: 'date',
-  status: 'status'
+  status: 'status',
+  officialBill: 'officialBill'
 });
 
 exports.Prisma.SortOrder = makeEnum({

@@ -21,6 +21,7 @@ export type Product = {
   name: string
   price: string
   date: string
+  count: number
 }
 
 /**
@@ -47,6 +48,7 @@ export type Order = {
   description: string
   date: string
   status: number
+  officialBill: boolean
 }
 
 
@@ -959,8 +961,18 @@ export namespace Prisma {
 
   export type AggregateProduct = {
     _count: ProductCountAggregateOutputType | null
+    _avg: ProductAvgAggregateOutputType | null
+    _sum: ProductSumAggregateOutputType | null
     _min: ProductMinAggregateOutputType | null
     _max: ProductMaxAggregateOutputType | null
+  }
+
+  export type ProductAvgAggregateOutputType = {
+    count: number | null
+  }
+
+  export type ProductSumAggregateOutputType = {
+    count: number | null
   }
 
   export type ProductMinAggregateOutputType = {
@@ -968,6 +980,7 @@ export namespace Prisma {
     name: string | null
     price: string | null
     date: string | null
+    count: number | null
   }
 
   export type ProductMaxAggregateOutputType = {
@@ -975,6 +988,7 @@ export namespace Prisma {
     name: string | null
     price: string | null
     date: string | null
+    count: number | null
   }
 
   export type ProductCountAggregateOutputType = {
@@ -982,15 +996,25 @@ export namespace Prisma {
     name: number
     price: number
     date: number
+    count: number
     _all: number
   }
 
+
+  export type ProductAvgAggregateInputType = {
+    count?: true
+  }
+
+  export type ProductSumAggregateInputType = {
+    count?: true
+  }
 
   export type ProductMinAggregateInputType = {
     id?: true
     name?: true
     price?: true
     date?: true
+    count?: true
   }
 
   export type ProductMaxAggregateInputType = {
@@ -998,6 +1022,7 @@ export namespace Prisma {
     name?: true
     price?: true
     date?: true
+    count?: true
   }
 
   export type ProductCountAggregateInputType = {
@@ -1005,6 +1030,7 @@ export namespace Prisma {
     name?: true
     price?: true
     date?: true
+    count?: true
     _all?: true
   }
 
@@ -1051,6 +1077,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ProductAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ProductSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ProductMinAggregateInputType
@@ -1081,6 +1119,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ProductCountAggregateInputType | true
+    _avg?: ProductAvgAggregateInputType
+    _sum?: ProductSumAggregateInputType
     _min?: ProductMinAggregateInputType
     _max?: ProductMaxAggregateInputType
   }
@@ -1091,7 +1131,10 @@ export namespace Prisma {
     name: string
     price: string
     date: string
+    count: number
     _count: ProductCountAggregateOutputType | null
+    _avg: ProductAvgAggregateOutputType | null
+    _sum: ProductSumAggregateOutputType | null
     _min: ProductMinAggregateOutputType | null
     _max: ProductMaxAggregateOutputType | null
   }
@@ -1115,6 +1158,7 @@ export namespace Prisma {
     name?: boolean
     price?: boolean
     date?: boolean
+    count?: boolean
     order?: boolean | OrderArgs
   }
 
@@ -2824,6 +2868,7 @@ export namespace Prisma {
     description: string | null
     date: string | null
     status: number | null
+    officialBill: boolean | null
   }
 
   export type OrderMaxAggregateOutputType = {
@@ -2831,6 +2876,7 @@ export namespace Prisma {
     description: string | null
     date: string | null
     status: number | null
+    officialBill: boolean | null
   }
 
   export type OrderCountAggregateOutputType = {
@@ -2838,6 +2884,7 @@ export namespace Prisma {
     description: number
     date: number
     status: number
+    officialBill: number
     _all: number
   }
 
@@ -2855,6 +2902,7 @@ export namespace Prisma {
     description?: true
     date?: true
     status?: true
+    officialBill?: true
   }
 
   export type OrderMaxAggregateInputType = {
@@ -2862,6 +2910,7 @@ export namespace Prisma {
     description?: true
     date?: true
     status?: true
+    officialBill?: true
   }
 
   export type OrderCountAggregateInputType = {
@@ -2869,6 +2918,7 @@ export namespace Prisma {
     description?: true
     date?: true
     status?: true
+    officialBill?: true
     _all?: true
   }
 
@@ -2969,6 +3019,7 @@ export namespace Prisma {
     description: string
     date: string
     status: number
+    officialBill: boolean
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
     _sum: OrderSumAggregateOutputType | null
@@ -2998,6 +3049,7 @@ export namespace Prisma {
     description?: boolean
     date?: boolean
     status?: boolean
+    officialBill?: boolean
     _count?: boolean | OrderCountOutputTypeArgs
   }
 
@@ -3744,7 +3796,8 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     price: 'price',
-    date: 'date'
+    date: 'date',
+    count: 'count'
   };
 
   export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -3768,7 +3821,8 @@ export namespace Prisma {
     id: 'id',
     description: 'description',
     date: 'date',
-    status: 'status'
+    status: 'status',
+    officialBill: 'officialBill'
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
@@ -3795,6 +3849,7 @@ export namespace Prisma {
     name?: StringFilter | string
     price?: StringFilter | string
     date?: StringFilter | string
+    count?: IntFilter | number
     order?: XOR<OrderRelationFilter, OrderWhereInput>
   }
 
@@ -3803,6 +3858,7 @@ export namespace Prisma {
     name?: SortOrder
     price?: SortOrder
     date?: SortOrder
+    count?: SortOrder
     order?: OrderOrderByWithRelationInput
   }
 
@@ -3815,9 +3871,12 @@ export namespace Prisma {
     name?: SortOrder
     price?: SortOrder
     date?: SortOrder
+    count?: SortOrder
     _count?: ProductCountOrderByAggregateInput
+    _avg?: ProductAvgOrderByAggregateInput
     _max?: ProductMaxOrderByAggregateInput
     _min?: ProductMinOrderByAggregateInput
+    _sum?: ProductSumOrderByAggregateInput
   }
 
   export type ProductScalarWhereWithAggregatesInput = {
@@ -3828,6 +3887,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter | string
     price?: StringWithAggregatesFilter | string
     date?: StringWithAggregatesFilter | string
+    count?: IntWithAggregatesFilter | number
   }
 
   export type UserWhereInput = {
@@ -3906,6 +3966,7 @@ export namespace Prisma {
     description?: StringFilter | string
     date?: StringFilter | string
     status?: IntFilter | number
+    officialBill?: BoolFilter | boolean
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -3916,6 +3977,7 @@ export namespace Prisma {
     description?: SortOrder
     date?: SortOrder
     status?: SortOrder
+    officialBill?: SortOrder
   }
 
   export type OrderWhereUniqueInput = {
@@ -3927,6 +3989,7 @@ export namespace Prisma {
     description?: SortOrder
     date?: SortOrder
     status?: SortOrder
+    officialBill?: SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
@@ -3942,12 +4005,14 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter | string
     date?: StringWithAggregatesFilter | string
     status?: IntWithAggregatesFilter | number
+    officialBill?: BoolWithAggregatesFilter | boolean
   }
 
   export type ProductCreateInput = {
     name: string
     price: string
     date: string
+    count: number
     order?: OrderCreateNestedOneWithoutProductsInput
   }
 
@@ -3956,12 +4021,14 @@ export namespace Prisma {
     name: string
     price: string
     date: string
+    count: number
   }
 
   export type ProductUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     price?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
     order?: OrderUpdateOneRequiredWithoutProductsNestedInput
   }
 
@@ -3970,12 +4037,14 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     price?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     price?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductUncheckedUpdateManyInput = {
@@ -3983,6 +4052,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     price?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type UserCreateInput = {
@@ -4066,6 +4136,7 @@ export namespace Prisma {
     description: string
     date: string
     status?: number
+    officialBill?: boolean
   }
 
   export type OrderUncheckedCreateInput = {
@@ -4074,6 +4145,7 @@ export namespace Prisma {
     description: string
     date: string
     status?: number
+    officialBill?: boolean
   }
 
   export type OrderUpdateInput = {
@@ -4083,6 +4155,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -4091,12 +4164,14 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUpdateManyMutationInput = {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUncheckedUpdateManyInput = {
@@ -4104,6 +4179,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type StringFilter = {
@@ -4120,6 +4196,17 @@ export namespace Prisma {
     not?: NestedStringFilter | string
   }
 
+  export type IntFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntFilter | number
+  }
+
   export type OrderRelationFilter = {
     is?: OrderWhereInput
     isNot?: OrderWhereInput
@@ -4130,6 +4217,11 @@ export namespace Prisma {
     name?: SortOrder
     price?: SortOrder
     date?: SortOrder
+    count?: SortOrder
+  }
+
+  export type ProductAvgOrderByAggregateInput = {
+    count?: SortOrder
   }
 
   export type ProductMaxOrderByAggregateInput = {
@@ -4137,6 +4229,7 @@ export namespace Prisma {
     name?: SortOrder
     price?: SortOrder
     date?: SortOrder
+    count?: SortOrder
   }
 
   export type ProductMinOrderByAggregateInput = {
@@ -4144,6 +4237,11 @@ export namespace Prisma {
     name?: SortOrder
     price?: SortOrder
     date?: SortOrder
+    count?: SortOrder
+  }
+
+  export type ProductSumOrderByAggregateInput = {
+    count?: SortOrder
   }
 
   export type StringWithAggregatesFilter = {
@@ -4163,6 +4261,22 @@ export namespace Prisma {
     _max?: NestedStringFilter
   }
 
+  export type IntWithAggregatesFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntWithAggregatesFilter | number
+    _count?: NestedIntFilter
+    _avg?: NestedFloatFilter
+    _sum?: NestedIntFilter
+    _min?: NestedIntFilter
+    _max?: NestedIntFilter
+  }
+
   export type StringNullableFilter = {
     equals?: string | null
     in?: Enumerable<string> | null
@@ -4175,17 +4289,6 @@ export namespace Prisma {
     startsWith?: string
     endsWith?: string
     not?: NestedStringNullableFilter | string | null
-  }
-
-  export type IntFilter = {
-    equals?: number
-    in?: Enumerable<number>
-    notIn?: Enumerable<number>
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedIntFilter | number
   }
 
   export type OrderListRelationFilter = {
@@ -4256,22 +4359,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter
   }
 
-  export type IntWithAggregatesFilter = {
-    equals?: number
-    in?: Enumerable<number>
-    notIn?: Enumerable<number>
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedIntWithAggregatesFilter | number
-    _count?: NestedIntFilter
-    _avg?: NestedFloatFilter
-    _sum?: NestedIntFilter
-    _min?: NestedIntFilter
-    _max?: NestedIntFilter
-  }
-
   export type UserRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -4283,6 +4370,11 @@ export namespace Prisma {
     none?: ProductWhereInput
   }
 
+  export type BoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
+  }
+
   export type ProductOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -4292,6 +4384,7 @@ export namespace Prisma {
     description?: SortOrder
     date?: SortOrder
     status?: SortOrder
+    officialBill?: SortOrder
   }
 
   export type OrderAvgOrderByAggregateInput = {
@@ -4303,6 +4396,7 @@ export namespace Prisma {
     description?: SortOrder
     date?: SortOrder
     status?: SortOrder
+    officialBill?: SortOrder
   }
 
   export type OrderMinOrderByAggregateInput = {
@@ -4310,10 +4404,19 @@ export namespace Prisma {
     description?: SortOrder
     date?: SortOrder
     status?: SortOrder
+    officialBill?: SortOrder
   }
 
   export type OrderSumOrderByAggregateInput = {
     status?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
   }
 
   export type OrderCreateNestedOneWithoutProductsInput = {
@@ -4324,6 +4427,14 @@ export namespace Prisma {
 
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type OrderUpdateOneRequiredWithoutProductsNestedInput = {
@@ -4360,14 +4471,6 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type OrderUpdateManyWithoutUserNestedInput = {
@@ -4475,6 +4578,10 @@ export namespace Prisma {
     deleteMany?: Enumerable<ProductScalarWhereInput>
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type ProductUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<Enumerable<ProductCreateWithoutOrderInput>, Enumerable<ProductUncheckedCreateWithoutOrderInput>>
     connectOrCreate?: Enumerable<ProductCreateOrConnectWithoutOrderInput>
@@ -4502,6 +4609,17 @@ export namespace Prisma {
     not?: NestedStringFilter | string
   }
 
+  export type NestedIntFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntFilter | number
+  }
+
   export type NestedStringWithAggregatesFilter = {
     equals?: string
     in?: Enumerable<string>
@@ -4519,7 +4637,7 @@ export namespace Prisma {
     _max?: NestedStringFilter
   }
 
-  export type NestedIntFilter = {
+  export type NestedIntWithAggregatesFilter = {
     equals?: number
     in?: Enumerable<number>
     notIn?: Enumerable<number>
@@ -4527,7 +4645,23 @@ export namespace Prisma {
     lte?: number
     gt?: number
     gte?: number
-    not?: NestedIntFilter | number
+    not?: NestedIntWithAggregatesFilter | number
+    _count?: NestedIntFilter
+    _avg?: NestedFloatFilter
+    _sum?: NestedIntFilter
+    _min?: NestedIntFilter
+    _max?: NestedIntFilter
+  }
+
+  export type NestedFloatFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatFilter | number
   }
 
   export type NestedStringNullableFilter = {
@@ -4572,31 +4706,17 @@ export namespace Prisma {
     not?: NestedIntNullableFilter | number | null
   }
 
-  export type NestedIntWithAggregatesFilter = {
-    equals?: number
-    in?: Enumerable<number>
-    notIn?: Enumerable<number>
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedIntWithAggregatesFilter | number
-    _count?: NestedIntFilter
-    _avg?: NestedFloatFilter
-    _sum?: NestedIntFilter
-    _min?: NestedIntFilter
-    _max?: NestedIntFilter
+  export type NestedBoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
   }
 
-  export type NestedFloatFilter = {
-    equals?: number
-    in?: Enumerable<number>
-    notIn?: Enumerable<number>
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedFloatFilter | number
+  export type NestedBoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
   }
 
   export type OrderCreateWithoutProductsInput = {
@@ -4605,6 +4725,7 @@ export namespace Prisma {
     description: string
     date: string
     status?: number
+    officialBill?: boolean
   }
 
   export type OrderUncheckedCreateWithoutProductsInput = {
@@ -4612,6 +4733,7 @@ export namespace Prisma {
     description: string
     date: string
     status?: number
+    officialBill?: boolean
   }
 
   export type OrderCreateOrConnectWithoutProductsInput = {
@@ -4630,6 +4752,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUncheckedUpdateWithoutProductsInput = {
@@ -4637,6 +4760,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderCreateWithoutUserInput = {
@@ -4645,6 +4769,7 @@ export namespace Prisma {
     description: string
     date: string
     status?: number
+    officialBill?: boolean
   }
 
   export type OrderUncheckedCreateWithoutUserInput = {
@@ -4652,6 +4777,7 @@ export namespace Prisma {
     description: string
     date: string
     status?: number
+    officialBill?: boolean
   }
 
   export type OrderCreateOrConnectWithoutUserInput = {
@@ -4665,6 +4791,7 @@ export namespace Prisma {
     description: string
     date: string
     status?: number
+    officialBill?: boolean
   }
 
   export type OrderUncheckedCreateWithoutSupervisorInput = {
@@ -4672,6 +4799,7 @@ export namespace Prisma {
     description: string
     date: string
     status?: number
+    officialBill?: boolean
   }
 
   export type OrderCreateOrConnectWithoutSupervisorInput = {
@@ -4703,6 +4831,7 @@ export namespace Prisma {
     description?: StringFilter | string
     date?: StringFilter | string
     status?: IntFilter | number
+    officialBill?: BoolFilter | boolean
   }
 
   export type OrderUpsertWithWhereUniqueWithoutSupervisorInput = {
@@ -4783,12 +4912,14 @@ export namespace Prisma {
     name: string
     price: string
     date: string
+    count: number
   }
 
   export type ProductUncheckedCreateWithoutOrderInput = {
     name: string
     price: string
     date: string
+    count: number
   }
 
   export type ProductCreateOrConnectWithoutOrderInput = {
@@ -4878,6 +5009,7 @@ export namespace Prisma {
     name?: StringFilter | string
     price?: StringFilter | string
     date?: StringFilter | string
+    count?: IntFilter | number
   }
 
   export type OrderUpdateWithoutUserInput = {
@@ -4886,6 +5018,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUncheckedUpdateWithoutUserInput = {
@@ -4893,12 +5026,14 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUncheckedUpdateManyWithoutOrdersInput = {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUpdateWithoutSupervisorInput = {
@@ -4907,6 +5042,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUncheckedUpdateWithoutSupervisorInput = {
@@ -4914,30 +5050,35 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrderUncheckedUpdateManyWithoutOrdersToConfirmInput = {
     description?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
     status?: IntFieldUpdateOperationsInput | number
+    officialBill?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ProductUpdateWithoutOrderInput = {
     name?: StringFieldUpdateOperationsInput | string
     price?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductUncheckedUpdateWithoutOrderInput = {
     name?: StringFieldUpdateOperationsInput | string
     price?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductUncheckedUpdateManyWithoutProductsInput = {
     name?: StringFieldUpdateOperationsInput | string
     price?: StringFieldUpdateOperationsInput | string
     date?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
   }
 
 
