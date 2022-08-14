@@ -3,7 +3,7 @@ import {FC} from "react";
 import {HiOutlineBell, HiMenuAlt1} from "react-icons/hi";
 import {useViewContext} from "@/contexts/view-context";
 import NavbarList from "./navbar-list";
-
+import IMAGES from "@/constants/images";
 interface NavbarProps {}
 
 const Navbar: FC<NavbarProps> = () => {
@@ -12,10 +12,10 @@ const Navbar: FC<NavbarProps> = () => {
         <nav className="flex justify-between md:justify-center items-center w-full bg-dark text-light flex-wrap md:flex-nowrap">
             <div className="w-4/12 md:w-1/12 flex justify-center md:justify-between items-center order-1">
                 <Image
-                    src={"/vercel.svg"}
+                    src={IMAGES.logo}
                     alt="logo"
-                    width={70}
-                    height={45}
+                    width={100}
+                    height={50}
                     className="rounded-full"
                 />
             </div>

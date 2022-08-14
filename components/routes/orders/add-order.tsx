@@ -1,4 +1,4 @@
-import {FC, lazy, useState} from "react";
+import {FC, useState} from "react";
 import {HiTrash} from "react-icons/hi";
 import RouteContainer from "@/components/core/containers/route-container";
 import FrameContainer from "@/components/core/containers/frame-container";
@@ -6,13 +6,21 @@ import CInput from "@/components/core/inputs";
 import CTextArea from "@/components/core/inputs/text-area";
 import CSelectOption from "@/components/core/inputs/select";
 import {useUsers} from "@/hooks/useUsers";
-import {ICreateOrder, IOrder, IProduct} from "@/types/data";
+import {
+    EProductType,
+    EPRODUCT_TYPES_NAMES,
+    ICreateOrder,
+    IOrder,
+    IProduct,
+    PRODUCT_CATEGORIES,
+} from "@/types/data";
 import {useUserContext} from "@/contexts/user-context";
 import {createOrder} from "@/services/orders";
 import useNotification from "@/hooks/useNotification";
-import dynamic from "next/dynamic";
 import CCheckbox from "@/components/core/inputs/checkbox";
 import {getGeorgianDateFromJalali} from "@/utils/date-helper";
+import CRadio from "@/components/core/inputs/radio";
+import {useProductCategories} from "@/hooks/useProductCategories";
 interface AddOrderRouteProps {}
 interface OrderDataProduct {
     id: number;
@@ -21,11 +29,14 @@ interface OrderDataProduct {
     valuePrice: string;
     valueDate: string;
     valueCount: string;
+    valueCategory: string;
+    valueType: string;
 }
 
 const AddOrderRoute: FC<AddOrderRouteProps> = () => {
-    const {users} = useUsers();
     const {user} = useUserContext();
+    const {users} = useUsers();
+    const {productCategories} = useProductCategories(user.group);
     const {notify} = useNotification();
     const [ordersData, setOrdersData] = useState<OrderDataProduct[]>(
         [1, 2, 3].map((id) => ({
@@ -35,6 +46,8 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
             valuePrice: "",
             valueDate: "",
             valueCount: "",
+            valueCategory: "",
+            valueType: "",
         })),
     );
 
@@ -86,6 +99,8 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                 valuePrice: "",
                 valueDate: "",
                 valueCount: "",
+                valueCategory: "",
+                valueType: "",
             },
         ]);
     };
@@ -103,11 +118,45 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                 valuePrice: "",
                 valueDate: "",
                 valueCount: "",
+                valueCategory: "",
+                valueType: "",
             })),
         );
         setDescription("");
         setSupervisor("");
     };
+
+    const handleChangeCategory =
+        (id: number) => (e: React.ChangeEvent<HTMLSelectElement>) => {
+            const {name, value} = e.target;
+            setOrdersData((prev) =>
+                prev.map((order) => {
+                    if (order.id === id) {
+                        return {
+                            ...order,
+                            valueCategory: value,
+                        };
+                    }
+                    return order;
+                }),
+            );
+        };
+
+    const handleChangeProductType =
+        (id: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+            const {name, value} = e.target;
+            setOrdersData((prev) =>
+                prev.map((order) => {
+                    if (order.id === id) {
+                        return {
+                            ...order,
+                            valueType: value,
+                        };
+                    }
+                    return order;
+                }),
+            );
+        };
 
     const handleSendOrder = async () => {
         console.log("send order");
@@ -132,24 +181,17 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                     product.valueDate,
                                 ).toString(),
                                 count: Number(product.valueCount),
+                                category: PRODUCT_CATEGORIES.find(
+                                    (c) => c.id === product.valueCategory,
+                                ),
+                                type: Number(product.valueType) as EProductType,
                             } as IProduct),
                     ),
                 supervisor: supervisor,
                 user: user.id,
             };
 
-            const result = await createOrder(data);
-            console.log(result);
-            if (result && result.ok && result.data) {
-                notify("ثبت سفارش با موفقیت انجام شد", {
-                    type: "success",
-                });
-                resetOrdersData();
-            } else {
-                notify("ثبت سفارش با خطا مواجه شد", {
-                    type: "error",
-                });
-            }
+            console.log("data => ", data);
         } else {
             notify("لطفا فیلد ها را به درستی پر کنید", {
                 type: "error",
@@ -170,67 +212,128 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                         {ordersData.map((order, index) => (
                             <div
                                 key={order.id}
-                                className="w-full flex flex-wrap md:flex-nowrap items-center justify-evenly mb-4">
-                                <span className="font-bold">- {index + 1}</span>
-                                <div className="w-11/12 md:w-3/12 flex items-center justify-center">
-                                    <CInput
-                                        containerClassName="rounded-md border-2 border-gray p-2"
-                                        type="text"
-                                        value={order.valueName}
-                                        name={order.name}
-                                        onChange={handleChange("name")}
-                                        placeholder="نام کالا"
-                                    />
-                                </div>
-                                <div className="w-5/12 md:w-1/12 flex items-center justify-center">
-                                    <CInput
-                                        containerClassName="rounded-md border-2 border-gray p-2"
-                                        type="number"
-                                        value={order.valuePrice}
-                                        name={order.name}
-                                        onChange={handleChange("price")}
-                                        placeholder="قیمت"
-                                    />
-                                </div>
-                                <div className="w-3/12 md:w-1/12 flex items-center justify-center">
-                                    <CInput
-                                        containerClassName="rounded-md border-2 border-gray p-2"
-                                        type="number"
-                                        value={order.valueCount}
-                                        name={order.name}
-                                        onChange={handleChange("count")}
-                                        placeholder="تعداد"
-                                    />
-                                </div>
-                                <div className="w-4/12 md:w-1/12 flex items-center justify-center">
-                                    <span className="text-center">
-                                        {order.valueCount.length &&
-                                            order.valuePrice.length &&
-                                            Number(order.valueCount) *
-                                                Number(order.valuePrice)}
+                                className="w-full flex flex-wrap md:flex-wrap items-center justify-evenly mb-4">
+                                <div className="w-full flex items-center justify-evenly mb-2">
+                                    <span className="font-bold">
+                                        - {index + 1}
                                     </span>
-                                </div>
-                                <div className="w-10/12 md:w-3/12 flex items-center justify-center">
-                                    <CInput
-                                        containerClassName="rounded-md border-2 border-gray p-2"
-                                        type="text"
-                                        value={order.valueDate}
-                                        name={order.name}
-                                        onChange={handleChange("date")}
-                                        placeholder={`تاریخ با فرمت: 1401/01/01`}
-                                    />
-                                </div>
-                                <button
-                                    title="حذف"
-                                    type="button"
-                                    onClick={() =>
-                                        handleRemoveOrderRow(order.id)
-                                    }
-                                    className="bg-danger text-white peer hover:rotate-45 px-2 py-2 transition-all rounded-full">
-                                    <div className="text-xl">
-                                        <HiTrash />
+                                    <div className="w-11/12 md:w-3/12 flex items-center justify-center">
+                                        <CInput
+                                            containerClassName="rounded-md border-2 border-gray p-2"
+                                            type="text"
+                                            value={order.valueName}
+                                            name={order.name}
+                                            onChange={handleChange("name")}
+                                            placeholder="نام کالا"
+                                        />
                                     </div>
-                                </button>
+                                    <div className="w-5/12 md:w-1/12 flex items-center justify-center">
+                                        <CInput
+                                            containerClassName="rounded-md border-2 border-gray p-2"
+                                            type="number"
+                                            value={order.valuePrice}
+                                            name={order.name}
+                                            onChange={handleChange("price")}
+                                            placeholder="قیمت"
+                                        />
+                                    </div>
+                                    <div className="w-3/12 md:w-1/12 flex items-center justify-center">
+                                        <CInput
+                                            containerClassName="rounded-md border-2 border-gray p-2"
+                                            type="number"
+                                            value={order.valueCount}
+                                            name={order.name}
+                                            onChange={handleChange("count")}
+                                            placeholder="تعداد"
+                                        />
+                                    </div>
+                                    <div className="w-4/12 md:w-1/12 flex items-center justify-center">
+                                        <span className="text-center">
+                                            {order.valueCount.length &&
+                                                order.valuePrice.length &&
+                                                Number(order.valueCount) *
+                                                    Number(order.valuePrice)}
+                                        </span>
+                                    </div>
+                                    <div className="w-10/12 md:w-3/12 flex items-center justify-center">
+                                        <CInput
+                                            containerClassName="rounded-md border-2 border-gray p-2"
+                                            type="text"
+                                            value={order.valueDate}
+                                            name={order.name}
+                                            onChange={handleChange("date")}
+                                            placeholder={`تاریخ با فرمت: 1401/01/01`}
+                                        />
+                                    </div>
+                                    <button
+                                        title="حذف"
+                                        type="button"
+                                        onClick={() =>
+                                            handleRemoveOrderRow(order.id)
+                                        }
+                                        className="bg-danger text-white peer hover:rotate-45 px-2 py-2 transition-all rounded-full">
+                                        <div className="text-xl">
+                                            <HiTrash />
+                                        </div>
+                                    </button>
+                                </div>
+                                <div className="w-full flex items-center justify-start">
+                                    <fieldset className="w-5/12 md:w-3/12 flex items-center justify-center">
+                                        <CRadio
+                                            name={`product-type-${order.id}`}
+                                            placeholder="نوع کالا"
+                                            options={Object.entries(
+                                                EProductType,
+                                            )
+                                                .filter(
+                                                    (k, v) =>
+                                                        !isNaN(
+                                                            Number(
+                                                                String(k).split(
+                                                                    ",",
+                                                                )[0],
+                                                            ),
+                                                        ),
+                                                )
+                                                .map((k, v) => ({
+                                                    name: EPRODUCT_TYPES_NAMES[
+                                                        Number(
+                                                            String(k).split(
+                                                                ",",
+                                                            )[0],
+                                                        )
+                                                    ],
+                                                    value: String(k).split(
+                                                        ",",
+                                                    )[0],
+                                                }))}
+                                            onChange={handleChangeProductType(
+                                                order.id,
+                                            )}
+                                            className="mx-1"
+                                            radioContainerClassName="mx-3 user-select-none"
+                                        />
+                                    </fieldset>
+                                    <div className="w-5/12 md:w-3/12 flex items-center justify-center">
+                                        <CSelectOption
+                                            containerClassName="rounded-md border-2 border-gray p-2"
+                                            placeholder="انتخاب دسته بندی"
+                                            value={order.valueCategory}
+                                            name={"order-category"}
+                                            onChange={handleChangeCategory(
+                                                order.id,
+                                            )}
+                                            options={
+                                                productCategories?.map(
+                                                    (category) => ({
+                                                        value: category.id,
+                                                        label: category.name,
+                                                    }),
+                                                ) ?? []
+                                            }
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>

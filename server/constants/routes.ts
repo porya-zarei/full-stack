@@ -20,4 +20,9 @@ export const API_ROUTES = {
         changeUserGroup: "/users/changeUserGroup",
         changeUserRole: "/users/changeUserRole",
     },
+    productCategories: {
+        getProductCategories: "/product-categories/getProductCategories",
+        getProductCategoriesByGroup: "/product-categories/getProductCategoryByGroup",
+        getProductCategory: "/product-categories/getProductCategory",
+    },
 };

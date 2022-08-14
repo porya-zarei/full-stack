@@ -1,4 +1,12 @@
-import {ERole, EStatus, IDBOrder, IOrder, IProduct, IUser} from "@/types/data";
+import {
+    ERole,
+    EStatus,
+    IDBOrder,
+    IOrder,
+    IProductCategory,
+    IProduct,
+    IUser,
+} from "@/types/data";
 import mongoose, {Schema} from "mongoose";
 
 export const UserSchema = new Schema<IUser>(
@@ -47,6 +55,26 @@ export const UserSchema = new Schema<IUser>(
     {timestamps: true},
 );
 
+export const ProductCategorySchema = new Schema<IProductCategory>({
+    id: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    group: {
+        type: Number,
+        required: true,
+    },
+    key: {
+        type: String,
+        required: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+});
+
 export const ProductSchema = new Schema<IProduct>({
     id: {
         type: String,
@@ -68,6 +96,15 @@ export const ProductSchema = new Schema<IProduct>({
     date: {
         type: String,
         required: true,
+    },
+    category: {
+        type: ProductCategorySchema,
+        required: true,
+        default: {
+            id: "",
+            key: "",
+            name: "",
+        },
     },
 });
 
@@ -110,5 +147,12 @@ export const OrderSchema = new Schema<IDBOrder>({
     },
 });
 
-export const UserModel = (mongoose?.models?.User|| mongoose.model<IUser>("User", UserSchema)) as mongoose.Model<IUser>;
-export const OrderModel = (mongoose?.models?.Order || mongoose.model<IDBOrder>("Order", OrderSchema)) as mongoose.Model<IDBOrder>;
+export const UserModel = (mongoose?.models?.User ||
+    mongoose.model<IUser>("User", UserSchema)) as mongoose.Model<IUser>;
+export const OrderModel = (mongoose?.models?.Order ||
+    mongoose.model<IDBOrder>("Order", OrderSchema)) as mongoose.Model<IDBOrder>;
+export const ProductCategoryModel = (mongoose?.models?.ProductCategory ||
+    mongoose.model<IProductCategory>(
+        "ProductCategory",
+        ProductCategorySchema,
+    )) as mongoose.Model<IProductCategory>;

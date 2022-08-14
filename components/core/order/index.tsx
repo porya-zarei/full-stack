@@ -100,7 +100,7 @@ const Order: FC<OrderProps> = ({
                     <button
                         type="button"
                         onClick={
-                            order?.status == EStatus.COMPLETED
+                            order?.status === EStatus.COMPLETED
                                 ? () => {}
                                 : handleConfirm
                         }
@@ -110,7 +110,7 @@ const Order: FC<OrderProps> = ({
                     <button
                         type="button"
                         onClick={
-                            order?.status == EStatus.CANCELED
+                            order?.status === EStatus.CANCELED
                                 ? () => {}
                                 : handleCancel
                         }

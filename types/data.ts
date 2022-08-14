@@ -67,6 +67,50 @@ export interface ICreateUser {
     key: string;
 }
 
+export interface IProductCategory {
+    _id: string;
+    id: string;
+    group: EGroup;
+    key: string;
+    name: string;
+}
+
+export type ICreateProductCategory = Omit<IProductCategory, "_id"|"id">;
+
+export const PRODUCT_CATEGORIES: IProductCategory[] = [
+    {
+        group: EGroup.SYSTEM,
+        id: "system",
+        key: "system",
+        name: "مهندسی سامانه",
+        _id: "5e9f8f8f9f8f8f8f8f8f8f8",
+    },
+    {
+        group: EGroup.MECHANIC,
+        id: "mechanic",
+        key: "mechanic",
+        name: "مکانیک",
+        _id: "5e9f8f8f9f8f8f8f8f8f8f9",
+    },
+    {
+        group: EGroup.ECONOMIC_EXECUTIVE,
+        id: "economicExecutive",
+        key: "economicExecutive",
+        name: "اقتصادی و اجرایی",
+        _id: "5e9f8f8f9f8f8f8f8f8f8fa",
+    },
+];
+
+export enum EProductType {
+    CONSUMPTION, // مصرفی
+    EQUIPMENT,// تجهیزات
+}
+
+export const EPRODUCT_TYPES_NAMES = [
+    "مصرفی",
+    "تجهیزات",
+]
+
 export interface IProduct {
     _id: string;
     id: string;
@@ -74,14 +118,8 @@ export interface IProduct {
     price: string;
     date: string;
     count: number;
-}
-
-export interface IDBProduct {
-    id: string;
-    name: string;
-    price: number;
-    date: string;
-    count: number;
+    category: IProductCategory;
+    type:EProductType;
 }
 
 export interface IOrder {

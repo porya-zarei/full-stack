@@ -1,8 +1,8 @@
-import {IDBOrder, IOrder, IUser} from "@/types/data";
+import {EGroup, IDBOrder, IOrder, IProductCategory, IUser} from "@/types/data";
 import {Types} from "mongoose";
 import {logger} from "../utils/logger";
 import {getConnection} from "./connection";
-import {OrderModel, UserModel} from "./models";
+import {OrderModel, ProductCategoryModel, UserModel} from "./models";
 
 export const getUsersMDB = async () => {
     try {
@@ -193,3 +193,103 @@ export const getUserWithUserNamePasswordMDB = async (
         return null;
     }
 };
+
+// product category
+
+export const getProductCategoriesMDB = async () => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const products = await ProductCategoryModel.find().exec();
+            return products;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getProductCategoryMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const product = await ProductCategoryModel.findById(id).exec();
+            return product;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const createProductCategoryMDB = async (productCategory: IProductCategory) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const newProduct = await ProductCategoryModel.create(productCategory);
+            return newProduct;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const updateProductCategoryMDB = async (
+    id: string,
+    productCategory: IProductCategory,
+) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const updatedProduct = await ProductCategoryModel.findOneAndUpdate(
+                {_id: new Types.ObjectId(id)},
+                {...productCategory},
+                {
+                    new: true,
+                },
+            ).exec();
+            return updatedProduct;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const deleteProductCategoryMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const deletedProduct = await ProductCategoryModel.findOneAndDelete({
+                _id: new Types.ObjectId(id),
+            }).exec();
+            return deletedProduct;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getProductCategoriesByGroupMDB = async (group: EGroup) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const products = await ProductCategoryModel.find({
+                group: Number(group),
+            }).exec();
+            return products;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
