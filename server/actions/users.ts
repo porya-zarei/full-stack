@@ -4,6 +4,7 @@ import {Types} from "mongoose";
 import {
     createUserMDB,
     deleteOrderMDB,
+    deleteUserMDB,
     getUserMDB,
     getUsersMDB,
     getUserWithUserNamePasswordMDB,
@@ -70,7 +71,8 @@ export const deleteUser = async (id: string, user: UnCertainData<IUser>) => {
     const modifiedUser = await getUserMDB(id);
     logger.log(`deleteUser: ${JSON.stringify(modifiedUser)}, ${JSON.stringify(user)}`);
     if (user && modifiedUser && isUserCanDeleteUser(user, modifiedUser)) {
-        const deletedUser = await deleteOrderMDB(id);
+        const deletedUser = await deleteUserMDB(id);
+        logger.log(`deletedUser: ${JSON.stringify(deletedUser)}`);
         const result: IAPIResult<string> = {
             data: "deleted",
             ok: true,
