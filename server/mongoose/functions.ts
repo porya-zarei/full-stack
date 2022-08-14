@@ -141,6 +141,7 @@ export const deleteUserMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const deletedUser = await UserModel.findOneAndDelete({
+                id,
                 _id: new Types.ObjectId(id),
             }).exec();
             // connection.disconnect();
@@ -158,6 +159,7 @@ export const deleteOrderMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const deletedOrder = await OrderModel.findOneAndDelete({
+                id,
                 _id: new Types.ObjectId(id),
             }).exec();
             // connection.disconnect();
