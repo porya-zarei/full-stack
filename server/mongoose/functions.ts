@@ -9,7 +9,6 @@ export const getUsersMDB = async () => {
         const connection = await getConnection();
         if (connection) {
             const users = await UserModel.find().exec();
-            // connection.disconnect();
             return users;
         }
         return null;
@@ -24,7 +23,6 @@ export const getOrdersMDB = async () => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const orders = await OrderModel.find().exec();
-            // connection.disconnect();
             return orders;
         }
         return null;
@@ -39,7 +37,6 @@ export const getUserMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const user = await UserModel.findById(id).exec();
-            // connection.disconnect();
             return user;
         }
         return null;
@@ -54,8 +51,6 @@ export const getOrderMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const order = await OrderModel.findById(id).exec();
-            // connection.disconnect();
-            // connection.disconnect();
             return order;
         }
         return null;
@@ -84,7 +79,6 @@ export const createOrderMDB = async (order: IDBOrder) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const newOrder = await OrderModel.create(order);
-            // connection.disconnect();
             return newOrder;
         }
         return null;
@@ -104,7 +98,6 @@ export const updateUserMDB = async (id: string, user: Partial<IUser>) => {
                     new: true,
                 },
             ).exec();
-            // connection.disconnect();
             logger.log(`updatedUser: ${JSON.stringify(updatedUser)}`);
             return updatedUser;
         }
@@ -126,7 +119,6 @@ export const updateOrderMDB = async (id: string, order: IDBOrder) => {
                     new: true,
                 },
             ).exec();
-            // connection.disconnect();
             return updatedOrder;
         }
         return null;
@@ -141,10 +133,9 @@ export const deleteUserMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const deletedUser = await UserModel.findOneAndDelete({
-                id,
                 _id: new Types.ObjectId(id),
             }).exec();
-            // connection.disconnect();
+            logger.log(`deletedUser in mdb: ${JSON.stringify(deletedUser)}`);
             return deletedUser;
         }
         return null;
@@ -159,10 +150,8 @@ export const deleteOrderMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const deletedOrder = await OrderModel.findOneAndDelete({
-                id,
                 _id: new Types.ObjectId(id),
             }).exec();
-            // connection.disconnect();
             return deletedOrder;
         }
         return null;
@@ -187,14 +176,14 @@ export const getUserWithUserNamePasswordMDB = async (
                 logger.log(
                     `user in getUserWithUserNamePasswordMDB ${user?.userName}`,
                 );
-                // connection.disconnect();
+
                 return user;
             } else {
                 const user = await UserModel.findOne({
                     userName,
                     password,
                 }).exec();
-                // connection.disconnect();
+
                 return user;
             }
         }
