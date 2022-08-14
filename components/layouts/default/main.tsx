@@ -1,4 +1,6 @@
-import {FC} from "react";
+import { useUserContext } from "@/contexts/user-context";
+import { autoLoginClient } from "@/utils/auth";
+import {FC, useEffect} from "react";
 import Sidebar from "../../core/sidebar";
 
 interface DefaultLayoutMainProps {
@@ -6,6 +8,16 @@ interface DefaultLayoutMainProps {
 }
 
 const DefaultLayoutMain: FC<DefaultLayoutMainProps> = ({children}) => {
+    const {changeToken, changeUser, isUserLoggedIn} = useUserContext();
+    useEffect(() => {
+        if (!isUserLoggedIn()) {
+            const result = autoLoginClient();
+            if (result) {
+                changeToken(result.token);
+                changeUser(result.user);
+            }
+        }
+    }, []);
     return (
         <main className="w-full h-auto flex justify-center items-start">
             <section className="sticky top-0 w-2/12 md:w-2/12 flex justify-center items-center h-full">

@@ -7,16 +7,16 @@ import { autoLoginClient } from "@/utils/auth";
 interface OrdersPageProps {}
 
 const OrdersPage: NextPage<OrdersPageProps> = () => {
-    const {changeToken, changeUser, isUserLoggedIn} = useUserContext();
-    useEffect(() => {
-        if (!isUserLoggedIn()) {
-            const result = autoLoginClient();
-            if (result) {
-                changeToken(result.token);
-                changeUser(result.user);
-            }
-        }
-    }, []);
+    // const {changeToken, changeUser, isUserLoggedIn} = useUserContext();
+    // useEffect(() => {
+    //     if (!isUserLoggedIn()) {
+    //         const result = autoLoginClient();
+    //         if (result) {
+    //             changeToken(result.token);
+    //             changeUser(result.user);
+    //         }
+    //     }
+    // }, []);
     return (
         <div className="w-full flex justify-start items-start">
             <OrdersRoute />
