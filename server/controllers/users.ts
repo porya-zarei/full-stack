@@ -132,6 +132,7 @@ export const deleteUserHandler: NextApiHandler = async (req, res) => {
             const {id} = req.body as {id: string};
             const user = await getUserFromToken(token);
             const result = await deleteUser(id, user);
+            logger.log(`deleteUserHandler: ${id}\n${JSON.stringify(result)}`);
             res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {

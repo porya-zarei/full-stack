@@ -68,10 +68,11 @@ export const updateUser = async (userData: Partial<IUser> & {id: string}) => {
 
 export const deleteUser = async (id: string, user: UnCertainData<IUser>) => {
     const modifiedUser = await getUserMDB(id);
+    logger.log(`deleteUser: ${JSON.stringify(modifiedUser)}, ${JSON.stringify(user)}`);
     if (user && modifiedUser && isUserCanDeleteUser(user, modifiedUser)) {
         const deletedUser = await deleteOrderMDB(id);
         const result: IAPIResult<string> = {
-            data: "delted",
+            data: "deleted",
             ok: true,
             error: "",
         };
