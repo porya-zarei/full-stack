@@ -7,21 +7,19 @@ import {
     ICreateOrder,
     ERole,
 } from "@/types/data";
+import { Types } from "mongoose";
 import {
-    ORDERS_JSON_DB_FILE,
-    USERS_JSON_DB_FILE,
-} from "../constants/json-db-files";
-import {
-    addToJsonFile,
-    deleteFromJsonFile,
-    getAllFromJsonFile,
-    getFromJsonFile,
-    updateInJsonFile,
-} from "../utils/json-database";
+    createOrderMDB,
+    deleteOrderMDB,
+    getOrderMDB,
+    getOrdersMDB,
+    getUserMDB,
+    updateOrderMDB,
+} from "../mongoose/functions";
 import {logger} from "../utils/logger";
 import {uuidGenerator} from "../utils/uuid-helper";
 
-export const getUserAndSupervisor = (
+export const getUserAndSupervisor = async (
     data:
         | IDBOrder
         | {
@@ -29,113 +27,150 @@ export const getUserAndSupervisor = (
               supervisor: string;
           },
 ) => {
-    const user = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, data.user);
-    const supervisor = getFromJsonFile<IUser>(
-        USERS_JSON_DB_FILE,
-        data.supervisor,
-    );
-    return {user, supervisor};
+    const user = await getUserMDB(data.user);
+    const supervisor = await getUserMDB(data.supervisor);
+    return {user:user.toObject(), supervisor:supervisor.toObject()};
 };
 
 export const getAllOrders = async () => {
-    const orders = getAllFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE);
-    const newOrders = orders.map((order) => {
-        const {user, supervisor} = getUserAndSupervisor(order);
-        const newOrder: Partial<IOrder> = {
-            ...order,
-            user,
-            supervisor,
-        };
-        return newOrder;
-    });
+    const orders = await getOrdersMDB();
+    
+    const newOrders: IOrder[] = [];
+    if (orders) {
+        for (const order of orders) {
+            const {user, supervisor} = await getUserAndSupervisor(order);
+            user &&
+                supervisor &&
+                newOrders.push({
+                    ...order.toObject(),
+                    user,
+                    supervisor,
+                });
+        }
+    }
+    logger.log(`get all orders => ${JSON.stringify(newOrders[0])}`);
     const result: IAPIResult<Partial<IOrder>[]> = {
         data: newOrders,
-        ok: true,
+        ok: newOrders.length > 0,
         error: "",
     };
     return result;
 };
 
 export const getOrder = async (id: string = "") => {
-    const order = getFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE, id);
-    const {user, supervisor} = getUserAndSupervisor(order);
-    const newOrder: Partial<IOrder> = {
-        ...order,
-        user,
-        supervisor,
-    };
-    const result: IAPIResult<Partial<IOrder>> = {
-        data: newOrder,
-        ok: true,
-        error: "",
+    const order = await getOrderMDB(id);
+    if (order) {
+        const {user, supervisor} = await getUserAndSupervisor(order);
+        if (user && supervisor) {
+            const newOrder: IOrder = {
+                ...order.toObject(),
+                user,
+                supervisor,
+            };
+            const result: IAPIResult<IOrder> = {
+                data: newOrder,
+                ok: !!newOrder,
+                error: "",
+            };
+            return result;
+        }
+    }
+    const result: IAPIResult<IOrder | null> = {
+        data: null,
+        ok: false,
+        error: "Order not found",
     };
     return result;
 };
 
 export const addOrder = async (createOrder: ICreateOrder) => {
-    const {user, supervisor} = getUserAndSupervisor(createOrder);
-    const order: IDBOrder = {
-        ...createOrder,
-        status:
-            user.role === ERole.USER
-                ? EStatus.PENDING_FOR_SUPERVISOR
-                : EStatus.PENDING_FOR_FINANCIAL_MANAGER,
-        date: new Date().toISOString(),
-        id: uuidGenerator(),
-    };
-    addToJsonFile(ORDERS_JSON_DB_FILE, order);
-    const newOrder: Partial<IOrder> = {
-        ...order,
-        user,
-        supervisor,
-    };
-    const result: IAPIResult<Partial<IOrder>> = {
-        data: newOrder,
-        ok: true,
-        error: "",
+    const {user, supervisor} = await getUserAndSupervisor(createOrder);
+    if (user && supervisor) {
+        const id = new Types.ObjectId().toString();
+        const order: IDBOrder = {
+            ...createOrder,
+            status:
+                user.role === ERole.USER
+                    ? EStatus.PENDING_FOR_SUPERVISOR
+                    : EStatus.PENDING_FOR_FINANCIAL_MANAGER,
+            date: new Date().toISOString(),
+            id: id,
+            _id: id,
+        };
+        const createdOrder = await createOrderMDB(order);
+        if (createdOrder) {
+            const newOrder: IOrder = {
+                ...createdOrder.toObject(),
+                user,
+                supervisor,
+            };
+            const result: IAPIResult<Partial<IOrder>> = {
+                data: newOrder,
+                ok: true,
+                error: "",
+            };
+            return result;
+        }
+    }
+    const result: IAPIResult<IOrder | null> = {
+        data: null,
+        ok: false,
+        error: "Order not created",
     };
     return result;
 };
 
 export const updateOrder = async (order: IDBOrder) => {
-    updateInJsonFile(ORDERS_JSON_DB_FILE, order, order.id);
-    const {user, supervisor} = getUserAndSupervisor(order);
-    const newOrder: Partial<IOrder> = {
-        ...order,
-        user,
-        supervisor,
-    };
-    const result: IAPIResult<Partial<IOrder>> = {
-        data: newOrder,
-        ok: true,
-        error: "",
+    const updatedOrder = await updateOrderMDB(order.id, order);
+    const {user, supervisor} = await getUserAndSupervisor(order);
+    if (user && supervisor && updatedOrder) {
+        const newOrder: IOrder = {
+            ...updatedOrder.toObject(),
+            user,
+            supervisor,
+        };
+        const result: IAPIResult<Partial<IOrder>> = {
+            data: newOrder,
+            ok: true,
+            error: "",
+        };
+        return result;
+    }
+    const result: IAPIResult<IOrder | null> = {
+        data: null,
+        ok: false,
+        error: "Order not updated",
     };
     return result;
 };
 
 export const deleteOrder = async (id: string = "") => {
-    deleteFromJsonFile(ORDERS_JSON_DB_FILE, id);
+    await deleteOrderMDB(id);
     const result: IAPIResult<string> = {
-        data: "ok",
+        data: "deleted",
         ok: true,
-        error: "",
+        error: "deleted",
     };
     return result;
 };
 
 export const getPendingOrders = async (id: string = "") => {
-    const user = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, id);
-    const orders = getAllFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE);
-    logger.log(`orders count: ${orders.length},user name: ${user.fullName}`);
-    const fullOrders = orders.map((order) => {
-        const {user, supervisor} = getUserAndSupervisor(order);
-        const newOrder: Partial<IOrder> = {
-            ...order,
-            user,
-            supervisor,
-        };
-        return newOrder;
-    });
+    const user = await getUserMDB(id);
+    const orders = await getOrdersMDB();
+    logger.log(`orders count: ${orders?.length},user name: ${user?.fullName}`);
+    const fullOrders: IOrder[] = [];
+    if (orders) {
+        for (const order of orders) {
+            const {user, supervisor} = await getUserAndSupervisor(order);
+            if (user && supervisor) {
+                fullOrders.push({
+                    ...order.toObject(),
+                    user,
+                    supervisor,
+                });
+            }
+        }
+    }
     const result: IAPIResult<Partial<IOrder>[]> = {
         data: fullOrders
             .filter(
@@ -143,29 +178,17 @@ export const getPendingOrders = async (id: string = "") => {
             )
             .filter((order) => {
                 logger.log(
-                    `order status: ${order.status},user role: ${user.role}`,
+                    `order status: ${order.status},user role: ${user?.role}`,
                 );
-                if (user.role === ERole.CREATOR) {
+                if (user?.role === ERole.CREATOR) {
                     return (
                         order.status === EStatus.PENDING_FOR_FINANCIAL_MANAGER
                     );
-                } else if (user.role === ERole.ADMIN) {
+                } else if (user?.role === ERole.ADMIN) {
                     return order.status === EStatus.PENDING_FOR_SUPERVISOR;
                 } else {
                     return false;
                 }
-            })
-            .map((order) => {
-                const {user, supervisor} = getUserAndSupervisor({
-                    user: order.user?.id ?? "",
-                    supervisor: order.supervisor?.id ?? "",
-                });
-                const newOrder: Partial<IOrder> = {
-                    ...order,
-                    user,
-                    supervisor,
-                };
-                return newOrder;
             }),
         ok: true,
         error: "",
@@ -174,20 +197,26 @@ export const getPendingOrders = async (id: string = "") => {
 };
 
 export const getUserOrders = async (id: string = "") => {
-    const user = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, id);
-    const orders = getAllFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE);
-    const result: IAPIResult<Partial<IOrder>[]> = {
-        data: orders
-            .filter((order) => order.user === user.id)
-            .map((order) => {
-                const {user, supervisor} = getUserAndSupervisor(order);
-                const newOrder: Partial<IOrder> = {
-                    ...order,
+    const user = await getUserMDB(id);
+    const orders = await getOrdersMDB();
+    const filtered = orders?.filter((order) => {
+        return order?.user === user?.id;
+    });
+    const data: IOrder[] = [];
+    if (filtered) {
+        for (const order of filtered) {
+            const {user, supervisor} = await getUserAndSupervisor(order);
+            if (user && supervisor) {
+                data.push({
+                    ...order.toObject(),
                     user,
                     supervisor,
-                };
-                return newOrder;
-            }),
+                });
+            }
+        }
+    }
+    const result: IAPIResult<Partial<IOrder>[]> = {
+        data: data,
         ok: true,
         error: "",
     };
@@ -195,19 +224,29 @@ export const getUserOrders = async (id: string = "") => {
 };
 
 export const changeOrderStatus = async (id: string = "", status: EStatus) => {
-    const order = getFromJsonFile<IDBOrder>(ORDERS_JSON_DB_FILE, id);
-    order.status = status;
-    updateInJsonFile(ORDERS_JSON_DB_FILE, order, id);
-    const {user, supervisor} = getUserAndSupervisor(order);
-    const newOrder: Partial<IOrder> = {
-        ...order,
-        user,
-        supervisor,
-    };
-    const result: IAPIResult<Partial<IOrder>> = {
-        data: newOrder,
-        ok: true,
-        error: "",
+    const order = await getOrderMDB(id);
+    if (order) {
+        order.status = status;
+        updateOrderMDB(id, order);
+        const {user, supervisor} = await getUserAndSupervisor(order);
+        if (user && supervisor) {
+            const newOrder: Partial<IOrder> = {
+                ...order.toObject(),
+                user,
+                supervisor,
+            };
+            const result: IAPIResult<Partial<IOrder>> = {
+                data: newOrder,
+                ok: true,
+                error: "",
+            };
+            return result;
+        }
+    }
+    const result: IAPIResult<IOrder | null> = {
+        data: null,
+        ok: false,
+        error: "Order not found",
     };
     return result;
 };

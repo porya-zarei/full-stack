@@ -8,6 +8,7 @@ import Card from "@/components/core/card";
 import {updateOrderStatus} from "@/services/orders";
 import {ERole, IOrder} from "@/types/data";
 import useNotification from "@/hooks/useNotification";
+import { HiOutlineCubeTransparent } from "react-icons/hi";
 
 interface OrdersRouteProps {}
 
@@ -42,8 +43,7 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                         </h3>
                     </div>
                     <div className="w-full flex items-center justify-evenly content-center py-3 flex-wrap">
-                        {!loading &&
-                            orders?.length > 0 &&
+                        {!loading && orders?.length > 0 ? (
                             orders.map((order) => (
                                 <div
                                     key={order.id}
@@ -67,7 +67,7 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                             },
                                             {
                                                 value: order.products
-                                                    .reduce(
+                                                    ?.reduce?.(
                                                         (acc, product) =>
                                                             acc +
                                                             Number(
@@ -105,7 +105,13 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                         }}
                                     />
                                 </div>
-                            ))}
+                            ))
+                        ) : (
+                            <HiOutlineCubeTransparent
+                                size={40}
+                                className="rotate-and-rescale-animation"
+                            />
+                        )}
                     </div>
                 </div>
             </FrameContainer>

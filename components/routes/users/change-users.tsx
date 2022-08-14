@@ -4,7 +4,7 @@ import CSelectOption from "@/components/core/inputs/select";
 import useNotification from "@/hooks/useNotification";
 import {useUsers} from "@/hooks/useUsers";
 import {changeGroup, changeRole, deleteUser} from "@/services/users";
-import {EGroup, ERole, IUser} from "@/types/data";
+import {EGroup, EGROUPS_NAMES, ERole, IUser} from "@/types/data";
 import {FC, useTransition} from "react";
 import {HiTrash} from "react-icons/hi";
 
@@ -19,8 +19,9 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
         async (e: React.ChangeEvent<HTMLSelectElement>) => {
             const group = Number(e.target.value) as EGroup;
             const result = await changeGroup(selected_user.id, group);
-            if (result && result.ok) {
+            if (result && result.ok && result.data) {
                 startTranstion(() => {
+                    console.log("transition => ", result);
                     refetch().then(() => {
                         notify("تغییر گروه کاربر با موفقیت انجام شد");
                     });
@@ -34,12 +35,15 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
         async (e: React.ChangeEvent<HTMLSelectElement>) => {
             const role = Number(e.target.value) as ERole;
             const result = await changeRole(selected_user.id, role);
-            if (result && result.ok) {
+            if (result && result.ok && result.data) {
                 startTranstion(() => {
                     refetch().then(() => {
                         notify("تغییر نقش کاربر با موفقیت انجام شد");
                     });
                 });
+            } else if (result && result.data && result.error) {
+                notify(`خطا در تغییر نقش کاربر${result.error}`);
+                notify(`${result.error}`);
             } else {
                 notify("خطا در تغییر نقش کاربر");
             }
@@ -62,7 +66,7 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
             <FrameContainer className="m-4 border-primary">
                 <div className="w-full flex items-start justify-center flex-wrap p-3">
                     <table className="w-full table-auto text-center">
-                        <thead>
+                        <thead className="border-b border-secondary-light">
                             <tr>
                                 <th className="px-4 py-2">#</th>
                                 <th className="px-4 py-2">نام کامل</th>
@@ -94,7 +98,7 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                                     )
                                                     .map(([key, value]) => ({
                                                         value: value.toString(),
-                                                        label: key,
+                                                        label: EGROUPS_NAMES[Number(value)],
                                                     }))}
                                                 value={user.group.toString()}
                                                 name="group"
@@ -116,8 +120,8 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                                         label: key,
                                                     }))}
                                                 value={user.role.toString()}
-                                                name="group"
-                                                placeholder="گروه"
+                                                name="role"
+                                                placeholder="نقش"
                                                 onChange={handleChangeUserRole(
                                                     user,
                                                 )}

@@ -18,7 +18,6 @@ import {
     getUserFromToken,
 } from "../utils/jwt-helper";
 import {logger} from "../utils/logger";
-import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getAllUsersHandler: NextApiHandler = async (req, res) => {
     try {
@@ -78,14 +77,8 @@ export const addUserHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
         if (token) {
-            const userdata = req.body as ICreateUser;
-            const user: IUser = {
-                ...userdata,
-                id: uuidGenerator(),
-                joinedAt: new Date().toISOString(),
-                role: ERole.USER,
-            };
-            const result = await addUser(user);
+            const userData = req.body as ICreateUser;
+            const result = await addUser(userData);
             res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {
@@ -163,18 +156,19 @@ export const registerUserHandler: NextApiHandler = async (req, res) => {
     try {
         const userData = req.body as ICreateUser;
         if (userData.key === SECRET_KEY) {
-            const user: IUser = {
-                ...userData,
-                id: uuidGenerator(),
-                joinedAt: new Date().toISOString(),
-                role: ERole.USER,
-            };
-            const result = await registerUser(user);
-            const token = getToken(result.data);
-            result.token = token;
-            res.setHeader("Set-Cookie", `token=${token}; Path=/`);
-            res.status(200).json(result);
-        }else {
+            const result = await registerUser(userData);
+            if (result.data) {
+                const token = getToken(result.data);
+                result.token = token;
+                res.setHeader("Set-Cookie", `token=${token}; Path=/`);
+                res.status(200).json(result);
+            }
+            res.status(500).json({
+                data: "",
+                ok: false,
+                error: "Error registering user",
+            } as IAPIResult<string>);
+        } else {
             const result: IAPIResult<string> = {
                 data: "",
                 ok: false,
@@ -199,10 +193,17 @@ export const loginUserHandler: NextApiHandler = async (req, res) => {
         logger.log("loginData => " + JSON.stringify(loginData));
         const result = await loginUser(loginData);
         logger.log("result => " + JSON.stringify(result));
-        const token = getToken(result.data);
-        result.token = token;
-        res.setHeader("Set-Cookie", `token=${token}; Path=/`);
-        res.status(200).json(result);
+        if (result.data) {
+            const token = getToken(result.data);
+            result.token = token;
+            res.setHeader("Set-Cookie", `token=${token}; Path=/`);
+            res.status(200).json(result);
+        }
+        res.status(401).json({
+            data: "",
+            ok: false,
+            error: "Error logging in user",
+        } as IAPIResult<string>);
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {
@@ -221,6 +222,7 @@ export const changeUserGroupHandler: NextApiHandler = async (req, res) => {
             const user = await getUserFromToken(token);
             if (user) {
                 const {id, group} = req.body as {id: string; group: EGroup};
+                logger.log(`group to change: ${group}`);
                 const result = await changeUserGroup(id, group, user);
                 res.status(200).json(result);
             } else {

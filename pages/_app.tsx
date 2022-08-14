@@ -1,6 +1,5 @@
 import "@/styles/globals.scss";
 import "react-toastify/dist/ReactToastify.css";
-import "react-modern-calendar-datepicker/lib/DatePicker.css";
 
 import DefaultLayout from "@/components/layouts/default";
 import {ViewContextProvider} from "@/contexts/view-context";

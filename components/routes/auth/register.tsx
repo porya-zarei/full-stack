@@ -9,6 +9,7 @@ import {isEmailValid, isPhoneNumberValid, isValid} from "@/utils/validations";
 import Link from "next/link";
 import {useRouter} from "next/router";
 import {FC, useState} from "react";
+import { HiOutlineCubeTransparent } from "react-icons/hi";
 
 interface RegisterRouteProps {}
 
@@ -24,6 +25,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
     const [fullName, setFullName] = useState("");
     const [group, setGroup] = useState("");
     const [key, setKey] = useState("");
+    const [loading, setLoading] = useState(false);
     const handleSubmit = async () => {
         console.log(
             userName,
@@ -33,6 +35,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
             phoneNumber,
             fullName,
         );
+        setLoading(true);
         if (
             isEmailValid(email) &&
             isValid([userName, password, fullName]) &&
@@ -61,6 +64,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
         } else {
             notify("لطفا اطلاعات را به صورت صحیح وارد کنید");
         }
+        setLoading(false);
     };
     return (
         <div className="w-full min-h-screen h-full flex items-center justify-center bg-slate-200 p-2">
@@ -173,9 +177,14 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                     <div className="w-full flex flex-wrap justify-center items-center my-2">
                         <button
                             type="button"
+                            disabled={loading}
                             className="w-full flex justify-center items-center m-1 bg-primary text-white font-bold py-2 px-4 rounded-md hover:brightness-90 transition-all"
                             onClick={handleSubmit}>
-                            ثبت نام
+                            {loading ? (
+                                <HiOutlineCubeTransparent className="rotate-and-rescale-animation" />
+                            ) : (
+                                "ثبت نام"
+                            )}
                         </button>
                         <Link href="/auth/login" passHref>
                             <a

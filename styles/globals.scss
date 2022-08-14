@@ -129,3 +129,19 @@ body {
         background: #555;
     }
 }
+
+@keyframes rotateAndRescale {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.5) rotate(360deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.rotate-and-rescale-animation {
+    animation: rotateAndRescale 2s ease-in-out infinite;
+}

@@ -3,6 +3,7 @@ import {sign, verify} from "jsonwebtoken";
 import { NextApiRequest } from "next";
 import { getUser } from "../actions/users";
 import {JWT_SECRET} from "../constants/configs";
+import { logger } from "./logger";
 
 export const getToken = (user?: IUser) => {
     const payload = {
@@ -42,6 +43,7 @@ export const getUserRoleFromToken = (token: string) => {
 
 export const getTokenFromRequest = (req: NextApiRequest) => {
     const {cookies} = req;
+    console.log(cookies);
     if (cookies && cookies.token) {
         return cookies.token;
     }

@@ -25,6 +25,7 @@ const HANDLERS: Record<string, NextApiHandler> = {
 const handler: NextApiHandler = async (req, res) => {
     const {slug} = req.query;
     console.log("slug => ",slug);
+    console.log("body => ",req.body);
     if (typeof slug === "string" && slug in HANDLERS) {
         await HANDLERS[slug](req, res);
     } else {

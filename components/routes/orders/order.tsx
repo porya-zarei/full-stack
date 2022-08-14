@@ -1,6 +1,6 @@
 import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
-import {FC, useState} from "react";
+import {FC, useEffect, useState} from "react";
 import {ERole, IOrder} from "@/types/data";
 import Order from "@/components/core/order";
 import Image from "next/image";
@@ -8,15 +8,19 @@ import IMAGES from "@/constants/images";
 import {updateOrderStatus} from "@/services/orders";
 import useNotification from "@/hooks/useNotification";
 import {useUserContext} from "@/contexts/user-context";
+import {HiOutlineCubeTransparent} from "react-icons/hi";
 
 interface OrderRouteProps {
     orderData: IOrder | null;
+    error: string | null;
+    loading: boolean;
 }
 
-const OrderRoute: FC<OrderRouteProps> = ({orderData}) => {
+const OrderRoute: FC<OrderRouteProps> = ({orderData, error, loading}) => {
     const [order, setOrder] = useState<IOrder>(orderData ?? ({} as IOrder));
     const {user} = useUserContext();
     const {notify} = useNotification();
+
     const handleUpdateStatus = (confirmed: boolean) => async () => {
         const result = await updateOrderStatus(order.id, confirmed);
         if (result.ok && result?.data && result?.data?.status) {
@@ -30,17 +34,25 @@ const OrderRoute: FC<OrderRouteProps> = ({orderData}) => {
             });
         }
     };
+    useEffect(() => {
+        setOrder(orderData ?? ({} as IOrder));
+    }, [orderData]);
     return (
         <RouteContainer>
             <FrameContainer className="min-h-[82vh] m-4 border-primary">
                 <div className="w-full flex justify-center items-center flex-wrap">
                     <div className="w-full md:w-1/3 order-2 md:order-1">
-                        {order && (
+                        {!loading ? (
                             <Order
                                 order={order}
                                 handleCancel={handleUpdateStatus(false)}
                                 handleConfirm={handleUpdateStatus(true)}
                                 renderFooter={user.role !== ERole.USER}
+                            />
+                        ) : (
+                            <HiOutlineCubeTransparent
+                                size={40}
+                                className="rotate-and-rescale-animation"
                             />
                         )}
                     </div>

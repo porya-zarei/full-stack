@@ -43,7 +43,9 @@ export const getOrder = async (id: string) => {
         const result = await axios_instance.post<IAPIResult<IOrder>>(
             API_ROUTES.orders.getOrder,
             {id},
+            {headers: {"Content-Type": "application/json"}},
         );
+        console.log("result in get order => ", result);
         return result.data;
     } catch (error) {
         console.log("error in get order => ", error);
@@ -108,4 +110,4 @@ export const updateOrderStatus = async (id: string, confirmed: boolean) => {
         };
         return result;
     }
-}
+};

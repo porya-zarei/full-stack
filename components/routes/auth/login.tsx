@@ -7,6 +7,7 @@ import {ILoginData} from "@/types/api";
 import Link from "next/link";
 import {useRouter} from "next/router";
 import {FC, useState} from "react";
+import {HiOutlineCubeTransparent} from "react-icons/hi";
 
 interface LoginRouteProps {}
 
@@ -17,8 +18,10 @@ const LoginRoute: FC<LoginRouteProps> = () => {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(true);
+    const [loading, setLoading] = useState(false);
     const handleSubmit = async () => {
         console.log(userName, password, rememberMe);
+        setLoading(true);
         if (userName.length > 5 && password.length > 5) {
             const loginData: ILoginData = {
                 userName,
@@ -39,6 +42,7 @@ const LoginRoute: FC<LoginRouteProps> = () => {
         } else {
             notify("Login failed: username or password too short");
         }
+        setLoading(false);
     };
     return (
         <div className="w-full min-h-screen h-full flex items-center justify-center bg-slate-200 p-2">
@@ -82,9 +86,14 @@ const LoginRoute: FC<LoginRouteProps> = () => {
                     <div className="w-full flex flex-wrap justify-center items-center my-2">
                         <button
                             type="button"
+                            disabled={loading}
                             className="w-full flex justify-center items-center m-1 bg-primary text-white font-bold py-2 px-4 rounded-md hover:brightness-90 transition-all"
                             onClick={handleSubmit}>
-                            ورود
+                            {loading ? (
+                                <HiOutlineCubeTransparent className="rotate-and-rescale-animation" />
+                            ) : (
+                                "ورود"
+                            )}
                         </button>
                         <Link href="/auth/register" passHref>
                             <a

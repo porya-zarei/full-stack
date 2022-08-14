@@ -19,6 +19,7 @@ export const getAllOrdersHandler: NextApiHandler = async (req, res) => {
         const token = getTokenFromRequest(req);
         if (token) {
             const result = await getAllOrders();
+            logger.log(`getAllOrdersHandler: ${JSON.stringify(result.data)}`);
             res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {
@@ -42,9 +43,13 @@ export const getAllOrdersHandler: NextApiHandler = async (req, res) => {
 export const getOrderHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
+        logger.log(`getOrderHandler req.body : ${JSON.stringify(req.body)}`);
+        logger.log(`getOrderHandler req.token : ${token}`);
         if (token) {
             const {id} = req.body as {id: string};
+            logger.log(`getOrderHandler id : ${id}`);
             const result = await getOrder(id);
+            logger.log(`getOrderHandler result : ${JSON.stringify(result)}`);
             res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {
@@ -209,29 +214,33 @@ export const updateOrderStatusHandler: NextApiHandler = async (req, res) => {
             const order = await getOrder(id);
             const user = await getUserFromToken(token);
             let status = EStatus.PENDING_FOR_SUPERVISOR;
-            if (confirmed) {
-                if (
-                    order.data.status === EStatus.PENDING_FOR_SUPERVISOR &&
-                    user?.role === ERole.ADMIN
-                ) {
-                    status = EStatus.PENDING_FOR_FINANCIAL_MANAGER;
-                } else if (
-                    order.data.status ===
-                        EStatus.PENDING_FOR_FINANCIAL_MANAGER &&
-                    user?.role === ERole.CREATOR
-                ) {
-                    status = EStatus.PENDING_FOR_PAYMENT;
-                } else if (
-                    order.data.status === EStatus.PENDING_FOR_PAYMENT &&
-                    user?.role === ERole.CREATOR
-                ) {
-                    status = EStatus.COMPLETED;
+            if (order.data) {
+                if (confirmed && order.data) {
+                    if (
+                        order.data.status === EStatus.PENDING_FOR_SUPERVISOR &&
+                        user?.role === ERole.ADMIN
+                    ) {
+                        status = EStatus.PENDING_FOR_FINANCIAL_MANAGER;
+                    } else if (
+                        order.data.status ===
+                            EStatus.PENDING_FOR_FINANCIAL_MANAGER &&
+                        user?.role === ERole.CREATOR
+                    ) {
+                        status = EStatus.PENDING_FOR_PAYMENT;
+                    } else if (
+                        order.data.status === EStatus.PENDING_FOR_PAYMENT &&
+                        user?.role === ERole.CREATOR
+                    ) {
+                        status = EStatus.COMPLETED;
+                    }
+                } else {
+                    status = EStatus.REJECTED;
                 }
+                const result = await changeOrderStatus(id, status);
+                res.status(200).json(result);
             } else {
-                status = EStatus.REJECTED;
+                return res.status(404).json(order);
             }
-            const result = await changeOrderStatus(id, status);
-            res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {
                 data: "",

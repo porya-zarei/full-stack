@@ -5,20 +5,22 @@ export enum ERole {
 }
 
 export enum EGroup {
-    CONTROL,
+    SYSTEM,
     MECHANIC,
-    ELECTRONIC,
+    ECONOMIC_EXECUTIVE,
     TELECOMUNICATION,
-    SECURITY,
+    PRECISION_AGRICULTURE,
+    MISSON_ANALYSIS,
     FINANCIAL,
 }
 
 export const EGROUPS_NAMES = [
-    "کنترل",
+    "مهندسی سامانه",
     "مکانیک",
-    "الکترونیک",
+    "اقتصادی و اجرایی",
     "مخابرات",
-    "امنیت",
+    "کشاورزی دقیق",
+    "انالیز ماموریت",
     "مالی",
 ];
 
@@ -29,7 +31,7 @@ export enum EStatus {
     COMPLETED,
     CANCELED,
     FAILED,
-    REJECTED
+    REJECTED,
 }
 
 export const ESTATUS_NAMES = [
@@ -43,6 +45,7 @@ export const ESTATUS_NAMES = [
 ];
 
 export interface IUser {
+    _id: string;
     id: string;
     fullName: string;
     email: string;
@@ -65,6 +68,7 @@ export interface ICreateUser {
 }
 
 export interface IProduct {
+    _id: string;
     id: string;
     name: string;
     price: string;
@@ -81,6 +85,7 @@ export interface IDBProduct {
 }
 
 export interface IOrder {
+    _id: string;
     id: string;
     user: IUser;
     products: IProduct[];
@@ -100,6 +105,7 @@ export interface ICreateOrder {
 }
 
 export interface IDBOrder {
+    _id: string;
     id: string;
     user: string;
     products: IProduct[];
@@ -109,3 +115,5 @@ export interface IDBOrder {
     supervisor: string;
     officialBill: boolean;
 }
+
+export type UnCertainData<T> = T | undefined | null;

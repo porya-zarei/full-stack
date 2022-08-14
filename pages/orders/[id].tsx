@@ -1,4 +1,5 @@
 import {useUserContext} from "@/contexts/user-context";
+import {useOrder} from "@/hooks/useOrder";
 import {getOrder} from "@/services/orders";
 import {IOrder} from "@/types/data";
 import {autoLoginClient} from "@/utils/auth";
@@ -8,10 +9,12 @@ import OrderRoute from "../../components/routes/orders/order";
 
 interface OrderPageProps {
     order: IOrder | null;
+    id: string;
 }
 
-const OrderPage: NextPage<OrderPageProps> = ({order}) => {
+const OrderPage: NextPage<OrderPageProps> = ({id}) => {
     const {changeToken, changeUser, isUserLoggedIn} = useUserContext();
+    const {order, loading, error} = useOrder(id);
     useEffect(() => {
         if (!isUserLoggedIn()) {
             const result = autoLoginClient();
@@ -21,9 +24,10 @@ const OrderPage: NextPage<OrderPageProps> = ({order}) => {
             }
         }
     }, []);
+    
     return (
         <div className="w-full flex justify-start items-start">
-            <OrderRoute orderData={order} />
+            <OrderRoute loading={loading} error={error} orderData={order} />
         </div>
     );
 };
@@ -36,12 +40,12 @@ export const getServerSideProps: GetServerSideProps = async ({
     query,
 }) => {
     const orderId = query.id?.toString() ?? "";
+    console.log("order-id:", orderId);
     try {
-        const result = await getOrder(orderId);
-        if (result.ok) {
+        if (orderId.length > 0) {
             return {
                 props: {
-                    order: result.data,
+                    id: orderId,
                 },
             };
         }
@@ -52,6 +56,7 @@ export const getServerSideProps: GetServerSideProps = async ({
         return {
             props: {
                 order: null,
+                id: "",
             },
         };
     } catch (error) {
@@ -62,7 +67,46 @@ export const getServerSideProps: GetServerSideProps = async ({
         return {
             props: {
                 order: null,
+                id: "",
             },
         };
     }
 };
+
+// export const getServerSideProps: GetServerSideProps = async ({
+//     req,
+//     res,
+//     query,
+// }) => {
+//     const orderId = query.id?.toString() ?? "";
+//     console.log("order-id:",orderId);
+//     try {
+//         const result = await getOrder(orderId);
+//         if (result.ok) {
+//             return {
+//                 props: {
+//                     order: result.data,
+//                 },
+//             };
+//         }
+//         res.writeHead(302, {
+//             Location: "/orders",
+//         });
+//         res.end();
+//         return {
+//             props: {
+//                 order: null,
+//             },
+//         };
+//     } catch (error) {
+//         res.writeHead(302, {
+//             Location: "/orders",
+//         });
+//         res.end();
+//         return {
+//             props: {
+//                 order: null,
+//             },
+//         };
+//     }
+// };

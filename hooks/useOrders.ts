@@ -27,6 +27,7 @@ export const useOrders = (userId?: string | null, type?: "pending" | null) => {
             } else {
                 const result = await getOrders();
                 if (result.ok && result.data) {
+                    console.log("result.data in get orders => ", result.data);
                     setOrders(result.data);
                 }
             }

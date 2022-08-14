@@ -8,9 +8,9 @@ export const useOrder = (orderId: string) => {
     const [error, setError] = useState("");
 
     const getOrdersHandler = async () => {
-        setLoading(true);
         try {
             const result = await getOrder(orderId);
+            console.log("order in usOrder => ",result);
             if (result.ok && result.data) {
                 setOrder(result.data);
             }

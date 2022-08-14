@@ -1,21 +1,23 @@
 import {IAPIResult, ILoginData} from "@/types/api";
-import {EGroup, ERole, IUser} from "@/types/data";
+import {EGroup, ERole, ICreateUser, IUser, UnCertainData} from "@/types/data";
+import {Types} from "mongoose";
 import {
-    addToJsonFile,
-    deleteFromJsonFile,
-    getAllFromJsonFile,
-    getFromJsonFile,
-    updateInJsonFile,
-} from "../utils/json-database";
-import {USERS_JSON_DB_FILE} from "../constants/json-db-files";
+    createUserMDB,
+    deleteOrderMDB,
+    getUserMDB,
+    getUsersMDB,
+    getUserWithUserNamePasswordMDB,
+    updateUserMDB,
+} from "../mongoose/functions";
 import {logger} from "../utils/logger";
 import {isUserCanChangeGroup, isUserCanChangeRole} from "../utils/premissions";
+import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getAllUsers = async (role?: ERole | null) => {
-    const users = getAllFromJsonFile<IUser>(USERS_JSON_DB_FILE);
-    const result: IAPIResult<IUser[]> = {
-        data: role ? users.filter((user) => user.role === role) : users,
-        ok: true,
+    const users = await getUsersMDB();
+    const result: IAPIResult<UnCertainData<IUser[]>> = {
+        data: role ? users?.filter((user) => user?.role === role) : users,
+        ok: !!users,
         error: "",
     };
     logger.log(`getAllUsers: ${JSON.stringify(result)}`);
@@ -23,96 +25,85 @@ export const getAllUsers = async (role?: ERole | null) => {
 };
 
 export const getUser = async (id: string) => {
-    const user = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, id);
-    const result: IAPIResult<IUser> = {
+    const user = await getUserMDB(id);
+    const result: IAPIResult<UnCertainData<IUser>> = {
         data: user,
-        ok: true,
+        ok: !!user,
         error: "",
     };
     return result;
 };
 
-export const addUser = async (user: IUser) => {
-    addToJsonFile(USERS_JSON_DB_FILE, user);
-    const result: IAPIResult<IUser> = {
-        data: user,
-        ok: true,
+export const addUser = async (userData: ICreateUser) => {
+    const id = new Types.ObjectId().toString();
+    const user: IUser = {
+        ...userData,
+        id: id,
+        _id: id,
+        joinedAt: new Date().toISOString(),
+        role: ERole.USER,
+    };
+    const createdUser = await createUserMDB(user);
+    const result: IAPIResult<UnCertainData<IUser>> = {
+        data: createdUser,
+        ok: !!createdUser,
         error: "",
     };
     return result;
 };
 
-export const updateUser = async (
-    userData: Partial<IUser> & {
-        id: string;
-    },
-) => {
-    const user = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, userData.id);
-    if (user) {
-        const updatedUser = {
-            ...user,
-            ...userData,
-        };
-        updateInJsonFile(USERS_JSON_DB_FILE, updatedUser, user.id);
-        const result: IAPIResult<IUser> = {
-            data: user,
-            ok: true,
-            error: "",
-        };
-        return result;
-    } else {
-        const result: IAPIResult<IUser> = {
-            data: {} as IUser,
-            ok: false,
-            error: "User not found",
-        };
-        return result;
-    }
+export const updateUser = async (userData: Partial<IUser> & {id: string}) => {
+    const updatedUser = await updateUserMDB(userData.id, userData);
+    const result: IAPIResult<UnCertainData<IUser>> = {
+        data: updatedUser,
+        ok: !!updatedUser,
+        error: "",
+    };
+    return result;
 };
 
 export const deleteUser = async (id: string) => {
-    deleteFromJsonFile(USERS_JSON_DB_FILE, id);
+    const deletedUser = await deleteOrderMDB(id);
     const result: IAPIResult<string> = {
-        data: "ok",
+        data: "delted",
         ok: true,
         error: "",
     };
     return result;
 };
 
-export const registerUser = async (user: IUser) => {
-    addToJsonFile(USERS_JSON_DB_FILE, user);
-    const result: IAPIResult<IUser> = {
-        data: user,
-        ok: true,
+export const registerUser = async (userData: ICreateUser) => {
+    const id = new Types.ObjectId().toString();
+    const user: IUser = {
+        ...userData,
+        id: id,
+        _id: id,
+        joinedAt: new Date().toISOString(),
+        role: ERole.USER,
+    };
+    const registeredUser = await createUserMDB(user);
+    const result: IAPIResult<UnCertainData<IUser>> = {
+        data: registeredUser,
+        ok: !!registeredUser,
         error: "",
     };
     return result;
 };
 
-export const getUserWithUserNamePassword = (
+export const getUserWithUserNamePassword = async (
     userName: string,
     password: string,
 ) => {
-    const isEmail = userName.match(/^[^@]+@[^@]+\.[^@]+$/);
-    const users = getAllFromJsonFile<IUser>(USERS_JSON_DB_FILE);
-    if (isEmail) {
-        return users.find(
-            (user) => user.email === userName && user.password === password,
-        );
-    } else {
-        return users.find(
-            (user) => user.userName === userName && user.password === password,
-        );
-    }
+    const user = await getUserWithUserNamePasswordMDB(userName, password);
+    return user;
 };
 
 export const loginUser = async (loginData: ILoginData) => {
-    const user = getUserWithUserNamePassword(
+    const user = await getUserWithUserNamePassword(
         loginData.userName,
         loginData.password,
     );
-    const result: IAPIResult<IUser | undefined> = {
+    const result: IAPIResult<UnCertainData<IUser>> = {
         data: user,
         ok: true,
         error: "",
@@ -125,16 +116,21 @@ export const changeUserGroup = async (
     group: EGroup,
     user: IUser | null,
 ) => {
-    const modifiedUser = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, userId);
+    const modifiedUser = await getUserMDB(userId);
+    logger.log(
+        `changeUserGroup: ${userId} ${group} ${JSON.stringify(modifiedUser)}`,
+    );
     if (modifiedUser && user) {
         if (isUserCanChangeGroup(user, modifiedUser)) {
-            const updatedUser = {
-                ...modifiedUser,
-                group,
+            let updatingUser = {
+                group: Number(group),
             };
-            updateInJsonFile(USERS_JSON_DB_FILE, updatedUser, modifiedUser.id);
-            const result: IAPIResult<IUser> = {
-                data: modifiedUser,
+            const updatedUser = await updateUserMDB(
+                modifiedUser.id,
+                updatingUser,
+            );
+            const result: IAPIResult<UnCertainData<IUser>> = {
+                data: updatedUser,
                 ok: true,
                 error: "",
             };
@@ -162,17 +158,19 @@ export const changeUserRole = async (
     role: ERole,
     user: IUser | null,
 ) => {
-    const modifiedUser = getFromJsonFile<IUser>(USERS_JSON_DB_FILE, userId);
+    const modifiedUser = await getUserMDB(userId);
     if (modifiedUser && user) {
         if (isUserCanChangeRole(user, modifiedUser)) {
-            const updatedUser = {
-                ...modifiedUser,
-                role,
+            const updatingUser = {
+                role: Number(role),
             };
-            updateInJsonFile(USERS_JSON_DB_FILE, updatedUser, modifiedUser.id);
-            const result: IAPIResult<IUser> = {
-                data: modifiedUser,
-                ok: true,
+            const updatedUser = await updateUserMDB(
+                modifiedUser.id,
+                updatingUser,
+            );
+            const result: IAPIResult<UnCertainData<IUser>> = {
+                data: updatedUser,
+                ok: !!updatedUser,
                 error: "",
             };
             return result;

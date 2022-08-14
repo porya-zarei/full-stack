@@ -22,18 +22,18 @@ const Order: FC<OrderProps> = ({
             <div className="w-full flex justify-center items-center flex-wrap">
                 <div className="w-full my-2 flex justify-center items-center">
                     <span className="text-xl text-center pb-2 border-b-2 border-solid border-secondary">
-                        ثبت کننده : {order.user.fullName}
+                        ثبت کننده : {order?.user?.fullName}
                     </span>
                 </div>
                 <div className="w-full my-2 flex justify-center items-center">
                     <span className="text-xl text-center pb-2 border-b-2 border-solid border-secondary">
-                        برای : {order.supervisor.fullName}
+                        برای : {order?.supervisor?.fullName}
                     </span>
                 </div>
                 <div className="w-full my-2 flex justify-center items-center">
                     <span className="text-sm text-gray-400 text-center pb-2 border-b-2 border-solid border-secondary">
                         تاریخ ثبت :{" "}
-                        {new Date(order.date).toLocaleString("fa-IR")}
+                        {new Date(order?.date).toLocaleString("fa-IR")}
                     </span>
                 </div>
             </div>
@@ -48,7 +48,7 @@ const Order: FC<OrderProps> = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {order.products.map((product, index) => (
+                        {order?.products?.map((product, index) => (
                             <tr key={index} className="text-center">
                                 <td className="px-2 py-1">{product.name}</td>
                                 <td className="px-2 py-1">{product.price}</td>
@@ -65,14 +65,14 @@ const Order: FC<OrderProps> = ({
                             className="text-center border-t-2 border-primary">
                             <td className="px-2 py-1">
                                 تعداد :{" "}
-                                {order.products.reduce(
+                                {order?.products?.reduce?.(
                                     (sum, product) => sum + product.count,
                                     0,
                                 )}
                             </td>
                             <td className="px-2 py-1">جمع کل :</td>
                             <td className="px-2 py-1">
-                                {order.products.reduce(
+                                {order?.products?.reduce(
                                     (sum, product) =>
                                         sum +
                                         Number(product.price) *
@@ -86,13 +86,13 @@ const Order: FC<OrderProps> = ({
             </div>
             <div className="w-full flex justify-center items-center flex-wrap border-t-2 border-gray-light border-dashed py-1">
                 <div className="w-full flex justify-start items-center my-2">
-                    وضعیت : {ESTATUS_NAMES[order.status]}
+                    وضعیت : {ESTATUS_NAMES[order?.status]}
                 </div>
                 <div className="w-full flex justify-start items-center my-2">
                     توضیحات :
                 </div>
                 <p className="w-full flex justify-center items-center flex-wrap">
-                    {order.description}
+                    {order?.description}
                 </p>
             </div>
             {renderFooter && (
@@ -100,7 +100,7 @@ const Order: FC<OrderProps> = ({
                     <button
                         type="button"
                         onClick={
-                            order.status == EStatus.COMPLETED
+                            order?.status == EStatus.COMPLETED
                                 ? () => {}
                                 : handleConfirm
                         }
@@ -110,7 +110,7 @@ const Order: FC<OrderProps> = ({
                     <button
                         type="button"
                         onClick={
-                            order.status == EStatus.CANCELED
+                            order?.status == EStatus.CANCELED
                                 ? () => {}
                                 : handleCancel
                         }
