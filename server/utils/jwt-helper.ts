@@ -44,7 +44,7 @@ export const getUserRoleFromToken = (token: string) => {
 export const getTokenFromRequest = (req: NextApiRequest) => {
     const {cookies} = req;
     console.log(cookies);
-    if (cookies && cookies.token) {
+    if (cookies && cookies.token && isTokenValid(cookies.token)) {
         return cookies.token;
     }
     return null;

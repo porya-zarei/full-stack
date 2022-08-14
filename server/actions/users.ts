@@ -10,7 +10,11 @@ import {
     updateUserMDB,
 } from "../mongoose/functions";
 import {logger} from "../utils/logger";
-import {isUserCanChangeGroup, isUserCanChangeRole} from "../utils/premissions";
+import {
+    isUserCanChangeGroup,
+    isUserCanChangeRole,
+    isUserCanDeleteUser,
+} from "../utils/premissions";
 import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getAllUsers = async (role?: ERole | null) => {
@@ -62,14 +66,24 @@ export const updateUser = async (userData: Partial<IUser> & {id: string}) => {
     return result;
 };
 
-export const deleteUser = async (id: string) => {
-    const deletedUser = await deleteOrderMDB(id);
-    const result: IAPIResult<string> = {
-        data: "delted",
-        ok: true,
-        error: "",
-    };
-    return result;
+export const deleteUser = async (id: string, user: UnCertainData<IUser>) => {
+    const modifiedUser = await getUserMDB(id);
+    if (user && modifiedUser && isUserCanDeleteUser(user, modifiedUser)) {
+        const deletedUser = await deleteOrderMDB(id);
+        const result: IAPIResult<string> = {
+            data: "delted",
+            ok: true,
+            error: "",
+        };
+        return result;
+    } else {
+        const result: IAPIResult<string> = {
+            data: "",
+            ok: false,
+            error: "You can't delete this user",
+        };
+        return result;
+    }
 };
 
 export const registerUser = async (userData: ICreateUser) => {

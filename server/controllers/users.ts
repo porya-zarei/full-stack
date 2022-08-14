@@ -130,7 +130,8 @@ export const deleteUserHandler: NextApiHandler = async (req, res) => {
         const token = getTokenFromRequest(req);
         if (token) {
             const {id} = req.body as {id: string};
-            const result = await deleteUser(id);
+            const user = await getUserFromToken(token);
+            const result = await deleteUser(id, user);
             res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {
@@ -198,12 +199,13 @@ export const loginUserHandler: NextApiHandler = async (req, res) => {
             result.token = token;
             res.setHeader("Set-Cookie", `token=${token}; Path=/`);
             res.status(200).json(result);
+        } else {
+            res.status(401).json({
+                data: "",
+                ok: false,
+                error: "Error logging in user",
+            } as IAPIResult<string>);
         }
-        else{res.status(401).json({
-            data: "",
-            ok: false,
-            error: "Error logging in user",
-        } as IAPIResult<string>);}
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {
