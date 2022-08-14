@@ -199,11 +199,11 @@ export const loginUserHandler: NextApiHandler = async (req, res) => {
             res.setHeader("Set-Cookie", `token=${token}; Path=/`);
             res.status(200).json(result);
         }
-        res.status(401).json({
+        else{res.status(401).json({
             data: "",
             ok: false,
             error: "Error logging in user",
-        } as IAPIResult<string>);
+        } as IAPIResult<string>);}
     } catch (error) {
         logger.error(error);
         const result: IAPIResult<IUser | null> = {
