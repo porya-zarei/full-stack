@@ -7,7 +7,7 @@ import {
     ICreateOrder,
     ERole,
 } from "@/types/data";
-import { Types } from "mongoose";
+import {Types} from "mongoose";
 import {
     createOrderMDB,
     deleteOrderMDB,
@@ -17,7 +17,6 @@ import {
     updateOrderMDB,
 } from "../mongoose/functions";
 import {logger} from "../utils/logger";
-import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getUserAndSupervisor = async (
     data:
@@ -29,12 +28,15 @@ export const getUserAndSupervisor = async (
 ) => {
     const user = await getUserMDB(data.user);
     const supervisor = await getUserMDB(data.supervisor);
-    return {user:user.toObject(), supervisor:supervisor.toObject()};
+    if (user && supervisor) {
+        return {user: user.toObject(), supervisor: supervisor.toObject()};
+    }
+    return {user: null, supervisor: null};
 };
 
 export const getAllOrders = async () => {
     const orders = await getOrdersMDB();
-    
+
     const newOrders: IOrder[] = [];
     if (orders) {
         for (const order of orders) {

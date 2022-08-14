@@ -13,12 +13,6 @@ import useNotification from "@/hooks/useNotification";
 import dynamic from "next/dynamic";
 import CCheckbox from "@/components/core/inputs/checkbox";
 import {getGeorgianDateFromJalali} from "@/utils/date-helper";
-const DatePickerInput = dynamic(
-    () => import("@/components/core/date-picker/date-picker-input"),
-    {
-        ssr: false,
-    },
-);
 interface AddOrderRouteProps {}
 interface OrderDataProduct {
     id: number;
