@@ -163,12 +163,13 @@ export const registerUserHandler: NextApiHandler = async (req, res) => {
                 result.token = token;
                 res.setHeader("Set-Cookie", `token=${token}; Path=/`);
                 res.status(200).json(result);
+            } else {
+                res.status(500).json({
+                    data: "",
+                    ok: false,
+                    error: "Error registering user",
+                } as IAPIResult<string>);
             }
-            res.status(500).json({
-                data: "",
-                ok: false,
-                error: "Error registering user",
-            } as IAPIResult<string>);
         } else {
             const result: IAPIResult<string> = {
                 data: "",
