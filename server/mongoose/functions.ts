@@ -119,9 +119,13 @@ export const updateOrderMDB = async (id: string, order: IDBOrder) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
-            const updatedOrder = await OrderModel.findByIdAndUpdate(id, order, {
-                new: true,
-            }).exec();
+            const updatedOrder = await OrderModel.findByIdAndUpdate(
+                {_id: new Types.ObjectId(id)},
+                {...order},
+                {
+                    new: true,
+                },
+            ).exec();
             // connection.disconnect();
             return updatedOrder;
         }
@@ -136,7 +140,9 @@ export const deleteUserMDB = async (id: string) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
-            const deletedUser = await UserModel.findByIdAndDelete(id).exec();
+            const deletedUser = await UserModel.findByIdAndDelete({
+                _id: new Types.ObjectId(id),
+            }).exec();
             // connection.disconnect();
             return deletedUser;
         }
@@ -151,7 +157,9 @@ export const deleteOrderMDB = async (id: string) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
-            const deletedOrder = await OrderModel.findByIdAndDelete(id).exec();
+            const deletedOrder = await OrderModel.findByIdAndDelete({
+                _id: new Types.ObjectId(id),
+            }).exec();
             // connection.disconnect();
             return deletedOrder;
         }
