@@ -7,13 +7,16 @@ import {
     HiOutlineUserAdd,
     HiOutlineUserCircle,
     HiOutlineChartBar,
+    HiOutlineArchive,
 } from "react-icons/hi";
+import { ROUTES_STATE } from "./routes";
 
 export interface ISidebarItem {
     icon: React.ReactElement;
     name: string;
     path: string;
     subPaths?: ISidebarItem[];
+    renderState?: ROUTES_STATE;
 }
 
 export const SIDEBAR_ITEMS: ISidebarItem[] = [
@@ -36,6 +39,11 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
                 name: "انالیز سفارشات",
                 icon: <HiOutlineChartBar />,
                 path: "/orders/orders-analytics",
+            },{
+                name: "دسته بندی کالاها",
+                icon: <HiOutlineArchive />,
+                path: "/orders/product-categories",
+                renderState: ROUTES_STATE.USER_IS_CREATOR,
             }
         ],
     },
@@ -44,11 +52,6 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
         icon: <HiUsers />,
         path: "/users",
         subPaths: [
-            {
-                name: "افزودن کاربر",
-                icon: <HiOutlineUserAdd />,
-                path: "/users/add-user",
-            },
             {
                 name:"ویرایش کاربران",
                 icon: <HiOutlineUserCircle />,

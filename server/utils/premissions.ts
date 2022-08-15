@@ -29,3 +29,7 @@ export const isUserCanDeleteUser = (user: IUser, modifiedUser: IUser) => {
     }
     return false;
 }
+
+export const isUserCanModifyProductCategories = (user:IUser) => {
+    return user.role === ERole.CREATOR;
+}

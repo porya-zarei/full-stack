@@ -13,17 +13,7 @@ interface OrderPageProps {
 }
 
 const OrderPage: NextPage<OrderPageProps> = ({id}) => {
-    // const {changeToken, changeUser, isUserLoggedIn} = useUserContext();
     const {order, loading, error} = useOrder(id);
-    // useEffect(() => {
-    //     if (!isUserLoggedIn()) {
-    //         const result = autoLoginClient();
-    //         if (result) {
-    //             changeToken(result.token);
-    //             changeUser(result.user);
-    //         }
-    //     }
-    // }, []);
     
     return (
         <div className="w-full flex justify-start items-start">

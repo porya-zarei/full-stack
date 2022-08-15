@@ -22,7 +22,9 @@ export const API_ROUTES = {
     },
     productCategories: {
         getProductCategories: "/product-categories/getProductCategories",
-        getProductCategoriesByGroup: "/product-categories/getProductCategoryByGroup",
+        getProductCategoriesByGroup:
+            "/product-categories/getProductCategoryByGroup",
         getProductCategory: "/product-categories/getProductCategory",
+        addProductCategory: "/product-categories/addProductCategory",
     },
 };

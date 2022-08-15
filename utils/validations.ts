@@ -1,3 +1,9 @@
+import { IAPIResult } from "@/types/api";
+
+export const isAPIResultOk = (result:IAPIResult<any|null|undefined>)=> {
+    return result && result.ok && result.data;
+}
+
 export const isEmailValid = (email: string): boolean => {
     const re =
         /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

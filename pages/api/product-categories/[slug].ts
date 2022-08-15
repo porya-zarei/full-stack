@@ -1,5 +1,6 @@
 import {NextApiHandler} from "next";
 import {
+    addProductCategoryHandler,
     getProductCategoriesHandler,
     getProductCategoryByGroupHandler,
     getProductCategoryHandler,
@@ -10,6 +11,7 @@ const HANDLERS: Record<string, NextApiHandler> = {
     getProductCategories: getProductCategoriesHandler,
     getProductCategoryByGroup: getProductCategoryByGroupHandler,
     getProductCategory: getProductCategoryHandler,
+    addProductCategory: addProductCategoryHandler,
 };
 
 const handler: NextApiHandler = async (req, res) => {

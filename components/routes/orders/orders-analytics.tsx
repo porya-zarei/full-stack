@@ -113,7 +113,7 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
     }, [groupFilter, dateFilter, statusFilter]);
     return (
         <RouteContainer>
-            <FrameContainer className="p-4 m-4 border-primary">
+            <FrameContainer className="p-2 m-2 md:p-4 md:m-4 border-primary">
                 <div className="w-full h-full flex justify-center items-start flex-wrap">
                     <div className="w-full flex justify-center items-center flex-wrap">
                         <div className="w-full flex justify-evenly items-center px-10">
@@ -190,28 +190,28 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
                         </div>
                     </div>
                     <div className="w-full flex justify-center items-center flex-wrap">
-                        <table className="w-full table-auto text-center">
+                        <table className="w-full table-auto text-center text-[10px]">
                             <thead className="bg-primary text-white">
                                 <tr>
-                                    <th className="px-4 py-2">
+                                    <th className="md:px-4 md:py-2 px-1 py-1">
                                         <span className="text-white">#</span>
                                     </th>
-                                    <th className="px-4 py-2">
+                                    <th className="md:px-4 md:py-2 px-1 py-1">
                                         <span className="text-white">
                                             نام سفارش دهنده
                                         </span>
                                     </th>
-                                    <th className="px-4 py-2">
+                                    <th className="md:px-4 md:py-2 px-1 py-1">
                                         <span className="text-white">
                                             وضعیت
                                         </span>
                                     </th>
-                                    <th className="px-4 py-2">
+                                    <th className="md:px-4 md:py-2 px-1 py-1">
                                         <span className="text-white">
                                             تعداد کالا
                                         </span>
                                     </th>
-                                    <th className="px-4 py-2">
+                                    <th className="md:px-4 md:py-2 px-1 py-1">
                                         <span className="text-white">
                                             هزینه کل
                                         </span>
@@ -237,7 +237,7 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
                                             )}
                                         </button>
                                     </th>
-                                    <th className="px-4 py-2">
+                                    <th className="md:px-4 md:py-2 px-1 py-1">
                                         <span className="text-white">
                                             تاریخ
                                         </span>
@@ -268,22 +268,22 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
                             <tbody>
                                 {filteredOrders.map((order, index) => (
                                     <tr key={index}>
-                                        <td className="px-4 py-2">
+                                        <td className="md:px-4 md:py-2 px-1 py-1">
                                             <span className="">
                                                 {index + 1}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="md:px-4 md:py-2 px-1 py-1">
                                             <span className="">
                                                 {order.user.fullName}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="md:px-4 md:py-2 px-1 py-1">
                                             <span className="">
                                                 {ESTATUS_NAMES[order.status]}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="md:px-4 md:py-2 px-1 py-1">
                                             <span className="">
                                                 {order.products.reduce(
                                                     (acc, product) =>
@@ -292,7 +292,7 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
                                                 )}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="md:px-4 md:py-2 px-1 py-1">
                                             <span className="">
                                                 {order.products.reduce(
                                                     (acc, product) => {
@@ -308,7 +308,7 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
                                                 )}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td className="md:px-4 md:py-2 px-1 py-1">
                                             <span className="">
                                                 {new Date(
                                                     order.date,

@@ -9,6 +9,7 @@ import {updateOrderStatus} from "@/services/orders";
 import {ERole, IOrder} from "@/types/data";
 import useNotification from "@/hooks/useNotification";
 import { HiOutlineCubeTransparent } from "react-icons/hi";
+import Loading from "@/components/core/loadings";
 
 interface OrdersRouteProps {}
 
@@ -107,10 +108,7 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                 </div>
                             ))
                         ) : (
-                            <HiOutlineCubeTransparent
-                                size={40}
-                                className="rotate-and-rescale-animation"
-                            />
+                            <Loading/>
                         )}
                     </div>
                 </div>
