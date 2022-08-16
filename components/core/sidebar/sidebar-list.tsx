@@ -12,14 +12,14 @@ const SidebarList: FC<SidebarListProps> = () => {
                     <li
                         key={item.name}
                         className="flex items-center justify-center w-full p-1">
-                        <SidebarListItem item={item} />
+                        <SidebarListItem isSubPath={false} item={item} />
                     </li>
                     {item.subPaths &&
                         item.subPaths.map((subItem) => (
                             <li
                                 key={subItem.name}
                                 className="flex items-center justify-center w-full p-1">
-                                - <SidebarListItem item={subItem} />
+                                - <SidebarListItem isSubPath={true} item={subItem} />
                             </li>
                         ))}
                 </>

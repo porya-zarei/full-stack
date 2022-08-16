@@ -11,12 +11,15 @@ import {Types} from "mongoose";
 import {
     createOrderMDB,
     deleteOrderMDB,
+    getGroupMDB,
     getOrderMDB,
     getOrdersMDB,
     getUserMDB,
     updateOrderMDB,
 } from "../mongoose/functions";
 import {logger} from "../utils/logger";
+import {isExtraPrice} from "../utils/premissions";
+import {getGroup} from "./groups";
 
 export const getUserAndSupervisor = async (
     data:
@@ -29,7 +32,7 @@ export const getUserAndSupervisor = async (
     const user = await getUserMDB(data.user);
     const supervisor = await getUserMDB(data.supervisor);
     if (user && supervisor) {
-        return {user: user.toObject(), supervisor: supervisor.toObject()};
+        return {user, supervisor};
     }
     return {user: null, supervisor: null};
 };
@@ -44,7 +47,7 @@ export const getAllOrders = async () => {
             user &&
                 supervisor &&
                 newOrders.push({
-                    ...order.toObject(),
+                    ...order,
                     user,
                     supervisor,
                 });
@@ -65,7 +68,7 @@ export const getOrder = async (id: string = "") => {
         const {user, supervisor} = await getUserAndSupervisor(order);
         if (user && supervisor) {
             const newOrder: IOrder = {
-                ...order.toObject(),
+                ...order,
                 user,
                 supervisor,
             };
@@ -87,8 +90,11 @@ export const getOrder = async (id: string = "") => {
 
 export const addOrder = async (createOrder: ICreateOrder) => {
     const {user, supervisor} = await getUserAndSupervisor(createOrder);
+
     if (user && supervisor) {
         const id = new Types.ObjectId().toString();
+        const group = user.group;
+        const isExtra = isExtraPrice(createOrder, group);
         const order: IDBOrder = {
             ...createOrder,
             status:
@@ -98,11 +104,12 @@ export const addOrder = async (createOrder: ICreateOrder) => {
             date: new Date().toISOString(),
             id: id,
             _id: id,
+            isExtra,
         };
         const createdOrder = await createOrderMDB(order);
         if (createdOrder) {
             const newOrder: IOrder = {
-                ...createdOrder.toObject(),
+                ...createdOrder,
                 user,
                 supervisor,
             };
@@ -127,7 +134,7 @@ export const updateOrder = async (order: IDBOrder) => {
     const {user, supervisor} = await getUserAndSupervisor(order);
     if (user && supervisor && updatedOrder) {
         const newOrder: IOrder = {
-            ...updatedOrder.toObject(),
+            ...updatedOrder,
             user,
             supervisor,
         };
@@ -166,7 +173,7 @@ export const getPendingOrders = async (id: string = "") => {
             const {user, supervisor} = await getUserAndSupervisor(order);
             if (user && supervisor) {
                 fullOrders.push({
-                    ...order.toObject(),
+                    ...order,
                     user,
                     supervisor,
                 });
@@ -210,7 +217,7 @@ export const getUserOrders = async (id: string = "") => {
             const {user, supervisor} = await getUserAndSupervisor(order);
             if (user && supervisor) {
                 data.push({
-                    ...order.toObject(),
+                    ...order,
                     user,
                     supervisor,
                 });
@@ -233,7 +240,7 @@ export const changeOrderStatus = async (id: string = "", status: EStatus) => {
         const {user, supervisor} = await getUserAndSupervisor(order);
         if (user && supervisor) {
             const newOrder: Partial<IOrder> = {
-                ...order.toObject(),
+                ...order,
                 user,
                 supervisor,
             };
@@ -251,4 +258,30 @@ export const changeOrderStatus = async (id: string = "", status: EStatus) => {
         error: "Order not found",
     };
     return result;
+};
+
+export const checkMoneyLimit = async (groupId: string, money: string) => {
+    const group = await getGroupMDB(groupId);
+    if (group) {
+        if (!isExtraPrice(Number(money), group)) {
+            const result: IAPIResult<boolean> = {
+                data: true,
+                ok: true,
+                error: "",
+            };
+            return result;
+        } else {
+            const result: IAPIResult<boolean> = {
+                data: false,
+                ok: true,
+                error: "you have exceeded the money limit",
+            };
+            return result;
+        }
+    }
+    return {
+        data: false,
+        ok: false,
+        error: "group not found",
+    };
 };

@@ -8,6 +8,7 @@ export const API_ROUTES = {
         updateOrder: "/orders/updateOrder",
         userOrders: "/orders/userOrders",
         updateOrderStatus: "/orders/updateOrderStatus",
+        checkMoneyLimit: "/orders/checkMoneyLimit",
     },
     users: {
         addUser: "/users/addUser",
@@ -26,5 +27,15 @@ export const API_ROUTES = {
             "/product-categories/getProductCategoryByGroup",
         getProductCategory: "/product-categories/getProductCategory",
         addProductCategory: "/product-categories/addProductCategory",
+        deleteProductCategory: "/product-categories/deleteProductCategory",
+    },
+    groups: {
+        getAllGroups: "/groups/getAllGroups",
+        getGroup: "/groups/getGroup",
+        addGroup: "/groups/addGroup",
+        updateGroup: "/groups/updateGroup",
+        deleteGroup: "/groups/deleteGroup",
+        checkGroupMoneyLimit: "/groups/checkGroupMoneyLimit",
+        deleteGroupLimitYear: "/groups/deleteGroupLimitYear",
     },
 };

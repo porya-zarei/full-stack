@@ -1,13 +1,19 @@
 import {getProductCategories} from "@/services/product-categories";
-import {EGroup, IProductCategory} from "@/types/data";
-import {useEffect, useState} from "react";
+import {IProductCategory} from "@/types/data";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 
-export const useProductCategories = (group?: EGroup) => {
+export const useProductCategories = (group?: string) => {
     const [productCategories, setProductCategories] = useState<
         IProductCategory[]
     >([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    const changeProductCategories: Dispatch<
+        SetStateAction<IProductCategory[]>
+    > = (value) => {
+        setProductCategories(value);
+    };
 
     const getProductCategoriesHandler = async () => {
         console.log("in getProductCategoriesHandler");
@@ -33,5 +39,6 @@ export const useProductCategories = (group?: EGroup) => {
         loading,
         error,
         refetch: getProductCategoriesHandler,
+        changeProductCategories,
     };
 };

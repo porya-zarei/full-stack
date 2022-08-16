@@ -3,10 +3,9 @@ import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
 import CInput from "@/components/core/inputs";
 import CSelectOption from "@/components/core/inputs/select";
+import {useGroups} from "@/hooks/useGroups";
 import {useOrders} from "@/hooks/useOrders";
 import {
-    EGroup,
-    EGROUPS_NAMES,
     ESTATUS_NAMES,
     IOrder,
     EStatus,
@@ -19,8 +18,9 @@ interface OrdersAnalytictsRouteProps {}
 
 const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
     const {orders, loading} = useOrders();
+    const {groups} = useGroups();
     const [filteredOrders, setFilteredOrders] = useState<IOrder[]>([]);
-    const [groupFilter, setGroupFilter] = useState(-1);
+    const [groupFilter, setGroupFilter] = useState("");
     const [dateFilter, setDateFilter] = useState(["", ""]);
     const [statusFilter, setStatusFilter] = useState(-1);
     const [priceSortIncrease, setPriceSortIncrease] = useState(true);
@@ -29,10 +29,10 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
     const handleFilter = () => {
         const filtered = orders
             .filter((order) => {
-                if (groupFilter === -1) {
+                if (groupFilter === "") {
                     return true;
                 }
-                return order.user.group === groupFilter;
+                return order.user.group.id === groupFilter;
             })
             .filter((order) => {
                 if (statusFilter === -1) {
@@ -95,7 +95,7 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
     const handleChange =
         (type: string) => (e: ChangeEvent<HTMLInputElement>) => {
             if (type === "group") {
-                setGroupFilter(Number(e.target.value));
+                setGroupFilter(e.target.value);
             } else if (type === "date-start") {
                 setDateFilter((prev) => [e.target.value, prev[1]]);
             } else if (type === "date-end") {
@@ -145,22 +145,11 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
                                 placeholder="انتخاب گروه"
                                 value={groupFilter.toString()}
                                 name={"group"}
-                                onChange={(e) =>
-                                    setGroupFilter(Number(e.target.value))
-                                }
-                                options={[
-                                    {
-                                        label: "همه",
-                                        value: String(-1),
-                                        selected: true,
-                                    },
-                                    ...Object.keys(EGroup)
-                                        .filter((g) => !isNaN(Number(g)))
-                                        .map((g) => ({
-                                            value: g,
-                                            label: EGROUPS_NAMES[Number(g)],
-                                        })),
-                                ]}
+                                onChange={(e) => setGroupFilter(e.target.value)}
+                                options={groups?.map((g) => ({
+                                    value: g.id,
+                                    label: g.name,
+                                }))}
                             />
                         </div>
                         <div className="w-10/12 flex items-center justify-start p-3 flex-wrap">
@@ -324,7 +313,26 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
             </FrameContainer>
             <FrameContainer className="p-4 m-4 border-primary">
                 <div className="w-full flex justify-center items-center flex-wrap max-w-md">
-                    <PieChart ordersData={filteredOrders} />
+                    <PieChart
+                        priceForEachGroup={filteredOrders.reduce(
+                            (data, order) => {
+                                const group = order.user.group;
+                                const price = order.products.reduce(
+                                    (acc, product) =>
+                                        acc +
+                                        Number(product.price) * product.count,
+                                    0,
+                                );
+                                if (Object.keys(data).includes(group.name)) {
+                                    data[group.name] += price;
+                                } else {
+                                    data[group.name] = price;
+                                }
+                                return data;
+                            },
+                            {} as Record<string, number>,
+                        )}
+                    />
                 </div>
             </FrameContainer>
         </RouteContainer>

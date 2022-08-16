@@ -1,12 +1,13 @@
 import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
-import CSelectOption from "@/components/core/inputs/select";
 import Loading from "@/components/core/loadings";
-import Modal from "@/components/core/modal";
+import {useGroups} from "@/hooks/useGroups";
 import {useModal} from "@/hooks/useModal";
+import useNotification from "@/hooks/useNotification";
 import {useProductCategories} from "@/hooks/useProductCategories";
-import {EGROUPS_NAMES, IProductCategory} from "@/types/data";
-import {FC, useState} from "react";
+import {deleteProductCategory} from "@/services/product-categories";
+import {IProductCategory} from "@/types/data";
+import {FC} from "react";
 import {
     HiOutlinePencil,
     HiOutlinePencilAlt,
@@ -17,16 +18,44 @@ import AddProductCategory from "./add-product-category";
 interface ProductCategoryRouteProps {}
 
 const ProductCategoryRoute: FC<ProductCategoryRouteProps> = () => {
-    const {productCategories, loading, refetch} = useProductCategories();
+    const {productCategories, loading, refetch, changeProductCategories} =
+        useProductCategories();
+    const {notify} = useNotification();
     const categories = productCategories.reduce((acc, category) => {
-        if (Object.keys(acc).includes(EGROUPS_NAMES[category.group])) {
-            acc[EGROUPS_NAMES[category.group]].push(category);
+        if (Object.keys(acc).includes(category.group.name)) {
+            acc[category.group.name].push(category);
         } else {
-            acc[EGROUPS_NAMES[category.group]] = [category];
+            acc[category.group.name] = [category];
         }
         return acc;
     }, {} as Record<string, Array<IProductCategory>>);
     const {ModalWrapper, handleClose, isOpen, handleOpen} = useModal();
+
+    const handleDeleteProductCategory = (id: string) => async () => {
+        try {
+            const result = await deleteProductCategory(id);
+            if (result && result.ok && result.data) {
+                changeProductCategories((prev) =>
+                    prev.filter((group) => group.id !== id),
+                );
+                notify("گروه با موفقیت حذف شد", {
+                    type: "success",
+                });
+            } else {
+                notify(`خطا در حذف گروه | ${result.error}`, {
+                    type: "error",
+                });
+            }
+        } catch (error) {
+            console.log("error in delete product category => ", error);
+            notify("خطا در حذف گروه", {
+                type: "error",
+            });
+        }
+    };
+
+    const handleEditProductCategory = (id: string) => async () => {};
+
     return (
         <RouteContainer>
             <FrameContainer className="m-2 md:m-4 border-primary">
@@ -80,12 +109,18 @@ const ProductCategoryRoute: FC<ProductCategoryRouteProps> = () => {
                                                 <div className="flex justify-center items-center text-lg overflow-hidden rounded-md">
                                                     <button
                                                         title="ویرایش"
+                                                        onClick={handleEditProductCategory(
+                                                            category.id,
+                                                        )}
                                                         type="button"
                                                         className="bg-primary text-white font-semibold px-4 py-2">
                                                         <HiOutlinePencilAlt />
                                                     </button>
                                                     <button
                                                         title="حذف"
+                                                        onClick={handleDeleteProductCategory(
+                                                            category.id,
+                                                        )}
                                                         type="button"
                                                         className="bg-danger text-white font-semibold px-4 py-2">
                                                         <HiOutlineTrash />

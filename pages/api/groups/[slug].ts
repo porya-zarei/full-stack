@@ -1,19 +1,22 @@
 import {NextApiHandler} from "next";
-import {
-    addProductCategoryHandler,
-    deleteProductCategoryHandler,
-    getProductCategoriesHandler,
-    getProductCategoryByGroupHandler,
-    getProductCategoryHandler,
-} from "@/server/controllers/product-categories";
+
 import {IAPIResult} from "@/types/api";
+import {
+    addGroupHandler,
+    deleteGroupHandler,
+    deleteGroupLimitYearHandler,
+    getAllGroupsHandler,
+    getGroupHandler,
+    updateGroupHandler,
+} from "@/server/controllers/groups";
 
 const HANDLERS: Record<string, NextApiHandler> = {
-    getProductCategories: getProductCategoriesHandler,
-    getProductCategoryByGroup: getProductCategoryByGroupHandler,
-    getProductCategory: getProductCategoryHandler,
-    addProductCategory: addProductCategoryHandler,
-    deleteProductCategory: deleteProductCategoryHandler,
+    addGroup: addGroupHandler,
+    deleteGroup: deleteGroupHandler,
+    getAllGroups: getAllGroupsHandler,
+    getGroup: getGroupHandler,
+    updateGroup: updateGroupHandler,
+    deleteGroupLimitYear: deleteGroupLimitYearHandler,
 };
 
 const handler: NextApiHandler = async (req, res) => {

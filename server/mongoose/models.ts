@@ -2,14 +2,36 @@ import {
     ERole,
     EStatus,
     IDBOrder,
-    IOrder,
-    IProductCategory,
     IProduct,
-    IUser,
+    IGroup,
+    IDBProductCategory,
+    IDBUser,
+    IMoneyLimitYear,
 } from "@/types/data";
+
 import mongoose, {Schema} from "mongoose";
 
-export const UserSchema = new Schema<IUser>(
+export const MoneyLimitYearSchema = new Schema<IMoneyLimitYear>({
+    limit: {type: String, required: true},
+    year: {type: String, required: true},
+});
+
+export const GroupSchema = new Schema<IGroup>({
+    id: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    moneyLimitYears: {
+        type: [MoneyLimitYearSchema],
+    },
+});
+
+export const UserSchema = new Schema<IDBUser>(
     {
         id: {
             type: String,
@@ -39,7 +61,7 @@ export const UserSchema = new Schema<IUser>(
             required: true,
         },
         group: {
-            type: Number,
+            type: String,
             required: true,
         },
         joinedAt: {
@@ -55,14 +77,14 @@ export const UserSchema = new Schema<IUser>(
     {timestamps: true},
 );
 
-export const ProductCategorySchema = new Schema<IProductCategory>({
+export const ProductCategorySchema = new Schema<IDBProductCategory>({
     id: {
         type: String,
         required: true,
         unique: true,
     },
     group: {
-        type: Number,
+        type: String,
         required: true,
     },
     key: {
@@ -148,11 +170,14 @@ export const OrderSchema = new Schema<IDBOrder>({
 });
 
 export const UserModel = (mongoose?.models?.User ||
-    mongoose.model<IUser>("User", UserSchema)) as mongoose.Model<IUser>;
+    mongoose.model<IDBUser>("User", UserSchema)) as mongoose.Model<IDBUser>;
 export const OrderModel = (mongoose?.models?.Order ||
     mongoose.model<IDBOrder>("Order", OrderSchema)) as mongoose.Model<IDBOrder>;
 export const ProductCategoryModel = (mongoose?.models?.ProductCategory ||
-    mongoose.model<IProductCategory>(
+    mongoose.model<IDBProductCategory>(
         "ProductCategory",
         ProductCategorySchema,
-    )) as mongoose.Model<IProductCategory>;
+    )) as mongoose.Model<IDBProductCategory>;
+
+export const GroupModel = (mongoose?.models?.Group ||
+    mongoose.model<IGroup>("Group", GroupSchema)) as mongoose.Model<IGroup>;

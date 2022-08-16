@@ -21,7 +21,7 @@ const AddProduct: FC<AddProductProps> = ({
     index,
 }) => {
     const {user} = useUserContext();
-    const {productCategories} = useProductCategories(user.group);
+    const {productCategories} = useProductCategories(user?.group?.id ?? "");
 
     const handleChange =
         (type = "name") =>

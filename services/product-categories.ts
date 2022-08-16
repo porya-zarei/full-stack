@@ -1,12 +1,12 @@
 import {API_ROUTES} from "@/server/constants/routes";
 import {IAPIResult} from "@/types/api";
-import {EGroup, ICreateProductCategory, IProductCategory} from "@/types/data";
+import {ICreateProductCategory, IProductCategory} from "@/types/data";
 import {axios_instance} from "./axios";
 
-export const getProductCategories = async (group?: EGroup) => {
+export const getProductCategories = async (group?: string) => {
     try {
         console.log("in getProductCategories group: ", group);
-        if (!isNaN(Number(String(group)))) {
+        if (group && group.length) {
             const result = await axios_instance.post<
                 IAPIResult<IProductCategory[]>
             >(API_ROUTES.productCategories.getProductCategoriesByGroup, {
@@ -46,6 +46,26 @@ export const createProductCategory = async (
         const result: IAPIResult<IProductCategory> = {
             data: {} as IProductCategory,
             error: "error in create product category",
+            ok: false,
+        };
+        return result;
+    }
+};
+
+export const deleteProductCategory = async (id: string) => {
+    try {
+        const result = await axios_instance.post<IAPIResult<string>>(
+            API_ROUTES.productCategories.deleteProductCategory,
+            {
+                id,
+            },
+        );
+        return result.data;
+    } catch (error) {
+        console.log("error in delete product category => ", error);
+        const result: IAPIResult<string> = {
+            data: "",
+            error: "error in delete product category",
             ok: false,
         };
         return result;

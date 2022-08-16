@@ -1,27 +1,18 @@
 import {FC, useState} from "react";
-import {HiTrash} from "react-icons/hi";
 import RouteContainer from "@/components/core/containers/route-container";
 import FrameContainer from "@/components/core/containers/frame-container";
-import CInput from "@/components/core/inputs";
 import CTextArea from "@/components/core/inputs/text-area";
 import CSelectOption from "@/components/core/inputs/select";
 import {useUsers} from "@/hooks/useUsers";
-import {
-    EProductType,
-    EPRODUCT_TYPES_NAMES,
-    ERole,
-    ICreateOrder,
-    IProduct,
-    PRODUCT_CATEGORIES,
-} from "@/types/data";
+import {EProductType, ERole, ICreateOrder, IProduct} from "@/types/data";
 import {useUserContext} from "@/contexts/user-context";
 import {createOrder} from "@/services/orders";
 import useNotification from "@/hooks/useNotification";
 import CCheckbox from "@/components/core/inputs/checkbox";
 import {getGeorgianDateFromJalali} from "@/utils/date-helper";
-import CRadio from "@/components/core/inputs/radio";
 import {useProductCategories} from "@/hooks/useProductCategories";
 import AddProduct from "./add-product";
+import {useCheckMoneyLimit} from "@/hooks/useCheckMoneyLimit";
 interface AddOrderRouteProps {}
 export interface OrderDataProduct {
     id: number;
@@ -37,6 +28,9 @@ export interface OrderDataProduct {
 const AddOrderRoute: FC<AddOrderRouteProps> = () => {
     const {user} = useUserContext();
     const {users} = useUsers(ERole.ADMIN);
+    const {checkMoneyLimit} = useCheckMoneyLimit();
+    console.log("user in add order => ", user);
+    const {productCategories} = useProductCategories(user?.group?.id ?? "");
     const {notify} = useNotification();
     const [productsData, setProductsData] = useState<OrderDataProduct[]>(
         [1, 2, 3].map((id) => ({
@@ -88,47 +82,85 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
         setSupervisor("");
     };
 
+    const checkMoneyLimitForOrder = async () => {
+        const limitCheck = await checkMoneyLimit(
+            user.group.id,
+            productsData
+                .reduce((acc, curr) => {
+                    return (
+                        acc + Number(curr.valuePrice) * Number(curr.valueCount)
+                    );
+                }, 0)
+                .toString(),
+        );
+        if (!limitCheck) {
+            notify("مبلغ سفارش بیشتر از حد مجاز سالانه است");
+            const response = prompt(
+                "مبلغ سفارش بیشتر از حد مجاز سالانه است | ایا ادامه می دهید ؟",
+            );
+            if (response === "yes") {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    };
+
     const handleSendOrder = async () => {
         console.log("send order");
         if (supervisor.length > 0 && productsData.length > 0) {
-            const data: ICreateOrder = {
-                officialBill,
-                description,
-                products: productsData
-                    .filter(
-                        (product) =>
-                            product.valueName !== "" &&
-                            product.valuePrice !== "" &&
-                            product.valueDate !== "",
-                    )
-                    .map(
-                        (product) =>
-                            ({
-                                id: String(product.id),
-                                name: product.valueName,
-                                price: product.valuePrice,
-                                date: getGeorgianDateFromJalali(
-                                    product.valueDate,
-                                ).toString(),
-                                count: Number(product.valueCount),
-                                category: PRODUCT_CATEGORIES.find(
-                                    (c) => c.id === product.valueCategory,
-                                ),
-                                type: Number(product.valueType) as EProductType,
-                            } as IProduct),
-                    ),
-                supervisor: supervisor,
-                user: user.id,
-            };
-
-            console.log("data => ", data);
-            const result = await createOrder(data);
-            if (result && result.ok && result.ok) {
-                resetProductsData();
-                notify("محصول با موفقیت ثبت شد", {
-                    type: "success",
-                });
-            } else {
+            try {
+                const isOk = await checkMoneyLimitForOrder();
+                if (isOk) {
+                    const data: ICreateOrder = {
+                        officialBill,
+                        description,
+                        products: productsData
+                            .filter(
+                                (product) =>
+                                    product.valueName !== "" &&
+                                    product.valuePrice !== "" &&
+                                    product.valueDate !== "",
+                            )
+                            .map(
+                                (product) =>
+                                    ({
+                                        id: String(product.id),
+                                        name: product.valueName,
+                                        price: product.valuePrice,
+                                        date: getGeorgianDateFromJalali(
+                                            product.valueDate,
+                                        ).toString(),
+                                        count: Number(product.valueCount),
+                                        category: productCategories.find(
+                                            (c) =>
+                                                c.id === product.valueCategory,
+                                        ),
+                                        type: Number(
+                                            product.valueType,
+                                        ) as EProductType,
+                                    } as IProduct),
+                            ),
+                        supervisor: supervisor,
+                        user: user.id,
+                    };
+                    console.log("data => ", data);
+                    const result = await createOrder(data);
+                    if (result && result.ok && result.ok) {
+                        resetProductsData();
+                        notify("محصول با موفقیت ثبت شد", {
+                            type: "success",
+                        });
+                    } else {
+                        notify("خطا در ثبت اطلاعات", {
+                            type: "error",
+                        });
+                    }
+                }
+            } catch (error) {
+                console.log("error in add order => ", error);
                 notify("خطا در ثبت اطلاعات", {
                     type: "error",
                 });

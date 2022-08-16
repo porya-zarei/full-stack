@@ -4,25 +4,25 @@ export enum ERole {
     USER,
 }
 
-export enum EGroup {
-    SYSTEM,
-    MECHANIC,
-    ECONOMIC_EXECUTIVE,
-    TELECOMUNICATION,
-    PRECISION_AGRICULTURE,
-    MISSON_ANALYSIS,
-    FINANCIAL,
-}
+// export enum EGroup {
+//     SYSTEM,
+//     MECHANIC,
+//     ECONOMIC_EXECUTIVE,
+//     TELECOMUNICATION,
+//     PRECISION_AGRICULTURE,
+//     MISSON_ANALYSIS,
+//     FINANCIAL,
+// }
 
-export const EGROUPS_NAMES = [
-    "مهندسی سامانه",
-    "مکانیک",
-    "اقتصادی و اجرایی",
-    "مخابرات",
-    "کشاورزی دقیق",
-    "انالیز ماموریت",
-    "مالی",
-];
+// export const EGROUPS_NAMES = [
+//     "مهندسی سامانه",
+//     "مکانیک",
+//     "اقتصادی و اجرایی",
+//     "مخابرات",
+//     "کشاورزی دقیق",
+//     "انالیز ماموریت",
+//     "مالی",
+// ];
 
 export enum EStatus {
     PENDING_FOR_SUPERVISOR,
@@ -54,7 +54,7 @@ export interface IUser {
     role: ERole;
     joinedAt: string;
     phoneNumber: string;
-    group: EGroup;
+    group: IGroup;
 }
 
 export interface ICreateUser {
@@ -63,53 +63,50 @@ export interface ICreateUser {
     password: string;
     userName: string;
     phoneNumber: string;
-    group: EGroup;
+    group: string;
     key: string;
+}
+
+export interface IDBUser {
+    _id: string;
+    id: string;
+    fullName: string;
+    email: string;
+    password: string;
+    userName: string;
+    role: ERole;
+    joinedAt: string;
+    phoneNumber: string;
+    group: string;
 }
 
 export interface IProductCategory {
     _id: string;
     id: string;
-    group: EGroup;
+    group: IGroup;
     key: string;
     name: string;
 }
 
-export type ICreateProductCategory = Omit<IProductCategory, "_id"|"id">;
+export type ICreateProductCategory = Omit<
+    IProductCategory,
+    "_id" | "id" | "group"
+> & {group: string};
 
-export const PRODUCT_CATEGORIES: IProductCategory[] = [
-    {
-        group: EGroup.SYSTEM,
-        id: "system",
-        key: "system",
-        name: "مهندسی سامانه",
-        _id: "5e9f8f8f9f8f8f8f8f8f8f8",
-    },
-    {
-        group: EGroup.MECHANIC,
-        id: "mechanic",
-        key: "mechanic",
-        name: "مکانیک",
-        _id: "5e9f8f8f9f8f8f8f8f8f8f9",
-    },
-    {
-        group: EGroup.ECONOMIC_EXECUTIVE,
-        id: "economicExecutive",
-        key: "economicExecutive",
-        name: "اقتصادی و اجرایی",
-        _id: "5e9f8f8f9f8f8f8f8f8f8fa",
-    },
-];
+export interface IDBProductCategory {
+    _id: string;
+    id: string;
+    group: string;
+    key: string;
+    name: string;
+}
 
 export enum EProductType {
     CONSUMPTION, // مصرفی
-    EQUIPMENT,// تجهیزات
+    EQUIPMENT, // تجهیزات
 }
 
-export const EPRODUCT_TYPES_NAMES = [
-    "مصرفی",
-    "تجهیزات",
-]
+export const EPRODUCT_TYPES_NAMES = ["مصرفی", "تجهیزات"];
 
 export interface IProduct {
     _id: string;
@@ -119,7 +116,7 @@ export interface IProduct {
     date: string;
     count: number;
     category: IProductCategory;
-    type:EProductType;
+    type: EProductType;
 }
 
 export interface IOrder {
@@ -132,6 +129,7 @@ export interface IOrder {
     status: EStatus;
     supervisor: IUser;
     officialBill: boolean;
+    isExtra: boolean;
 }
 
 export interface ICreateOrder {
@@ -152,6 +150,27 @@ export interface IDBOrder {
     status: EStatus;
     supervisor: string;
     officialBill: boolean;
+    isExtra: boolean;
+}
+
+export interface IMoneyLimitYear {
+    _id?: string;
+    year: string;
+    limit: string;
+}
+
+export type ICreateMoneyLimitYear = Omit<IMoneyLimitYear, "_id">;
+
+export interface IGroup {
+    _id: string;
+    id: string;
+    name: string;
+    moneyLimitYears: Array<IMoneyLimitYear>;
+}
+
+export interface ICreateGroup {
+    name: string;
+    moneyLimitYears: Array<ICreateMoneyLimitYear>;
 }
 
 export type UnCertainData<T> = T | undefined | null;

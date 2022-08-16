@@ -1,10 +1,10 @@
 import CInput from "@/components/core/inputs";
 import CSelectOption from "@/components/core/inputs/select";
 import Loading from "@/components/core/loadings";
+import {useGroups} from "@/hooks/useGroups";
 import useNotification from "@/hooks/useNotification";
 import {createProductCategory} from "@/services/product-categories";
-import {EGroup, EGROUPS_NAMES, ICreateProductCategory} from "@/types/data";
-import {enumToArray} from "@/utils/enums-helper";
+import {ICreateProductCategory} from "@/types/data";
 import {isAPIResultOk, isValid} from "@/utils/validations";
 import {FC, useState} from "react";
 import {HiOutlineX} from "react-icons/hi";
@@ -18,8 +18,9 @@ const AddProductCategory: FC<AddProductCategoryProps> = ({
     handleClose,
     refetch,
 }) => {
+    const {groups} = useGroups();
     const {notify} = useNotification();
-    const [group, setGroup] = useState<EGroup>(0);
+    const [group, setGroup] = useState("");
     const [englishName, setEnglishName] = useState("");
     const [persianName, setPersianName] = useState("");
     const [loading, setLoading] = useState(false);
@@ -42,6 +43,7 @@ const AddProductCategory: FC<AddProductCategoryProps> = ({
                     refetch().then(() => {
                         setEnglishName("");
                         setPersianName("");
+                        setGroup("");
                     });
                 } else {
                     notify(`خطا در ایجاد دسته بندی: ${result?.error}`, {
@@ -68,7 +70,7 @@ const AddProductCategory: FC<AddProductCategoryProps> = ({
                 onClick={() => {
                     setEnglishName("");
                     setPersianName("");
-                    setGroup(0);
+                    setGroup("");
                     handleClose();
                 }}>
                 <HiOutlineX />
@@ -85,12 +87,10 @@ const AddProductCategory: FC<AddProductCategoryProps> = ({
                         placeholder="انتخاب گروه"
                         value={group.toString()}
                         name="group"
-                        onChange={(e) =>
-                            setGroup(Number(e.target.value) as EGroup)
-                        }
-                        options={enumToArray(EGroup).map((group) => ({
-                            label: EGROUPS_NAMES[Number(group.value)],
-                            value: group.value,
+                        onChange={(e) => setGroup(e.target.value)}
+                        options={groups.map((g) => ({
+                            label: g.name,
+                            value: g.id,
                         }))}
                     />
                 </div>

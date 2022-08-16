@@ -2,19 +2,21 @@ import CInput from "@/components/core/inputs";
 import CCheckbox from "@/components/core/inputs/checkbox";
 import CSelectOption from "@/components/core/inputs/select";
 import {useUserContext} from "@/contexts/user-context";
+import {useGroups} from "@/hooks/useGroups";
 import useNotification from "@/hooks/useNotification";
 import {handleRegister} from "@/services/auth";
-import {EGroup, EGROUPS_NAMES, ICreateUser} from "@/types/data";
+import {ICreateUser} from "@/types/data";
 import {isEmailValid, isPhoneNumberValid, isValid} from "@/utils/validations";
 import Link from "next/link";
 import {useRouter} from "next/router";
 import {FC, useState} from "react";
-import { HiOutlineCubeTransparent } from "react-icons/hi";
+import {HiOutlineCubeTransparent} from "react-icons/hi";
 
 interface RegisterRouteProps {}
 
 const RegisterRoute: FC<RegisterRouteProps> = () => {
     const {notify} = useNotification();
+    const {groups} = useGroups();
     const router = useRouter();
     const {changeToken, changeUser} = useUserContext();
     const [userName, setUserName] = useState("");
@@ -47,7 +49,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                 email,
                 phoneNumber,
                 fullName,
-                group: Number(group) as EGroup,
+                group,
                 key,
             };
             const result = await handleRegister(data);
@@ -149,19 +151,10 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             value={group}
                             name={"group"}
                             onChange={(e) => setGroup(e.target.value)}
-                            options={[
-                                {
-                                    label: "همه",
-                                    value: String(-1),
-                                    selected: true,
-                                },
-                                ...Object.keys(EGroup)
-                                    .filter((g) => !isNaN(Number(g)))
-                                    .map((g) => ({
-                                        value: g,
-                                        label: EGROUPS_NAMES[Number(g)],
-                                    })),
-                            ]}
+                            options={groups?.map((g) => ({
+                                value: g.id,
+                                label: g.name,
+                            }))}
                         />
                     </div>
                     <div className="w-full flex justify-between items-center my-2">

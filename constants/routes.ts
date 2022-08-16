@@ -26,6 +26,8 @@ export const APP_ROUTES: IRoute[] = [
         renderState: ROUTES_STATE.USER_LOGED_OUT,
     },
     {path: "/orders", name: "سفارشات", renderState: ROUTES_STATE.USER_LOGED_IN},
+    {path: "/users", name: "کاربران", renderState: ROUTES_STATE.USER_LOGED_IN},
+    {path: "/groups", name: "گروه ها", renderState: ROUTES_STATE.USER_LOGED_IN},
     {
         path: "/auth/logout",
         name: "خروج",

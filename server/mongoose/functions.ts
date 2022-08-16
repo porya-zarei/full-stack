@@ -1,15 +1,49 @@
-import {EGroup, IDBOrder, IOrder, IProductCategory, IUser} from "@/types/data";
+import {
+    IDBOrder,
+    IDBProductCategory,
+    IDBUser,
+    IGroup,
+    IProductCategory,
+    IUser,
+} from "@/types/data";
 import {Types} from "mongoose";
 import {logger} from "../utils/logger";
 import {getConnection} from "./connection";
-import {OrderModel, ProductCategoryModel, UserModel} from "./models";
+import {
+    GroupModel,
+    OrderModel,
+    ProductCategoryModel,
+    UserModel,
+} from "./models";
+
+export const getGroupsMDB = async () => {
+    try {
+        const connection = await getConnection();
+        if (connection) {
+            const groups = await GroupModel.find().exec();
+            return groups;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
 
 export const getUsersMDB = async () => {
     try {
         const connection = await getConnection();
         if (connection) {
             const users = await UserModel.find().exec();
-            return users;
+            const groups = await GroupModel.find().exec();
+            const usersWithGroups = users.map(
+                (user) =>
+                    ({
+                        ...user.toObject(),
+                        group: groups.find((group) => group.id === user.group),
+                    } as IUser),
+            );
+            return usersWithGroups;
         }
         return null;
     } catch (error) {
@@ -23,7 +57,7 @@ export const getOrdersMDB = async () => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const orders = await OrderModel.find().exec();
-            return orders;
+            return orders.map((order) => order.toObject());
         }
         return null;
     } catch (error) {
@@ -37,7 +71,22 @@ export const getUserMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const user = await UserModel.findById(id).exec();
-            return user;
+            const group = await GroupModel.findById(user?.group ?? "").exec();
+            return {...user?.toObject(), group: group?.toObject()} as IUser;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getGroupMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const group = await GroupModel.findById(id).exec();
+            return group?.toObject();
         }
         return null;
     } catch (error) {
@@ -51,7 +100,7 @@ export const getOrderMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const order = await OrderModel.findById(id).exec();
-            return order;
+            return order?.toObject();
         }
         return null;
     } catch (error) {
@@ -60,12 +109,27 @@ export const getOrderMDB = async (id: string) => {
     }
 };
 
-export const createUserMDB = async (user: IUser) => {
+export const createUserMDB = async (user: IDBUser) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const newUser = await UserModel.create(user);
-            return newUser;
+            const group = await GroupModel.findById(newUser.group).exec();
+            return {...newUser.toObject(), group: group?.toObject()} as IUser;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const createGroupMDB = async (group: IGroup) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const newGroup = await GroupModel.create(group);
+            return newGroup.toObject();
         }
         return null;
     } catch (error) {
@@ -79,7 +143,7 @@ export const createOrderMDB = async (order: IDBOrder) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const newOrder = await OrderModel.create(order);
-            return newOrder;
+            return newOrder.toObject();
         }
         return null;
     } catch (error) {
@@ -87,7 +151,8 @@ export const createOrderMDB = async (order: IDBOrder) => {
         return null;
     }
 };
-export const updateUserMDB = async (id: string, user: Partial<IUser>) => {
+
+export const updateUserMDB = async (id: string, user: Partial<IDBUser>) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
@@ -98,8 +163,35 @@ export const updateUserMDB = async (id: string, user: Partial<IUser>) => {
                     new: true,
                 },
             ).exec();
+            const group = await GroupModel.findById(
+                updatedUser?.group ?? "",
+            ).exec();
             logger.log(`updatedUser: ${JSON.stringify(updatedUser)}`);
-            return updatedUser;
+            return {
+                ...updatedUser?.toObject(),
+                group: group?.toObject(),
+            } as IUser;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const updateGroupMDB = async (id: string, group: Partial<IGroup>) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const updatedGroup = await GroupModel.findOneAndUpdate(
+                {_id: new Types.ObjectId(id)},
+                {...group},
+                {
+                    new: true,
+                },
+            ).exec();
+            logger.log(`updatedGroup: ${JSON.stringify(updatedGroup)}`);
+            return updatedGroup?.toObject();
         }
         return null;
     } catch (error) {
@@ -119,7 +211,7 @@ export const updateOrderMDB = async (id: string, order: IDBOrder) => {
                     new: true,
                 },
             ).exec();
-            return updatedOrder;
+            return updatedOrder?.toObject();
         }
         return null;
     } catch (error) {
@@ -136,7 +228,59 @@ export const deleteUserMDB = async (id: string) => {
                 _id: new Types.ObjectId(id),
             }).exec();
             logger.log(`deletedUser in mdb: ${JSON.stringify(deletedUser)}`);
-            return deletedUser;
+            return deletedUser?.toObject();
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+export const deleteGroupMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const deletedGroup = await GroupModel.findOneAndDelete({
+                _id: new Types.ObjectId(id),
+            }).exec();
+            logger.log(
+                `deletedGroup in mdb: ${id} , ${JSON.stringify(deletedGroup)}`,
+            );
+            return deletedGroup?.toObject();
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const deleteGroupLimitYearMDB = async (
+    groupId: string,
+    yearLimitId: string,
+) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const updatedGroup = await GroupModel.findOneAndUpdate(
+                {
+                    _id: new Types.ObjectId(groupId),
+                },
+                {
+                    $pull: {
+                        moneyLimitYears: {_id: yearLimitId},
+                    },
+                },
+                {
+                    new: true,
+                },
+            ).exec();
+            logger.log(
+                `updatedGroup in delete year limit mdb: ${groupId} , ${JSON.stringify(
+                    updatedGroup,
+                )}`,
+            );
+            return updatedGroup?.toObject();
         }
         return null;
     } catch (error) {
@@ -152,7 +296,7 @@ export const deleteOrderMDB = async (id: string) => {
             const deletedOrder = await OrderModel.findOneAndDelete({
                 _id: new Types.ObjectId(id),
             }).exec();
-            return deletedOrder;
+            return deletedOrder?.toObject();
         }
         return null;
     } catch (error) {
@@ -173,18 +317,25 @@ export const getUserWithUserNamePasswordMDB = async (
                     email: userName,
                     password,
                 }).exec();
+                const group = await GroupModel.findById(
+                    user?.group ?? "",
+                ).exec();
                 logger.log(
                     `user in getUserWithUserNamePasswordMDB ${user?.userName}`,
                 );
-
-                return user;
+                return {...user?.toObject(), group: group?.toObject()} as IUser;
             } else {
                 const user = await UserModel.findOne({
                     userName,
                     password,
                 }).exec();
-
-                return user;
+                const group = await GroupModel.findById(
+                    user?.group ?? "",
+                ).exec();
+                logger.log(
+                    `user in getUserWithUserNamePasswordMDB ${user?.userName}`,
+                );
+                return {...user?.toObject(), group: group?.toObject()} as IUser;
             }
         }
         return null;
@@ -201,7 +352,17 @@ export const getProductCategoriesMDB = async () => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const products = await ProductCategoryModel.find().exec();
-            return products;
+            const groups = await GroupModel.find().exec();
+            const result = products.map((product) => {
+                const group = groups.find(
+                    (g) => g.id.toString() === product.group,
+                );
+                return {
+                    ...product?.toObject(),
+                    group: group?.toObject(),
+                } as IProductCategory;
+            });
+            return result;
         }
         return null;
     } catch (error) {
@@ -215,7 +376,13 @@ export const getProductCategoryMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const product = await ProductCategoryModel.findById(id).exec();
-            return product;
+            const group = await GroupModel.findById(
+                product?.group ?? "",
+            ).exec();
+            return {
+                ...product?.toObject(),
+                group: group?.toObject(),
+            } as IProductCategory;
         }
         return null;
     } catch (error) {
@@ -224,12 +391,22 @@ export const getProductCategoryMDB = async (id: string) => {
     }
 };
 
-export const createProductCategoryMDB = async (productCategory: IProductCategory) => {
+export const createProductCategoryMDB = async (
+    productCategory: IDBProductCategory,
+) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
-            const newProduct = await ProductCategoryModel.create(productCategory);
-            return newProduct;
+            const newProduct = await ProductCategoryModel.create(
+                productCategory,
+            );
+            const group = await GroupModel.findById(
+                newProduct?.group ?? "",
+            ).exec();
+            return {
+                ...newProduct?.toObject(),
+                group: group?.toObject(),
+            } as IProductCategory;
         }
         return null;
     } catch (error) {
@@ -240,19 +417,27 @@ export const createProductCategoryMDB = async (productCategory: IProductCategory
 
 export const updateProductCategoryMDB = async (
     id: string,
-    productCategory: IProductCategory,
+    productCategory: Partial<IProductCategory>,
 ) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const updatedProduct = await ProductCategoryModel.findOneAndUpdate(
                 {_id: new Types.ObjectId(id)},
-                {...productCategory},
+                {
+                    ...productCategory,
+                } as IProductCategory,
                 {
                     new: true,
                 },
             ).exec();
-            return updatedProduct;
+            const group = await GroupModel.findById(
+                productCategory.group,
+            ).exec();
+            return {
+                ...updatedProduct?.toObject(),
+                group: group?.toObject(),
+            } as IProductCategory;
         }
         return null;
     } catch (error) {
@@ -268,7 +453,7 @@ export const deleteProductCategoryMDB = async (id: string) => {
             const deletedProduct = await ProductCategoryModel.findOneAndDelete({
                 _id: new Types.ObjectId(id),
             }).exec();
-            return deletedProduct;
+            return deletedProduct?.toObject();
         }
         return null;
     } catch (error) {
@@ -277,14 +462,22 @@ export const deleteProductCategoryMDB = async (id: string) => {
     }
 };
 
-export const getProductCategoriesByGroupMDB = async (group: EGroup) => {
+export const getProductCategoriesByGroupMDB = async (group: string) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const products = await ProductCategoryModel.find({
-                group: Number(group),
+                group: group,
             }).exec();
-            return products;
+            const groups = await GroupModel.find().exec();
+            const result = products.map((product) => {
+                const group = groups.find((g) => g.id === product.group);
+                return {
+                    ...product?.toObject(),
+                    group: group?.toObject(),
+                } as IProductCategory;
+            });
+            return result;
         }
         return null;
     } catch (error) {
@@ -292,4 +485,3 @@ export const getProductCategoriesByGroupMDB = async (group: EGroup) => {
         return null;
     }
 };
-

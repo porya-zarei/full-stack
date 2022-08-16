@@ -3,6 +3,7 @@ import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
 import Image from "next/image";
 import IMAGES from "@/constants/images";
+import { useUserContext } from "@/contexts/user-context";
 
 interface HomeRouteProps {}
 

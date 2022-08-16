@@ -1,31 +1,16 @@
-import {EGROUPS_NAMES, IOrder} from "@/types/data";
+import {IOrder} from "@/types/data";
 import {FC} from "react";
 import {Chart as ChartJS, ArcElement, Tooltip, Legend} from "chart.js";
 import {Pie} from "react-chartjs-2";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface PieChartProps {
-    ordersData: IOrder[];
+    priceForEachGroup: Record<string, number>;
 }
 
-const PieChart: FC<PieChartProps> = ({ordersData}) => {
-    const priceForEachGroup = ordersData.reduce((data, order) => {
-        const group = order.user.group;
-        const price = order.products.reduce(
-            (acc, product) => acc + Number(product.price) * product.count,
-            0,
-        );
-        if (data[group]) {
-            data[group] += price;
-        } else {
-            data[group] = price;
-        }
-        return data;
-    }, {} as Record<string, number>);
+const PieChart: FC<PieChartProps> = ({priceForEachGroup}) => {
     const data = {
-        labels: Object.keys(priceForEachGroup).map(
-            (group) => EGROUPS_NAMES[Number(group)],
-        ),
+        labels: Object.keys(priceForEachGroup),
         datasets: [
             {
                 label: "# of Votes",

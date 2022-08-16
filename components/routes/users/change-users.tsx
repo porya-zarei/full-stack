@@ -1,10 +1,11 @@
 import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
 import CSelectOption from "@/components/core/inputs/select";
+import {useGroups} from "@/hooks/useGroups";
 import useNotification from "@/hooks/useNotification";
 import {useUsers} from "@/hooks/useUsers";
 import {changeGroup, changeRole, deleteUser} from "@/services/users";
-import {EGroup, EGROUPS_NAMES, ERole, IUser} from "@/types/data";
+import {ERole, IUser} from "@/types/data";
 import {FC, useTransition} from "react";
 import {HiTrash} from "react-icons/hi";
 
@@ -13,11 +14,12 @@ interface ChangeUsersRouteProps {}
 const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
     const [isPending, startTranstion] = useTransition();
     const {users, loading, refetch} = useUsers();
+    const {groups} = useGroups();
     const {notify} = useNotification();
     const handleChangeUserGroup =
         (selected_user: IUser) =>
         async (e: React.ChangeEvent<HTMLSelectElement>) => {
-            const group = Number(e.target.value) as EGroup;
+            const group = String(e.target.value);
             const result = await changeGroup(selected_user.id, group);
             if (result && result.ok && result.data) {
                 startTranstion(() => {
@@ -92,14 +94,10 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                         </td>
                                         <td className="px-4 py-2">
                                             <CSelectOption
-                                                options={Object.entries(EGroup)
-                                                    .filter(([key]) =>
-                                                        key.match(/^[A-Z]/),
-                                                    )
-                                                    .map(([key, value]) => ({
-                                                        value: value.toString(),
-                                                        label: EGROUPS_NAMES[Number(value)],
-                                                    }))}
+                                                options={groups.map((g) => ({
+                                                    value: g.id,
+                                                    label: g.name,
+                                                }))}
                                                 value={user.group.toString()}
                                                 name="group"
                                                 placeholder="گروه"

@@ -8,7 +8,6 @@ import Card from "@/components/core/card";
 import {updateOrderStatus} from "@/services/orders";
 import {ERole, IOrder} from "@/types/data";
 import useNotification from "@/hooks/useNotification";
-import { HiOutlineCubeTransparent } from "react-icons/hi";
 import Loading from "@/components/core/loadings";
 
 interface OrdersRouteProps {}

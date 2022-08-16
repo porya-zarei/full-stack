@@ -1,5 +1,5 @@
 import {IAPIResult, ILoginData} from "@/types/api";
-import {EGroup, ERole, ICreateUser, IUser} from "@/types/data";
+import {ERole, ICreateUser, IDBUser, IUser} from "@/types/data";
 import {NextApiHandler} from "next";
 import {
     addUser,
@@ -103,7 +103,7 @@ export const updateUserHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
         if (token) {
-            const user = req.body as Partial<IUser> & {id: string};
+            const user = req.body as Partial<IDBUser> & {id: string};
             const result = await updateUser(user);
             res.status(200).json(result);
         } else {
@@ -225,7 +225,7 @@ export const changeUserGroupHandler: NextApiHandler = async (req, res) => {
         if (token) {
             const user = await getUserFromToken(token);
             if (user) {
-                const {id, group} = req.body as {id: string; group: EGroup};
+                const {id, group} = req.body as {id: string; group: string};
                 logger.log(`group to change: ${group}`);
                 const result = await changeUserGroup(id, group, user);
                 res.status(200).json(result);

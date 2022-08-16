@@ -4,6 +4,7 @@ import {NextApiHandler} from "next";
 import {
     addOrder,
     changeOrderStatus,
+    checkMoneyLimit,
     deleteOrder,
     getAllOrders,
     getOrder,
@@ -255,6 +256,32 @@ export const updateOrderStatusHandler: NextApiHandler = async (req, res) => {
             data: "",
             ok: false,
             error: "Error updating order",
+        };
+        res.status(500).json(result);
+    }
+};
+
+export const checkMoneyLimitHandler: NextApiHandler = async (req, res) => {
+    try {
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const {id, money} = req.body as {id: string; money: string};
+            const result = await checkMoneyLimit(id, money);
+            res.status(200).json(result);
+        } else {
+            const result: IAPIResult<boolean> = {
+                data: false,
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
+    } catch (error) {
+        logger.error(error);
+        const result: IAPIResult<boolean> = {
+            data: false,
+            ok: false,
+            error: "Error checking money limit",
         };
         res.status(500).json(result);
     }

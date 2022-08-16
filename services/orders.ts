@@ -111,3 +111,21 @@ export const updateOrderStatus = async (id: string, confirmed: boolean) => {
         return result;
     }
 };
+
+export const checkMoneyLimit = async (id: string,money:string) => {
+    try {
+        const result = await axios_instance.post<IAPIResult<boolean>>(
+            API_ROUTES.orders.checkMoneyLimit,
+            {id,money},
+        );
+        return result.data;
+    } catch (error) {
+        console.log("error in check money limit => ", error);
+        const result: IAPIResult<boolean> = {
+            data: false,
+            error: "error in check money limit",
+            ok: false,
+        };
+        return result;
+    }
+}

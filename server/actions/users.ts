@@ -1,9 +1,14 @@
 import {IAPIResult, ILoginData} from "@/types/api";
-import {EGroup, ERole, ICreateUser, IUser, UnCertainData} from "@/types/data";
+import {
+    ERole,
+    ICreateUser,
+    IDBUser,
+    IUser,
+    UnCertainData,
+} from "@/types/data";
 import {Types} from "mongoose";
 import {
     createUserMDB,
-    deleteOrderMDB,
     deleteUserMDB,
     getUserMDB,
     getUsersMDB,
@@ -16,7 +21,6 @@ import {
     isUserCanChangeRole,
     isUserCanDeleteUser,
 } from "../utils/premissions";
-import {uuidGenerator} from "../utils/uuid-helper";
 
 export const getAllUsers = async (role?: ERole | null) => {
     const users = await getUsersMDB();
@@ -41,7 +45,7 @@ export const getUser = async (id: string) => {
 
 export const addUser = async (userData: ICreateUser) => {
     const id = new Types.ObjectId().toString();
-    const user: IUser = {
+    const user: IDBUser = {
         ...userData,
         id: id,
         _id: id,
@@ -57,7 +61,7 @@ export const addUser = async (userData: ICreateUser) => {
     return result;
 };
 
-export const updateUser = async (userData: Partial<IUser> & {id: string}) => {
+export const updateUser = async (userData: Partial<IDBUser> & {id: string}) => {
     const updatedUser = await updateUserMDB(userData.id, userData);
     const result: IAPIResult<UnCertainData<IUser>> = {
         data: updatedUser,
@@ -69,7 +73,9 @@ export const updateUser = async (userData: Partial<IUser> & {id: string}) => {
 
 export const deleteUser = async (id: string, user: UnCertainData<IUser>) => {
     const modifiedUser = await getUserMDB(id);
-    logger.log(`deleteUser: ${JSON.stringify(modifiedUser)}, ${JSON.stringify(user)}`);
+    logger.log(
+        `deleteUser: ${JSON.stringify(modifiedUser)}, ${JSON.stringify(user)}`,
+    );
     if (user && modifiedUser && isUserCanDeleteUser(user, modifiedUser)) {
         const deletedUser = await deleteUserMDB(id);
         logger.log(`deletedUser: ${JSON.stringify(deletedUser)}`);
@@ -91,7 +97,7 @@ export const deleteUser = async (id: string, user: UnCertainData<IUser>) => {
 
 export const registerUser = async (userData: ICreateUser) => {
     const id = new Types.ObjectId().toString();
-    const user: IUser = {
+    const user: IDBUser = {
         ...userData,
         id: id,
         _id: id,
@@ -130,7 +136,7 @@ export const loginUser = async (loginData: ILoginData) => {
 
 export const changeUserGroup = async (
     userId: string,
-    group: EGroup,
+    group: string,
     user: IUser | null,
 ) => {
     const modifiedUser = await getUserMDB(userId);
@@ -139,13 +145,7 @@ export const changeUserGroup = async (
     );
     if (modifiedUser && user) {
         if (isUserCanChangeGroup(user, modifiedUser)) {
-            let updatingUser = {
-                group: Number(group),
-            };
-            const updatedUser = await updateUserMDB(
-                modifiedUser.id,
-                updatingUser,
-            );
+            const updatedUser = await updateUserMDB(modifiedUser.id, {group});
             const result: IAPIResult<UnCertainData<IUser>> = {
                 data: updatedUser,
                 ok: true,

@@ -4,10 +4,11 @@ import {
     HiOutlineClipboardList,
     HiOutlineDocumentAdd,
     HiUsers,
-    HiOutlineUserAdd,
     HiOutlineUserCircle,
     HiOutlineChartBar,
     HiOutlineArchive,
+    HiOutlineUserGroup,
+    HiOutlinePresentationChartLine,
 } from "react-icons/hi";
 import { ROUTES_STATE } from "./routes";
 
@@ -39,12 +40,13 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
                 name: "انالیز سفارشات",
                 icon: <HiOutlineChartBar />,
                 path: "/orders/orders-analytics",
-            },{
+            },
+            {
                 name: "دسته بندی کالاها",
                 icon: <HiOutlineArchive />,
                 path: "/orders/product-categories",
                 renderState: ROUTES_STATE.USER_IS_CREATOR,
-            }
+            },
         ],
     },
     {
@@ -53,10 +55,22 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
         path: "/users",
         subPaths: [
             {
-                name:"ویرایش کاربران",
+                name: "ویرایش کاربران",
                 icon: <HiOutlineUserCircle />,
                 path: "/users/change-users",
-            }
+            },
         ],
-    }
+    },
+    {
+        name: "گروه ها ",
+        icon: <HiOutlineUserGroup />,
+        path: "/groups",
+        subPaths: [
+            {
+                name: "مدیریت گروه ها",
+                icon: <HiOutlinePresentationChartLine />,
+                path: "/groups/manage-groups",
+            },
+        ],
+    },
 ];

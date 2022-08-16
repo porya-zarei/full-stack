@@ -1,5 +1,5 @@
 import {IAPIResult} from "@/types/api";
-import {EGroup, ICreateProductCategory, IProductCategory} from "@/types/data";
+import {ICreateProductCategory, IProductCategory} from "@/types/data";
 import {Types} from "mongoose";
 import {
     createProductCategoryMDB,
@@ -61,6 +61,7 @@ export const createProductCategory = async (
         };
         return result;
     }
+
     return {
         data: null,
         ok: false,
@@ -94,9 +95,9 @@ export const updateProductCategory = async (
 export const deleteProductCategory = async (id: string) => {
     const deletedProductCategory = await deleteProductCategoryMDB(id);
     if (deletedProductCategory) {
-        const result: IAPIResult<IProductCategory> = {
-            data: deletedProductCategory,
-            ok: !!deletedProductCategory,
+        const result: IAPIResult<string> = {
+            data: "deleted",
+            ok: true,
             error: "",
         };
         return result;
@@ -108,7 +109,7 @@ export const deleteProductCategory = async (id: string) => {
     } as IAPIResult<IProductCategory | null>;
 };
 
-export const getProductCategoriesByGroup = async (group: EGroup) => {
+export const getProductCategoriesByGroup = async (group: string) => {
     const productCategories = await getProductCategoriesByGroupMDB(group);
     if (productCategories) {
         const result: IAPIResult<IProductCategory[]> = {

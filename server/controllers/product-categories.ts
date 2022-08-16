@@ -1,8 +1,9 @@
 import {IAPIResult} from "@/types/api";
-import {EGroup, ICreateProductCategory} from "@/types/data";
+import { ICreateProductCategory} from "@/types/data";
 import {NextApiHandler} from "next";
 import {
     createProductCategory,
+    deleteProductCategory,
     getAllProductCategories,
     getProductCategoriesByGroup,
     getProductCategory,
@@ -78,7 +79,7 @@ export const getProductCategoryByGroupHandler: NextApiHandler = async (
     try {
         const token = getTokenFromRequest(req);
         if (token) {
-            const {group} = req.body as {group: EGroup};
+            const {group} = req.body as {group: string};
             logger.log(`getProductCategoryByGroupHandler group : ${group}`);
             const result = await getProductCategoriesByGroup(group);
             logger.log(
@@ -156,3 +157,48 @@ export const addProductCategoryHandler: NextApiHandler = async (
         res.status(500).json(result);
     }
 };
+
+export const deleteProductCategoryHandler: NextApiHandler = async (
+    req,
+    res,
+) => {
+    try {
+        const token = getTokenFromRequest(req);
+        if (token) {
+            const user = await getUserFromToken(token);
+            if (user && isUserCanModifyProductCategories(user)) {
+                const {id} = req.body as {id: string};
+                logger.log(`deleteProductCategoryHandler id : ${id}`);
+                const result = await deleteProductCategory(id);
+                logger.log(
+                    `deleteProductCategoryHandler result : ${JSON.stringify(
+                        result,
+                    )}`,
+                );
+                res.status(200).json(result);
+            }else {
+                const result: IAPIResult<string> = {
+                    data: "",
+                    ok: false,
+                    error: "Unauthorized",
+                };
+                res.status(401).json(result);
+            }
+        } else {
+            const result: IAPIResult<string> = {
+                data: "",
+                ok: false,
+                error: "Unauthorized",
+            };
+            res.status(401).json(result);
+        }
+    } catch (error) {
+        logger.error(error);
+        const result: IAPIResult<string> = {
+            data: "",
+            ok: false,
+            error: "Error deleting product category",
+        };
+        res.status(500).json(result);
+    }
+}

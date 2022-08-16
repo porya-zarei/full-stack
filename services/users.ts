@@ -1,6 +1,6 @@
 import {API_ROUTES} from "@/server/constants/routes";
 import {IAPIResult} from "@/types/api";
-import {EGroup, ERole, IUser} from "@/types/data";
+import {ERole, IUser} from "@/types/data";
 import {axios_instance} from "./axios";
 
 export const getUsers = async (role?: ERole | null) => {
@@ -39,7 +39,7 @@ export const changeRole = async (id: string, role: ERole) => {
     }
 };
 
-export const changeGroup = async (id: string, group: EGroup) => {
+export const changeGroup = async (id: string, group: string) => {
     try {
         const result = await axios_instance.post<IAPIResult<IUser>>(
             API_ROUTES.users.changeUserGroup,

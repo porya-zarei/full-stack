@@ -88,3 +88,18 @@ export const isDateInRange = (date: Date, startDate?: Date, endDate?: Date) => {
         );
     return false;
 };
+
+const toEnglishDigits = (str: string) => {
+    const persian = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+    const english = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    for (let i = 0; i < persian.length; i++) {
+        str = str.replace(new RegExp(persian[i], "g"), english[i]);
+    }
+    return str;
+};
+
+export const getCurrentJalaliYear = () => {
+    const date = new Date();
+    const year = date.toLocaleDateString("fa-IR").split("/")[0];
+    return toEnglishDigits(year);
+};

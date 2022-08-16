@@ -1,6 +1,7 @@
 import {NextApiHandler} from "next";
 import {
     addOrderHandler,
+    checkMoneyLimitHandler,
     deleteOrderHandler,
     getAllOrdersHandler,
     getOrderHandler,
@@ -20,6 +21,7 @@ const HANDLERS: Record<string, NextApiHandler> = {
     updateOrder: updateOrderHandler,
     userOrders: getUserOrdersHandler,
     updateOrderStatus: updateOrderStatusHandler,
+    checkMoneyLimit: checkMoneyLimitHandler,
 };
 
 const handler: NextApiHandler = async (req, res) => {
