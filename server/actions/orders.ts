@@ -19,7 +19,6 @@ import {
 } from "../mongoose/functions";
 import {logger} from "../utils/logger";
 import {isExtraPrice} from "../utils/premissions";
-import {getGroup} from "./groups";
 
 export const getUserAndSupervisor = async (
     data:
@@ -54,7 +53,7 @@ export const getAllOrders = async () => {
         }
     }
     logger.log(`get all orders => ${JSON.stringify(newOrders[0])}`);
-    const result: IAPIResult<Partial<IOrder>[]> = {
+    const result: IAPIResult<IOrder[]> = {
         data: newOrders,
         ok: newOrders.length > 0,
         error: "",
@@ -90,11 +89,11 @@ export const getOrder = async (id: string = "") => {
 
 export const addOrder = async (createOrder: ICreateOrder) => {
     const {user, supervisor} = await getUserAndSupervisor(createOrder);
-
-    if (user && supervisor) {
+    const orders = await getAllOrders();
+    if (user && supervisor && orders) {
         const id = new Types.ObjectId().toString();
         const group = user.group;
-        const isExtra = isExtraPrice(createOrder, group);
+        const isExtra = isExtraPrice(orders.data, createOrder, group);
         const order: IDBOrder = {
             ...createOrder,
             status:
@@ -183,7 +182,8 @@ export const getPendingOrders = async (id: string = "") => {
     const result: IAPIResult<Partial<IOrder>[]> = {
         data: fullOrders
             .filter(
-                (order) => Number(order.user?.group) === Number(user?.group),
+                (order) =>
+                    Number(order.user?.group.id) === Number(user?.group.id),
             )
             .filter((order) => {
                 logger.log(
@@ -262,8 +262,9 @@ export const changeOrderStatus = async (id: string = "", status: EStatus) => {
 
 export const checkMoneyLimit = async (groupId: string, money: string) => {
     const group = await getGroupMDB(groupId);
-    if (group) {
-        if (!isExtraPrice(Number(money), group)) {
+    const orders = await getAllOrders();
+    if (group && orders) {
+        if (!isExtraPrice(orders.data, Number(money), group)) {
             const result: IAPIResult<boolean> = {
                 data: true,
                 ok: true,

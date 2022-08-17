@@ -1,10 +1,10 @@
-import {ERole, ICreateOrder, IGroup, IUser} from "@/types/data";
+import {ERole, ICreateOrder, IGroup, IOrder, IUser} from "@/types/data";
 
 export const isUserCanChangeGroup = (user: IUser, modifiedUser: IUser) => {
     if (user.role === ERole.CREATOR && modifiedUser.role !== ERole.CREATOR) {
         return true;
     }
-    if(user.role === ERole.CREATOR && user.id === modifiedUser.id) {
+    if (user.role === ERole.CREATOR && user.id === modifiedUser.id) {
         return true;
     }
     if (user.role === ERole.ADMIN && modifiedUser.role === ERole.USER) {
@@ -52,7 +52,11 @@ export const getCurrentJalaliYear = () => {
     return toEnglishDigits(year);
 };
 
-export const isExtraPrice = (order: ICreateOrder | number, group: IGroup) => {
+export const isExtraPrice = (
+    orders: IOrder[],
+    order: ICreateOrder | number,
+    group: IGroup,
+) => {
     let orderPrice = 0;
     if (typeof order === "number") {
         orderPrice = order;
@@ -61,6 +65,16 @@ export const isExtraPrice = (order: ICreateOrder | number, group: IGroup) => {
             return acc + Number(curr.price) * curr.count;
         }, 0);
     }
+    orderPrice += orders
+        .filter((o) => o?.user?.group?.id === group?.id)
+        .reduce((acc, curr) => {
+            return (
+                acc +
+                curr.products.reduce((acc, curr) => {
+                    return acc + Number(curr.price) * curr.count;
+                }, 0)
+            );
+        }, 0);
     const year = getCurrentJalaliYear();
     const groupLimit =
         Number(
