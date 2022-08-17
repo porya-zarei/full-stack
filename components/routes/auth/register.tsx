@@ -3,6 +3,7 @@ import CCheckbox from "@/components/core/inputs/checkbox";
 import CSelectOption from "@/components/core/inputs/select";
 import {useUserContext} from "@/contexts/user-context";
 import {useGroups} from "@/hooks/useGroups";
+import {useKeyboard} from "@/hooks/useKeyboard";
 import useNotification from "@/hooks/useNotification";
 import {handleRegister} from "@/services/auth";
 import {ICreateUser} from "@/types/data";
@@ -68,6 +69,13 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
         }
         setLoading(false);
     };
+    useKeyboard(
+        "Enter",
+        () => {
+            handleSubmit();
+        },
+        [userName, password, email, phoneNumber, fullName, group, key],
+    );
     return (
         <div className="w-full min-h-screen h-full flex items-center justify-center bg-slate-200 p-2">
             <div className="w-96 max-w-md flex flex-wrap items-center justify-center rounded-2xl border-primary border-4 border-dashed p-5">

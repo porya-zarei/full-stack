@@ -163,6 +163,7 @@ export const updateGroupHandler: NextApiHandler = async (req, res) => {
             const user = await getUserFromToken(token);
             if (user) {
                 const data = req.body as ICreateGroup & {id: string};
+                logger.log(`data in update group =>     ${JSON.stringify(data)}`);
                 const result = await updateGroup({...data, id: data.id});
                 res.status(200).json(result);
             } else {

@@ -353,6 +353,14 @@ export const getProductCategoriesMDB = async () => {
         if (connection.connection.readyState === 1) {
             const products = await ProductCategoryModel.find().exec();
             const groups = await GroupModel.find().exec();
+            logger.log(
+                `products in getProductCategoriesMDB ${JSON.stringify(
+                    products,
+                )}`,
+            );
+            logger.log(
+                `groups in getProductCategoriesMDB ${JSON.stringify(groups)}`,
+            );
             const result = products.map((product) => {
                 const group = groups.find(
                     (g) => g.id.toString() === product.group,

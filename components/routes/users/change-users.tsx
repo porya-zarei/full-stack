@@ -98,7 +98,7 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                                     value: g.id,
                                                     label: g.name,
                                                 }))}
-                                                value={user.group.toString()}
+                                                value={user?.group?.toString()??""}
                                                 name="group"
                                                 placeholder="گروه"
                                                 onChange={handleChangeUserGroup(
@@ -111,13 +111,13 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                             <CSelectOption
                                                 options={Object.entries(ERole)
                                                     .filter(([key]) =>
-                                                        key.match(/^[A-Z]/),
+                                                        key?.match(/^[A-Z]/),
                                                     )
                                                     .map(([key, value]) => ({
-                                                        value: value.toString(),
+                                                        value: value?.toString(),
                                                         label: key,
                                                     }))}
-                                                value={user.role.toString()}
+                                                value={user?.role?.toString()??""}
                                                 name="role"
                                                 placeholder="نقش"
                                                 onChange={handleChangeUserRole(

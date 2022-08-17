@@ -59,30 +59,25 @@ const EditGroup: FC<EditGroupProps> = ({handleClose, group, refetch}) => {
         if (updated) {
             try {
                 setLoading(true);
-
                 const data: Partial<ICreateGroup> & {id: string} = {
                     id: group?.id ?? "",
-                    moneyLimitYears: [
-                        {
-                            limit: updated.limit ?? "",
-                            year: updated.year ?? "",
-                        },
-                    ],
+                    moneyLimitYears: [...(moneyLimitYears ?? [])],
                 };
-                console.log("data in add group => ", data);
+                console.log("data in update limit year => ", data,updated,moneyLimitYears);
                 const result = await updateGroup(data);
+                console.log("result in update limit year => ", result);
                 if (result.ok) {
-                    notify("گروه با موفقیت ایجاد شد", {
+                    notify("گروه با موفقیت ویرایش شد", {
                         type: "success",
                     });
                     refetch();
                 } else {
-                    notify(`خطا در ایجاد گروه: ${result?.error}`, {
+                    notify(`خطا در ویرایش گروه: ${result?.error}`, {
                         type: "error",
                     });
                 }
             } catch (error) {
-                notify("خطا در ایجاد گروه", {
+                notify("خطا در ویرایش گروه", {
                     type: "error",
                 });
                 console.log("error i create product category => ", error);
@@ -95,9 +90,11 @@ const EditGroup: FC<EditGroupProps> = ({handleClose, group, refetch}) => {
     const handleDeleteGroupLimitYear =
         (groupId: string, yearLimitId: string) => async () => {
             try {
+                console.log("data in delete gl => ", groupId, yearLimitId);
                 const result = await deleteGroupLimitYear(groupId, yearLimitId);
+                console.log("result in delete gl => ", result);
                 if (result.ok) {
-                    notify("نام گروه اپدیت شد");
+                    notify("محدودیت با موفقیت حذف شد");
                     refetch();
                 }
             } catch (error) {
@@ -120,6 +117,43 @@ const EditGroup: FC<EditGroupProps> = ({handleClose, group, refetch}) => {
         } catch (error) {
             console.log(error);
             notify(`مشکلی رخ داده است`);
+        }
+    };
+
+    const handleAddNewGroupLimitYear = async () => {
+        try {
+            setLoading(true);
+
+            const data: Partial<ICreateGroup> & {id: string} = {
+                id: group?.id ?? "",
+                moneyLimitYears: [
+                    ...(group?.moneyLimitYears ?? []),
+                    {
+                        limit: moneyLimitYear.limit ?? "",
+                        year: moneyLimitYear.year ?? "",
+                    },
+                ],
+            };
+            console.log("data in add group => ", data);
+            const result = await updateGroup(data);
+            console.log("result in add group => ", result);
+            if (result.ok) {
+                notify("محدودیت با موفقیت ایجاد شد", {
+                    type: "success",
+                });
+                refetch();
+            } else {
+                notify(`خطا در ایجاد محدودیت: ${result?.error}`, {
+                    type: "error",
+                });
+            }
+        } catch (error) {
+            notify("خطا در ایجاد محدودیت", {
+                type: "error",
+            });
+            console.log("error i create product category => ", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -162,61 +196,63 @@ const EditGroup: FC<EditGroupProps> = ({handleClose, group, refetch}) => {
                     </button>
                 </div>
                 <div className="w-full flex items-center justify-center flex-wrap my-3  max-h-[150px] overflow-y-auto">
-                    {moneyLimitYears.map((ml, index) => (
-                        <div
-                            className="w-full flex items-center justify-center my-3"
-                            key={index}>
-                            <div className="w-4/12 md:w-4/12 flex flex-wrap items-center justify-center">
-                                <CInput
-                                    containerClassName="rounded-md border-2 border-gray p-2 flex-wrap"
-                                    type="text"
-                                    value={ml.year}
-                                    name={"year"}
-                                    onChange={handleChangeMoneyLimitYear(
-                                        ml?._id ?? "",
-                                    )}
-                                    placeholder="سال"
-                                />
+                    {moneyLimitYears
+                        .filter((ml) => ml._id)
+                        .map((ml, index) => (
+                            <div
+                                className="w-full flex items-center justify-center my-3"
+                                key={index}>
+                                <div className="w-4/12 md:w-4/12 flex flex-wrap items-center justify-center">
+                                    <CInput
+                                        containerClassName="rounded-md border-2 border-gray p-2 flex-wrap"
+                                        type="text"
+                                        value={ml.year}
+                                        name={"year"}
+                                        onChange={handleChangeMoneyLimitYear(
+                                            ml?._id ?? "",
+                                        )}
+                                        placeholder="سال"
+                                    />
+                                </div>
+                                <div className="w-4/12 md:w-4/12 flex items-center justify-center">
+                                    <CInput
+                                        containerClassName="rounded-md border-2 border-gray p-2 flex-wrap"
+                                        type="text"
+                                        value={ml.limit}
+                                        name={"limit"}
+                                        onChange={handleChangeMoneyLimitYear(
+                                            ml?._id ?? "",
+                                        )}
+                                        placeholder="محدودیت"
+                                    />
+                                </div>
+                                <div className="w-2/12 md:w-2/12 flex items-center justify-center">
+                                    <button
+                                        type="button"
+                                        title="حذف کردن"
+                                        className="w-auto p-2 flex items-center justify-center rounded-full bg-danger text-white"
+                                        onClick={handleDeleteGroupLimitYear(
+                                            group?.id ?? "",
+                                            ml?._id ?? "",
+                                        )}>
+                                        <span className="text-sm">
+                                            <HiOutlineX />
+                                        </span>
+                                    </button>
+                                </div>
+                                <div className="w-2/12 md:w-2/12 flex items-center justify-center">
+                                    <button
+                                        type="button"
+                                        title="ثبت ویرایش"
+                                        className="w-auto p-2 flex items-center justify-center rounded-full bg-info text-white"
+                                        onClick={handleUpdate(ml?._id ?? "")}>
+                                        <span className="text-sm">
+                                            <HiOutlinePencil />
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
-                            <div className="w-4/12 md:w-4/12 flex items-center justify-center">
-                                <CInput
-                                    containerClassName="rounded-md border-2 border-gray p-2 flex-wrap"
-                                    type="text"
-                                    value={ml.limit}
-                                    name={"limit"}
-                                    onChange={handleChangeMoneyLimitYear(
-                                        ml?._id ?? "",
-                                    )}
-                                    placeholder="محدودیت"
-                                />
-                            </div>
-                            <div className="w-2/12 md:w-2/12 flex items-center justify-center">
-                                <button
-                                    type="button"
-                                    title="حذف کردن"
-                                    className="w-auto p-2 flex items-center justify-center rounded-full bg-danger text-white"
-                                    onClick={handleDeleteGroupLimitYear(
-                                        group?.id ?? "",
-                                        ml?._id ?? "",
-                                    )}>
-                                    <span className="text-sm">
-                                        <HiOutlineX />
-                                    </span>
-                                </button>
-                            </div>
-                            <div className="w-2/12 md:w-2/12 flex items-center justify-center">
-                                <button
-                                    type="button"
-                                    title="ثبت ویرایش"
-                                    className="w-auto p-2 flex items-center justify-center rounded-full bg-info text-white"
-                                    onClick={handleUpdate(ml?._id ?? "")}>
-                                    <span className="text-sm">
-                                        <HiOutlinePencil />
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
                 <div className="w-full flex justify-center items-center">
                     <div className="w-4/12 md:w-4/12 flex flex-wrap items-center justify-center">
@@ -254,7 +290,7 @@ const EditGroup: FC<EditGroupProps> = ({handleClose, group, refetch}) => {
                             type="button"
                             title="افزودن به گروه"
                             className="w-auto p-2 flex items-center justify-center rounded-full bg-primary text-white"
-                            onClick={handleUpdate(group?.id??"")}>
+                            onClick={handleAddNewGroupLimitYear}>
                             <span className="text-sm">
                                 <HiOutlineDocumentAdd />
                             </span>

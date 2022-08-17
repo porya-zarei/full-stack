@@ -4,6 +4,9 @@ export const isUserCanChangeGroup = (user: IUser, modifiedUser: IUser) => {
     if (user.role === ERole.CREATOR && modifiedUser.role !== ERole.CREATOR) {
         return true;
     }
+    if(user.role === ERole.CREATOR && user.id === modifiedUser.id) {
+        return true;
+    }
     if (user.role === ERole.ADMIN && modifiedUser.role === ERole.USER) {
         return true;
     }

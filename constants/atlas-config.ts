@@ -1,10 +1,10 @@
-// const ATLAS_USERNAME = "spaceomid";
-// const ATLAS_PASSWORD = "aaa09157433090@";
-// const ATLAS_DB_NAME = "financial";
+const ATLAS_USERNAME = "spaceomid";
+const ATLAS_PASSWORD = "aaa09157433090@";
+const ATLAS_DB_NAME = "financial";
 
-const ATLAS_USERNAME = "space-omid-x";
-const ATLAS_PASSWORD = "AfSfwX7kilQYFgmU";
-const ATLAS_DB_NAME = "spaceomid";
+// const ATLAS_USERNAME = "space-omid-x";
+// const ATLAS_PASSWORD = "AfSfwX7kilQYFgmU";
+// const ATLAS_DB_NAME = "spaceomid";
 
 export const ATLAS_CONFIG = {
     username: ATLAS_USERNAME,

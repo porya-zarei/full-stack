@@ -1,6 +1,7 @@
 import CInput from "@/components/core/inputs";
 import CCheckbox from "@/components/core/inputs/checkbox";
 import {useUserContext} from "@/contexts/user-context";
+import {useKeyboard} from "@/hooks/useKeyboard";
 import useNotification from "@/hooks/useNotification";
 import {handleLogin} from "@/services/auth";
 import {ILoginData} from "@/types/api";
@@ -44,6 +45,9 @@ const LoginRoute: FC<LoginRouteProps> = () => {
         }
         setLoading(false);
     };
+    useKeyboard("Enter", () => {
+        handleSubmit();
+    },[userName, password]);
     return (
         <div className="w-full min-h-screen h-full flex items-center justify-center bg-slate-200 p-2">
             <div className="w-96 max-w-md flex flex-wrap items-center justify-center rounded-2xl border-primary border-4 border-dashed p-5">

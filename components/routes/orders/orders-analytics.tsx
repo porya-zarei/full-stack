@@ -5,12 +5,10 @@ import CInput from "@/components/core/inputs";
 import CSelectOption from "@/components/core/inputs/select";
 import {useGroups} from "@/hooks/useGroups";
 import {useOrders} from "@/hooks/useOrders";
-import {
-    ESTATUS_NAMES,
-    IOrder,
-    EStatus,
-} from "@/types/data";
+import {ESTATUS_NAMES, IOrder, EStatus} from "@/types/data";
+import {getGroupMoneyRemaining, getOrderPrice} from "@/utils";
 import {getGeorgianDateFromJalali, isDateInRange} from "@/utils/date-helper";
+import {group} from "console";
 import {ChangeEvent, FC, useEffect, useState} from "react";
 import {HiArrowDown, HiArrowUp} from "react-icons/hi";
 
@@ -25,6 +23,7 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
     const [statusFilter, setStatusFilter] = useState(-1);
     const [priceSortIncrease, setPriceSortIncrease] = useState(true);
     const [dateSortIncrease, setDateSortIncrease] = useState(true);
+    const [selectedGroup, setSelectedGroup] = useState("");
 
     const handleFilter = () => {
         const filtered = orders
@@ -333,6 +332,41 @@ const OrdersAnalytictsRoute: FC<OrdersAnalytictsRouteProps> = () => {
                             {} as Record<string, number>,
                         )}
                     />
+                </div>
+            </FrameContainer>
+            <FrameContainer className="p-4 m-4 border-primary">
+                <div className="w-full flex justify-center items-center flex-wrap max-w-md">
+                    <div className="w-10/12 flex items-center justify-start p-3 flex-wrap">
+                        <span className="text-gray-600">انتخاب گروه:</span>
+                        <CSelectOption
+                            containerClassName="rounded-md border-2 border-gray p-2"
+                            placeholder="انتخاب گروه"
+                            value={selectedGroup}
+                            name={"group"}
+                            onChange={(e) => setSelectedGroup(e.target.value)}
+                            options={groups?.map((g) => ({
+                                value: g.id,
+                                label: g.name,
+                            }))}
+                        />
+                    </div>
+                    {selectedGroup.length > 0 && (
+                        <PieChart
+                            priceForEachGroup={{
+                                "هزینه سفارشات": getOrderPrice(
+                                    orders.filter(
+                                        (o) =>
+                                            o.user.group.id === selectedGroup,
+                                    ),
+                                ),
+                                "هزینه مانده": getGroupMoneyRemaining(
+                                    groups,
+                                    orders,
+                                    selectedGroup,
+                                ),
+                            }}
+                        />
+                    )}
                 </div>
             </FrameContainer>
         </RouteContainer>

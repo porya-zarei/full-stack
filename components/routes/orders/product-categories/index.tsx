@@ -7,7 +7,7 @@ import useNotification from "@/hooks/useNotification";
 import {useProductCategories} from "@/hooks/useProductCategories";
 import {deleteProductCategory} from "@/services/product-categories";
 import {IProductCategory} from "@/types/data";
-import {FC} from "react";
+import {FC, useEffect, useState} from "react";
 import {
     HiOutlinePencil,
     HiOutlinePencilAlt,
@@ -21,16 +21,10 @@ const ProductCategoryRoute: FC<ProductCategoryRouteProps> = () => {
     const {productCategories, loading, refetch, changeProductCategories} =
         useProductCategories();
     const {notify} = useNotification();
-    const categories = productCategories.reduce((acc, category) => {
-        if (Object.keys(acc).includes(category.group.name)) {
-            acc[category.group.name].push(category);
-        } else {
-            acc[category.group.name] = [category];
-        }
-        return acc;
-    }, {} as Record<string, Array<IProductCategory>>);
+    const [categories, setCategories] = useState<
+        Record<string, Array<IProductCategory>>
+    >({});
     const {ModalWrapper, handleClose, isOpen, handleOpen} = useModal();
-
     const handleDeleteProductCategory = (id: string) => async () => {
         try {
             const result = await deleteProductCategory(id);
@@ -55,6 +49,18 @@ const ProductCategoryRoute: FC<ProductCategoryRouteProps> = () => {
     };
 
     const handleEditProductCategory = (id: string) => async () => {};
+
+    useEffect(() => {
+        const cats = productCategories?.reduce((acc, category) => {
+            if (Object.keys(acc).includes(category?.group?.name)) {
+                acc[category?.group?.name].push(category);
+            } else {
+                acc[category?.group?.name] = [category];
+            }
+            return acc;
+        }, {} as Record<string, Array<IProductCategory>>);
+        setCategories(cats);
+    }, [productCategories]);
 
     return (
         <RouteContainer>
