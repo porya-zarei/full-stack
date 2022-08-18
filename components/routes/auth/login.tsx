@@ -35,13 +35,13 @@ const LoginRoute: FC<LoginRouteProps> = () => {
                 if (rememberMe) {
                     localStorage.setItem("token", result.token);
                 }
-                notify("Login successful");
+                notify("شما با موفقیت وارد شدید.");
                 router.push("/");
             } else {
-                notify("Login failed: " + result.error);
+                notify("ورود نا موفق : " + result?.error??"");
             }
         } else {
-            notify("Login failed: username or password too short");
+            notify("نام کاربری و یا کلمه عبور کوتاه است.");
         }
         setLoading(false);
     };

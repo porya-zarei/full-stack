@@ -63,6 +63,8 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                 }
                 notify("ثبت نام با موفقیت انجام شد");
                 router.push("/");
+            } else {
+                notify("ثبت نام با خطا مواجه شد : " + result?.error ?? "");
             }
         } else {
             notify("لطفا اطلاعات را به صورت صحیح وارد کنید");
@@ -85,6 +87,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             window.open(
                                 "https://emn178.github.io/online-tools/sha256.html",
                                 "_blank",
+                                "noopener noreferrer",
                             );
                         }}
                         className="text-3xl font-bold inline border-b-2 border-secondary">

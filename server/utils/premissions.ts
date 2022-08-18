@@ -83,3 +83,11 @@ export const isExtraPrice = (
         ) ?? 0;
     return orderPrice > groupLimit;
 };
+
+export const isUserCanModifyTransactions = (user: IUser) => {
+    return user.role === ERole.CREATOR;
+}
+
+export const isUserCanConfirmTransaction = (user: IUser) => {
+    return user.role !== ERole.USER;
+}

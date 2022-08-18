@@ -25,7 +25,6 @@ const CRadio: FC<CRadioProps> = ({
     options,
     radioContainerClassName,
 }) => {
-    console.log("options => ",options);
     return (
         <div
             title={title}

@@ -9,7 +9,7 @@ const Loading: FC<LoadingProps> = ({size = 40}) => {
     return (
         <HiOutlineCubeTransparent
             size={size}
-            className="rotate-and-rescale-animation"
+            className="rotate-and-rescale-animation z-0"
         />
     );
 };

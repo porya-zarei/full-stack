@@ -29,6 +29,24 @@ export const API_ROUTES = {
         addProductCategory: "/product-categories/addProductCategory",
         deleteProductCategory: "/product-categories/deleteProductCategory",
     },
+    productTransactions: {
+        getAllProductTransactions:
+            "/product-transactions/getAllProductTransactions",
+        getProductTransactionsByUser:
+            "/product-transactions/getProductTransactionsByUser",
+        getProductTransactionsByStatus:
+            "/product-transactions/getProductTransactionsByStatus",
+        getProductTransaction: "/product-transactions/getProductTransaction",
+        addProductTransaction: "/product-transactions/addProductTransaction",
+        deleteProductTransaction:
+            "/product-transactions/deleteProductTransaction",
+        updateProductTransaction:
+            "/product-transactions/updateProductTransaction",
+        confirmProductTransaction:
+            "/product-transactions/confirmProductTransaction",
+        getProductTransactionsForConfirmation:
+            "/product-transactions/getProductTransactionsForConfirmation",
+    },
     groups: {
         getAllGroups: "/groups/getAllGroups",
         getGroup: "/groups/getGroup",

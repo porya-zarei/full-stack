@@ -1,9 +1,9 @@
 import ProductCategoryRoute from "@/components/routes/orders/product-categories";
-import {FC} from "react";
+import {NextPage} from "next";
 
 interface ProductCategoriesPageProps {}
 
-const ProductCategoriesPage: FC<ProductCategoriesPageProps> = () => {
+const ProductCategoriesPage: NextPage<ProductCategoriesPageProps> = () => {
     return (
         <div className="w-full flex justify-start items-start">
             <ProductCategoryRoute />

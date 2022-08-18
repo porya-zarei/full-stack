@@ -15,7 +15,7 @@ const LogoutRoute: FC<LogoutRouteProps> = () => {
             changeToken("");
             changeUser({} as IUser);
             clearUserData();
-            notify("بای بای");
+            notify("شما با موفقیت خارج شدید.");
         }
     }, []);
     return (
@@ -29,7 +29,7 @@ const LogoutRoute: FC<LogoutRouteProps> = () => {
                 <div className="w-full flex items-center justify-center flex-wrap">
                     <div className="w-full flex justify-center items-center">
                         <p className="w-full text-center text-gray-600 my-4">
-                            بازم پیش ما برگرد 😥 😓
+                            برای ورود مجدد به حساب کاربری خود بر روی لینک های زیر کلیک کنید.
                         </p>
                     </div>
                     <div className="w-full flex flex-wrap justify-center items-center my-4">

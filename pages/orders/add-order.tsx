@@ -1,10 +1,9 @@
-import {FC} from "react";
 import AddOrderRoute from "@/components/routes/orders/add-order";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, NextPage } from "next";
 
 interface AddOrderPageProps {}
 
-const AddOrderPage: FC<AddOrderPageProps> = () => {
+const AddOrderPage: NextPage<AddOrderPageProps> = () => {
     return (
         <div className="w-full flex justify-start items-start">
             <AddOrderRoute />

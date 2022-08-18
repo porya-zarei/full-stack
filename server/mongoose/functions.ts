@@ -1,9 +1,12 @@
 import {
+    ETransactionStatus,
     IDBOrder,
     IDBProductCategory,
+    IDBProductTransaction,
     IDBUser,
     IGroup,
     IProductCategory,
+    IProductTransaction,
     IUser,
 } from "@/types/data";
 import {Types} from "mongoose";
@@ -13,6 +16,7 @@ import {
     GroupModel,
     OrderModel,
     ProductCategoryModel,
+    ProductTransactionModel,
     UserModel,
 } from "./models";
 
@@ -493,3 +497,192 @@ export const getProductCategoriesByGroupMDB = async (group: string) => {
         return null;
     }
 };
+
+// product transaction
+
+export const getProductTransactionsMDB = async () => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const productTransactions =
+                await ProductTransactionModel.find().exec();
+            const users = await UserModel.find().exec();
+            const groups = await GroupModel.find().exec();
+            logger.log(
+                `productTransactions in getProductTransactionsMDB ${JSON.stringify(
+                    productTransactions,
+                )}`,
+            );
+            const result = productTransactions.map((transaction) => {
+                const user = users.find((u) => u.id === transaction.user);
+                const group = groups.find((g) => g.id === user?.group);
+                return {
+                    ...transaction?.toObject(),
+                    user: {
+                        ...user?.toObject(),
+                        group: group?.toObject(),
+                    } as IUser,
+                } as IProductTransaction;
+            });
+            return result;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getProductTransactionMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const productTransaction = await ProductTransactionModel.findById(
+                id,
+            ).exec();
+            const user = await UserModel.findById(
+                productTransaction?.user,
+            ).exec();
+            const group = await GroupModel.findById(user?.group).exec();
+            return {
+                ...productTransaction?.toObject(),
+                user: {...user?.toObject(), group: group?.toObject()} as IUser,
+            } as IProductTransaction;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const createProductTransactionMDB = async (
+    productTransaction: IDBProductTransaction,
+) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const newProductTransaction = await ProductTransactionModel.create(
+                productTransaction,
+            );
+            const user = await UserModel.findById(
+                newProductTransaction?.user ?? "",
+            ).exec();
+            const group = await GroupModel.findById(user?.group).exec();
+            return {
+                ...newProductTransaction?.toObject(),
+                user: {...user?.toObject(), group: group?.toObject()} as IUser,
+            } as IProductTransaction;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const updateProductTransactionMDB = async (
+    id: string,
+    productTransaction: Partial<IDBProductTransaction>,
+) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const updatedProductTransaction =
+                await ProductTransactionModel.findOneAndUpdate(
+                    {_id: new Types.ObjectId(id)},
+                    {
+                        ...productTransaction,
+                    },
+                    {
+                        new: true,
+                    },
+                ).exec();
+            const user = await UserModel.findById(
+                updatedProductTransaction?.user ?? "",
+            ).exec();
+            const group = await GroupModel.findById(user?.group).exec();
+            return {
+                ...updatedProductTransaction?.toObject(),
+                user: {...user?.toObject(), group: group?.toObject()} as IUser,
+            } as IProductTransaction;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const deleteProductTransactionMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const deletedProductTransaction =
+                await ProductTransactionModel.findOneAndDelete({
+                    _id: new Types.ObjectId(id),
+                }).exec();
+            return deletedProductTransaction?.toObject();
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getProductTransactionsByUserMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const productTransactions = await ProductTransactionModel.find({
+                user: id,
+            }).exec();
+            const user = await UserModel.findById(id).exec();
+            const group = await GroupModel.findById(user?.group).exec();
+            const result = productTransactions.map((transaction) => {
+                return {
+                    ...transaction?.toObject(),
+                    user: {
+                        ...user?.toObject(),
+                        group: group?.toObject(),
+                    } as IUser,
+                } as IProductTransaction;
+            });
+            return result;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getProductTransactionsByStatusMDB = async (status:ETransactionStatus) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const productTransactions = await ProductTransactionModel.find({
+                status,
+            }).exec();
+            const users = await UserModel.find().exec();
+            const groups = await GroupModel.find().exec();
+            const result = productTransactions.map((transaction) => {
+                const user = users.find((u) => u.id === transaction.user);
+                const group = groups.find((g) => g.id === user?.group);
+                return {
+                    ...transaction?.toObject(),
+                    user: {
+                        ...user?.toObject(),
+                        group: group?.toObject(),
+                    } as IUser,
+                } as IProductTransaction;
+            });
+            return result;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+}

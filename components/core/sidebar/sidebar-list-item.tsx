@@ -14,7 +14,7 @@ const SidebarListItem: FC<SidebarListItemProps> = ({item,isSubPath}) => {
         <Link passHref href={item.path}>
             <a
                 type="button"
-                className="relative flex items-center justify-center md:justify-start w-full px-1 py-3 rounded-md hover:bg-secondary hover:bg-opacity-20">
+                className="relative flex items-center justify-center md:justify-start w-full px-1 py-2 rounded-md hover:bg-secondary hover:bg-opacity-20">
                 <span
                     className={`text-2xl md:text-2xl flex items-center justify-center text-primary `}>
                     {item.icon}

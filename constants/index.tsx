@@ -50,6 +50,12 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
                 path: "/orders/product-categories",
                 renderState: ROUTES_STATE.USER_IS_CREATOR,
             },
+            {
+                name: "مدیریت تراکنش ها",
+                icon: <HiOutlinePresentationChartLine />,
+                path: "/orders/product-transactions",
+                renderState: ROUTES_STATE.USER_LOGED_IN,
+            }
         ],
     },
     {

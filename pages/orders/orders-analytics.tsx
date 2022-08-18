@@ -1,10 +1,9 @@
 import OrdersAnalytictsRoute from "@/components/routes/orders/orders-analytics";
-import { GetServerSideProps } from "next";
-import {FC} from "react";
+import { GetServerSideProps, NextPage } from "next";
 
 interface OrdersAnalyticsPageProps {}
 
-const OrdersAnalyticsPage: FC<OrdersAnalyticsPageProps> = () => {
+const OrdersAnalyticsPage: NextPage<OrdersAnalyticsPageProps> = () => {
     return (
         <div className="w-full flex justify-start items-start">
             <OrdersAnalytictsRoute />

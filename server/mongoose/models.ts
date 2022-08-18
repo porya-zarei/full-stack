@@ -7,6 +7,8 @@ import {
     IDBProductCategory,
     IDBUser,
     IMoneyLimitYear,
+    IDBProductTransaction,
+    ETransactionStatus,
 } from "@/types/data";
 
 import mongoose, {Schema} from "mongoose";
@@ -169,6 +171,40 @@ export const OrderSchema = new Schema<IDBOrder>({
     },
 });
 
+export const ProductTransactionSchema = new Schema<IDBProductTransaction>({
+    id: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    date: {
+        type: String,
+        required: true,
+    },
+    user: {
+        type: String,
+        required: true,
+    },
+    product: {
+        type: String,
+        required: true,
+        default: "",
+    },
+    key: {
+        type: String,
+    },
+    status: {
+        type: Number,
+        required: true,
+        default: ETransactionStatus.PENDING_FOR_CONFIRM_IN,
+    },
+    description: {
+        type: String,
+        required: true,
+        default: "",
+    },
+});
+
 export const UserModel = (mongoose?.models?.User ||
     mongoose.model<IDBUser>("User", UserSchema)) as mongoose.Model<IDBUser>;
 export const OrderModel = (mongoose?.models?.Order ||
@@ -181,3 +217,9 @@ export const ProductCategoryModel = (mongoose?.models?.ProductCategory ||
 
 export const GroupModel = (mongoose?.models?.Group ||
     mongoose.model<IGroup>("Group", GroupSchema)) as mongoose.Model<IGroup>;
+
+export const ProductTransactionModel = (mongoose?.models?.ProductTransaction ||
+    mongoose.model<IDBProductTransaction>(
+        "ProductTransaction",
+        ProductTransactionSchema,
+    )) as mongoose.Model<IDBProductTransaction>;
