@@ -190,9 +190,10 @@ export const getPendingOrders = async (id: string = "") => {
                     `order status: ${order.status},user role: ${user?.role}`,
                 );
                 if (user?.role === ERole.CREATOR) {
-                    return (
-                        order.status === EStatus.PENDING_FOR_FINANCIAL_MANAGER
-                    );
+                    // return (
+                    //     order.status === EStatus.PENDING_FOR_FINANCIAL_MANAGER
+                    // );
+                    return true;
                 } else if (user?.role === ERole.ADMIN) {
                     return order.status === EStatus.PENDING_FOR_SUPERVISOR;
                 } else {

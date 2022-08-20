@@ -51,7 +51,7 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
                 renderState: ROUTES_STATE.USER_IS_CREATOR,
             },
             {
-                name: "مدیریت تراکنش ها",
+                name: "ورود و خروج کالا",
                 icon: <HiOutlinePresentationChartLine />,
                 path: "/orders/product-transactions",
                 renderState: ROUTES_STATE.USER_LOGED_IN,

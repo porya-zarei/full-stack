@@ -98,7 +98,7 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                                     value: g.id,
                                                     label: g.name,
                                                 }))}
-                                                value={user?.group?.toString()??""}
+                                                value={user?.group?.id??""}
                                                 name="group"
                                                 placeholder="گروه"
                                                 onChange={handleChangeUserGroup(
