@@ -32,14 +32,18 @@ const SidebarList: FC<SidebarListProps> = () => {
                                             subItem.renderState ===
                                                 ROUTES_STATE.USER_IS_CREATOR ||
                                             subItem.renderState ===
-                                                ROUTES_STATE.USER_LOGED_IN
+                                                ROUTES_STATE.USER_LOGED_IN ||
+                                            subItem.renderState ===
+                                                ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN
                                         );
                                     } else {
                                         return (
                                             subItem.renderState ===
                                                 ROUTES_STATE.USER_LOGED_IN ||
                                             subItem.renderState ===
-                                                ROUTES_STATE.USER_IS_ADMIN
+                                                ROUTES_STATE.USER_IS_ADMIN ||
+                                            subItem.renderState ===
+                                                ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN
                                         );
                                     }
                                 })

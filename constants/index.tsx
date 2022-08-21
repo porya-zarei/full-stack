@@ -36,13 +36,13 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
                 name: "تایید سفارشات",
                 icon: <HiOutlineClipboardList />,
                 path: "/orders/orders-list",
-                renderState: ROUTES_STATE.USER_LOGED_IN,
+                renderState: ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN,
             },
             {
                 name: "انالیز سفارشات",
                 icon: <HiOutlineChartBar />,
                 path: "/orders/orders-analytics",
-                renderState: ROUTES_STATE.USER_LOGED_IN,
+                renderState: ROUTES_STATE.USER_IS_CREATOR,
             },
             {
                 name: "دسته بندی کالاها",
@@ -59,7 +59,7 @@ export const SIDEBAR_ITEMS: ISidebarItem[] = [
         ],
     },
     {
-        name: "کابران",
+        name: "کاربران",
         icon: <HiUsers />,
         path: "/users",
         subPaths: [

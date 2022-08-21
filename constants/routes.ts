@@ -4,6 +4,7 @@ export enum ROUTES_STATE {
     USER_LOGED_OUT,
     USER_IS_ADMIN,
     USER_IS_CREATOR,
+    USER_IS_CREATOR_OR_ADMIN,
 }
 
 export interface IRoute {
