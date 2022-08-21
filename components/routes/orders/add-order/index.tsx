@@ -13,6 +13,7 @@ import {getGeorgianDateFromJalali} from "@/utils/date-helper";
 import {useProductCategories} from "@/hooks/useProductCategories";
 import AddProduct from "./add-product";
 import {useCheckMoneyLimit} from "@/hooks/useCheckMoneyLimit";
+import Loading from "@/components/core/loadings";
 interface AddOrderRouteProps {}
 export interface OrderDataProduct {
     id: number;
@@ -49,8 +50,10 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
     const [supervisor, setSupervisor] = useState("");
     const [officialBill, setOfficialBill] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+
     const handleAddOrderRow = () => {
-        const randomId = Math.floor(Math.random() * 10000);
+        const randomId = Math.floor(Math.random() * 1000000);
         setProductsData([
             ...productsData,
             {
@@ -67,7 +70,11 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
     };
     const resetProductsData = () => {
         setProductsData(
-            [1, 2, 3].map((id) => ({
+            [
+                Math.floor(Math.random() * 1000000),
+                Math.floor(Math.random() * 1000000),
+                Math.floor(Math.random() * 1000000),
+            ].map((id) => ({
                 id,
                 name: `order-${id}`,
                 valueName: "",
@@ -112,6 +119,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
         console.log("send order");
         if (supervisor.length > 0 && productsData.length > 0) {
             try {
+                setLoading(true);
                 const isOk = await checkMoneyLimitForOrder();
                 if (isOk) {
                     const data: ICreateOrder = {
@@ -164,6 +172,8 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                 notify("خطا در ثبت اطلاعات", {
                     type: "error",
                 });
+            } finally {
+                setLoading(false);
             }
         } else {
             notify("لطفا فیلد ها را به درستی پر کنید", {
@@ -188,6 +198,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                 setProductsData={setProductsData}
                                 productData={productData}
                                 index={index}
+                                categories={productCategories}
                             />
                         ))}
                     </div>
@@ -241,8 +252,8 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                         <button
                             type="button"
                             onClick={handleSendOrder}
-                            className="bg-info text-white px-2 py-2 hover:bg-opacity-90 rounded-md">
-                            افزودن سفارش
+                            className="bg-info text-white px-2 py-2 hover:bg-opacity-90 rounded-md flex justify-center items-center">
+                            {loading ? <Loading /> : "ثبت سفارش"}
                         </button>
                     </div>
                 </div>

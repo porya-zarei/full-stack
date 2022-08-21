@@ -33,6 +33,7 @@ interface CardProps {
     onSuccessBtnClick?: (e: MouseEvent<HTMLButtonElement>) => void;
     titleContainerClassName?: string;
     renderFooter?: boolean;
+    status?:string;
 }
 
 const Card: FC<CardProps> = ({
@@ -59,6 +60,7 @@ const Card: FC<CardProps> = ({
     onSuccessBtnClick,
     titleContainerClassName,
     renderFooter=false,
+    status,
 }) => {
     return (
         <div
@@ -98,6 +100,14 @@ const Card: FC<CardProps> = ({
                         className={`w-full text-xs flex justify-center items-center ${badgeClassName}`}>
                         {badge}
                     </span>
+                    <div className="w-full text-xs flex justify-center items-center">
+                        <span className="m-1 flex justify-center items-center">
+                            وضعیت:
+                        </span>
+                        <span className="m-1 flex justify-center items-center">
+                            {status}
+                        </span>
+                    </div>
                 </div>
                 <div
                     className={`w-full my-2 flex justify-center items-center ${className}`}>

@@ -51,8 +51,16 @@ const Order: FC<OrderProps> = ({
                         {order?.products?.map((product, index) => (
                             <tr key={index} className="text-center">
                                 <td className="px-2 py-1">{product.name}</td>
-                                <td className="px-2 py-1">{product.price}</td>
-                                <td className="px-2 py-1">{product.count}</td>
+                                <td className="px-2 py-1">
+                                    {Number(product.price).toLocaleString(
+                                        "fa-IR",
+                                    )}
+                                </td>
+                                <td className="px-2 py-1">
+                                    {Number(product.count).toLocaleString(
+                                        "fa-IR",
+                                    )}
+                                </td>
                                 <td className="px-2 py-1">
                                     {new Date(product.date).toLocaleDateString(
                                         "fa-IR",
@@ -65,20 +73,24 @@ const Order: FC<OrderProps> = ({
                             className="text-center border-t-2 border-primary">
                             <td className="px-2 py-1">
                                 تعداد :{" "}
-                                {order?.products?.reduce?.(
-                                    (sum, product) => sum + product.count,
-                                    0,
-                                )}
+                                {order?.products
+                                    ?.reduce?.(
+                                        (sum, product) => sum + product.count,
+                                        0,
+                                    )
+                                    .toLocaleString("fa-IR")}
                             </td>
                             <td className="px-2 py-1">جمع کل :</td>
                             <td className="px-2 py-1">
-                                {order?.products?.reduce(
-                                    (sum, product) =>
-                                        sum +
-                                        Number(product.price) *
-                                            Number(product.count),
-                                    0,
-                                )}
+                                {order?.products
+                                    ?.reduce(
+                                        (sum, product) =>
+                                            sum +
+                                            Number(product.price) *
+                                                Number(product.count),
+                                        0,
+                                    )
+                                    .toLocaleString("fa-IR")}
                             </td>
                         </tr>
                     </tbody>

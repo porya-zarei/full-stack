@@ -3,7 +3,7 @@ import CRadio from "@/components/core/inputs/radio";
 import CSelectOption from "@/components/core/inputs/select";
 import {useUserContext} from "@/contexts/user-context";
 import {useProductCategories} from "@/hooks/useProductCategories";
-import {EProductType, EPRODUCT_TYPES_NAMES} from "@/types/data";
+import {EProductType, EPRODUCT_TYPES_NAMES, IProductCategory} from "@/types/data";
 import { enumToArray } from "@/utils/enums-helper";
 import {Dispatch, FC, SetStateAction} from "react";
 import {HiTrash} from "react-icons/hi";
@@ -13,16 +13,16 @@ interface AddProductProps {
     index: number;
     productData: OrderDataProduct;
     setProductsData: Dispatch<SetStateAction<OrderDataProduct[]>>;
+    categories:IProductCategory[];
 }
 
 const AddProduct: FC<AddProductProps> = ({
     productData,
     setProductsData,
     index,
+    categories,
 }) => {
     const {user} = useUserContext();
-    const {productCategories} = useProductCategories(user?.group?.id ?? "");
-
     const handleChange =
         (type = "name") =>
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +98,7 @@ const AddProduct: FC<AddProductProps> = ({
             className="w-full flex flex-wrap md:flex-wrap items-center justify-evenly mb-4 py-2 border-y-2 border-secondary">
             <div className="w-full flex items-center justify-evenly mb-2 flex-wrap">
                 <span className="font-bold">- {index + 1}</span>
-                <div className="w-11/12 md:w-3/12 flex items-center justify-center">
+                <div className="w-10/12 md:w-3/12 flex items-center justify-center">
                     <CInput
                         containerClassName="rounded-md border-2 border-gray p-2"
                         type="text"
@@ -108,7 +108,7 @@ const AddProduct: FC<AddProductProps> = ({
                         placeholder="نام کالا"
                     />
                 </div>
-                <div className="w-5/12 md:w-1/12 flex items-center justify-center">
+                <div className="w-5/12 md:w-3/12 flex items-center justify-center">
                     <CInput
                         containerClassName="rounded-md border-2 border-gray p-2"
                         type="number"
@@ -132,18 +132,18 @@ const AddProduct: FC<AddProductProps> = ({
                     <span className="text-center">
                         {productData.valueCount.length &&
                             productData.valuePrice.length &&
-                            Number(productData.valueCount) *
-                                Number(productData.valuePrice)}
+                            (Number(productData.valueCount) *
+                                Number(productData.valuePrice)).toLocaleString("en-US")}
                     </span>
                 </div>
-                <div className="w-10/12 md:w-3/12 flex items-center justify-center">
+                <div className="w-10/12 md:w-2/12 flex items-center justify-center">
                     <CInput
                         containerClassName="rounded-md border-2 border-gray p-2"
                         type="text"
                         value={productData.valueDate}
                         name={productData.name}
                         onChange={handleChange("date")}
-                        placeholder={`تاریخ با فرمت: 1401/01/01`}
+                        placeholder={`1401/01/01`}
                     />
                 </div>
                 <button
@@ -178,7 +178,7 @@ const AddProduct: FC<AddProductProps> = ({
                         name={"order-category"}
                         onChange={handleChangeCategory(productData.id)}
                         options={
-                            productCategories?.map((category) => ({
+                            categories?.map((category) => ({
                                 value: category.id,
                                 label: category.name,
                             })) ?? []

@@ -6,7 +6,7 @@ import {useRouter} from "next/router";
 import {useOrders} from "@/hooks/useOrders";
 import Card from "@/components/core/card";
 import {updateOrderStatus} from "@/services/orders";
-import {ERole, IOrder} from "@/types/data";
+import {ERole, ESTATUS_NAMES, IOrder} from "@/types/data";
 import useNotification from "@/hooks/useNotification";
 import Loading from "@/components/core/loadings";
 
@@ -62,7 +62,7 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                                                 product.count,
                                                         0,
                                                     )
-                                                    .toString(),
+                                                    .toLocaleString("en-US"),
                                                 label: "مجموع هزینه ها",
                                             },
                                             {
@@ -82,6 +82,7 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                         title={order.user.fullName}
                                         titleContainerClassName="bg-white border-y-2 border-solid border-primary py-1 sticky top-0 z-10"
                                         badge={order.user.email}
+                                        status={ESTATUS_NAMES[Number(order.status)]}
                                         primaryContainerClassName="rounded-xl overflow-hidden shadow-around transition-all hover:scale-105 cursor-pointer"
                                         secondaryContainerClassName="h-full bg-white relative overflow-y-auto custom-scrollbar"
                                         contentClassName="px-3 py-2 text-center"

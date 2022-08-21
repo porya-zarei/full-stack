@@ -103,7 +103,6 @@ export const ProductSchema = new Schema<IProduct>({
     id: {
         type: String,
         required: true,
-        unique: true,
     },
     name: {
         type: String,
@@ -200,7 +199,6 @@ export const ProductTransactionSchema = new Schema<IDBProductTransaction>({
     },
     description: {
         type: String,
-        required: true,
         default: "",
     },
 });

@@ -3,7 +3,6 @@ import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
 import Image from "next/image";
 import IMAGES from "@/constants/images";
-import { useUserContext } from "@/contexts/user-context";
 
 interface HomeRouteProps {}
 
@@ -12,14 +11,6 @@ const HomeRoute: FC<HomeRouteProps> = () => {
         <RouteContainer>
             <FrameContainer className="min-h-[82vh] m-4 border-primary">
                 <div className="w-full flex justify-center items-center flex-wrap">
-                    <div className="w-full flex justify-center items-center flex-wrap">
-                        <Image
-                            src={IMAGES.besmellahImage}
-                            alt="بسم الله"
-                            width={500}
-                            height={200}
-                        />
-                    </div>
                     <div className="w-full flex justify-center items-center flex-wrap">
                         <p className="text-center text-xl">
                             داشبورد مدیریت سفارشات شرکت امید فضا

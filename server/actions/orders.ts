@@ -104,6 +104,7 @@ export const addOrder = async (createOrder: ICreateOrder) => {
             id: id,
             _id: id,
             isExtra,
+            description: createOrder.description.length > 0 ? createOrder.description : "بدون توضیحات",
         };
         const createdOrder = await createOrderMDB(order);
         if (createdOrder) {
