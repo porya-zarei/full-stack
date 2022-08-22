@@ -6,7 +6,7 @@ import {axios_instance} from "./axios";
 export const getProductCategories = async (group?: string) => {
     try {
         console.log("in getProductCategories group: ", group);
-        if (group && group.length) {
+        if (group && group.length > 0) {
             const result = await axios_instance.post<
                 IAPIResult<IProductCategory[]>
             >(API_ROUTES.productCategories.getProductCategoriesByGroup, {

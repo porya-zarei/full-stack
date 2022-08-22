@@ -15,7 +15,7 @@ interface OrdersRouteProps {}
 const OrdersRoute: FC<OrdersRouteProps> = () => {
     const {user} = useUserContext();
     const router = useRouter();
-    const {orders, error, loading, refetch} = useOrders();
+    const {orders, error, loading, refetch} = useOrders(user?.id,"all");
     const {notify} = useNotification();
     const handleUpdateStatus =
         (confirmed: boolean, order: IOrder) =>

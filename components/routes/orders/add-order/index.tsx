@@ -26,15 +26,22 @@ export interface OrderDataProduct {
     valueType: string;
 }
 
+export const getRandonId = (): number => {
+    return Math.floor(Math.random() * 1000000000);
+};
+
 const AddOrderRoute: FC<AddOrderRouteProps> = () => {
     const {user} = useUserContext();
     const {users} = useUsers(ERole.ADMIN);
     const {checkMoneyLimit} = useCheckMoneyLimit();
     console.log("user in add order => ", user);
-    const {productCategories} = useProductCategories(user?.group?.id ?? "");
+    const {productCategories} = useProductCategories(
+        user?.group?.id ?? "",
+        true,
+    );
     const {notify} = useNotification();
     const [productsData, setProductsData] = useState<OrderDataProduct[]>(
-        [1, 2, 3].map((id) => ({
+        [getRandonId(), getRandonId(), getRandonId()].map((id) => ({
             id,
             name: `order-${id}`,
             valueName: "",
@@ -53,7 +60,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
     const [loading, setLoading] = useState(false);
 
     const handleAddOrderRow = () => {
-        const randomId = Math.floor(Math.random() * 1000000);
+        const randomId = getRandonId();
         setProductsData([
             ...productsData,
             {
@@ -70,11 +77,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
     };
     const resetProductsData = () => {
         setProductsData(
-            [
-                Math.floor(Math.random() * 1000000),
-                Math.floor(Math.random() * 1000000),
-                Math.floor(Math.random() * 1000000),
-            ].map((id) => ({
+            [getRandonId(), getRandonId(), getRandonId()].map((id) => ({
                 id,
                 name: `order-${id}`,
                 valueName: "",

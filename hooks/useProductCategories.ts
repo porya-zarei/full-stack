@@ -2,7 +2,10 @@ import {getProductCategories} from "@/services/product-categories";
 import {IProductCategory} from "@/types/data";
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 
-export const useProductCategories = (group?: string) => {
+export const useProductCategories = (
+    group?: string,
+    force: boolean = false,
+) => {
     const [productCategories, setProductCategories] = useState<
         IProductCategory[]
     >([]);
@@ -16,7 +19,7 @@ export const useProductCategories = (group?: string) => {
     };
 
     const getProductCategoriesHandler = async () => {
-        console.log("in getProductCategoriesHandler");
+        console.log("in getProductCategoriesHandler => ", group);
         setLoading(true);
         try {
             const result = await getProductCategories(group);
@@ -31,8 +34,14 @@ export const useProductCategories = (group?: string) => {
     };
 
     useEffect(() => {
-        getProductCategoriesHandler();
-    }, [group]);
+        if (force) {
+            if (group && group?.length > 0) {
+                getProductCategoriesHandler();
+            }
+        } else {
+            getProductCategoriesHandler();
+        }
+    }, [group, force]);
 
     return {
         productCategories,

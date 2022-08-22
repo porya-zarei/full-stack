@@ -2,7 +2,7 @@ import {getOrders, getPendingOrders, getUserOrders} from "@/services/orders";
 import {IOrder} from "@/types/data";
 import {useEffect, useState} from "react";
 
-export const useOrders = (userId?: string | null, type?: "pending" | null) => {
+export const useOrders = (userId?: string | null, type?: "pending" |"all" | null) => {
     const [orders, setOrders] = useState<IOrder[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");

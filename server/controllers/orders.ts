@@ -181,9 +181,9 @@ export const getUserOrdersHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
         if (token) {
-            const userId = req.query.id?.toString() ?? "";
-            logger.log(`Getting orders for user ${userId}`);
-            const result = await getUserOrders(userId);
+            const {id} = req.body as {id: string};
+            logger.log(`Getting orders for user ${id}`);
+            const result = await getUserOrders(id);
             res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {

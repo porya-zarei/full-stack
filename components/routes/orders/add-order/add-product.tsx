@@ -22,7 +22,6 @@ const AddProduct: FC<AddProductProps> = ({
     index,
     categories,
 }) => {
-    const {user} = useUserContext();
     const handleChange =
         (type = "name") =>
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +29,7 @@ const AddProduct: FC<AddProductProps> = ({
             console.log(name, value);
             setProductsData((prev) =>
                 prev.map((product) => {
-                    if (product.name === name) {
+                    if (product.name === productData.name) {
                         return type === "name"
                             ? {
                                   ...product,
@@ -103,7 +102,7 @@ const AddProduct: FC<AddProductProps> = ({
                         containerClassName="rounded-md border-2 border-gray p-2"
                         type="text"
                         value={productData.valueName}
-                        name={productData.name}
+                        name={"name"}
                         onChange={handleChange("name")}
                         placeholder="نام کالا"
                     />
@@ -113,7 +112,7 @@ const AddProduct: FC<AddProductProps> = ({
                         containerClassName="rounded-md border-2 border-gray p-2"
                         type="number"
                         value={productData.valuePrice}
-                        name={productData.name}
+                        name={"price"}
                         onChange={handleChange("price")}
                         placeholder="قیمت"
                     />
@@ -123,7 +122,7 @@ const AddProduct: FC<AddProductProps> = ({
                         containerClassName="rounded-md border-2 border-gray p-2"
                         type="number"
                         value={productData.valueCount}
-                        name={productData.name}
+                        name={"count"}
                         onChange={handleChange("count")}
                         placeholder="تعداد"
                     />
@@ -141,7 +140,7 @@ const AddProduct: FC<AddProductProps> = ({
                         containerClassName="rounded-md border-2 border-gray p-2"
                         type="text"
                         value={productData.valueDate}
-                        name={productData.name}
+                        name={"date"}
                         onChange={handleChange("date")}
                         placeholder={`1401/01/01`}
                     />

@@ -83,7 +83,6 @@ export const ProductCategorySchema = new Schema<IDBProductCategory>({
     id: {
         type: String,
         required: true,
-        unique: true,
     },
     group: {
         type: String,
