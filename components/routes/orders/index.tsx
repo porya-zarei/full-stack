@@ -15,7 +15,7 @@ interface OrdersRouteProps {}
 const OrdersRoute: FC<OrdersRouteProps> = () => {
     const {user} = useUserContext();
     const router = useRouter();
-    const {orders, error, loading, refetch} = useOrders(user?.id,"all");
+    const {orders, error, loading, refetch} = useOrders(user?.id, "all", true);
     const {notify} = useNotification();
     const handleUpdateStatus =
         (confirmed: boolean, order: IOrder) =>
@@ -82,7 +82,9 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                         title={order.user.fullName}
                                         titleContainerClassName="bg-white border-y-2 border-solid border-primary py-1 sticky top-0 z-10"
                                         badge={order.user.email}
-                                        status={ESTATUS_NAMES[Number(order.status)]}
+                                        status={
+                                            ESTATUS_NAMES[Number(order.status)]
+                                        }
                                         primaryContainerClassName="rounded-xl overflow-hidden shadow-around transition-all hover:scale-105 cursor-pointer"
                                         secondaryContainerClassName="h-full bg-white relative overflow-y-auto custom-scrollbar"
                                         contentClassName="px-3 py-2 text-center"
@@ -108,7 +110,7 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                 </div>
                             ))
                         ) : (
-                            <Loading/>
+                            <Loading />
                         )}
                     </div>
                 </div>

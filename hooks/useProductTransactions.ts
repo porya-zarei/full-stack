@@ -9,6 +9,7 @@ import {Dispatch, SetStateAction, useEffect, useState} from "react";
 export const useProductTransactions = (
     user?: string,
     status?: ETransactionStatus,
+    force: boolean = false,
 ) => {
     const [productTransactions, setProductTransactions] = useState<
         IProductTransaction[]
@@ -55,7 +56,13 @@ export const useProductTransactions = (
     };
 
     useEffect(() => {
-        getProductTransactionsHandler();
+        if (force) {
+            if (user && user?.length > 0) {
+                getProductTransactionsHandler();
+            }
+        } else {
+            getProductTransactionsHandler();
+        }
     }, [user, status]);
 
     return {

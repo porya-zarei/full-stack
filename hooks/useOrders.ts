@@ -2,7 +2,11 @@ import {getOrders, getPendingOrders, getUserOrders} from "@/services/orders";
 import {IOrder} from "@/types/data";
 import {useEffect, useState} from "react";
 
-export const useOrders = (userId?: string | null, type?: "pending" |"all" | null) => {
+export const useOrders = (
+    userId?: string | null,
+    type?: "pending" | "all" | null,
+    force: boolean = false,
+) => {
     const [orders, setOrders] = useState<IOrder[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -39,7 +43,13 @@ export const useOrders = (userId?: string | null, type?: "pending" |"all" | null
     };
 
     useEffect(() => {
-        getOrdersHandler();
+        if (force) {
+            if (userId) {
+                getOrdersHandler();
+            }
+        } else {
+            getOrdersHandler();
+        }
     }, [userId]);
 
     return {orders, loading, error, refetch: getOrdersHandler};
