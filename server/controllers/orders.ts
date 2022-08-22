@@ -215,9 +215,19 @@ export const updateOrderStatusHandler: NextApiHandler = async (req, res) => {
             const order = await getOrder(id);
             const user = await getUserFromToken(token);
             let status = EStatus.PENDING_FOR_SUPERVISOR;
-            if (order.data) {
+            logger.log(
+                `in update status => ${JSON.stringify(order)} ${JSON.stringify(
+                    user,
+                )} ${confirmed}`,
+            );
+            if (order) {
                 if (confirmed && order.data) {
                     if (
+                        order.data.status === EStatus.PENDING_FOR_SUPERVISOR &&
+                        user?.role === ERole.CREATOR
+                    ) {
+                        status = EStatus.PENDING_FOR_FINANCIAL_MANAGER;
+                    } else if (
                         order.data.status === EStatus.PENDING_FOR_SUPERVISOR &&
                         user?.role === ERole.ADMIN
                     ) {
@@ -238,6 +248,9 @@ export const updateOrderStatusHandler: NextApiHandler = async (req, res) => {
                     status = EStatus.REJECTED;
                 }
                 const result = await changeOrderStatus(id, status);
+                logger.log(
+                    `order ${status} update => ${JSON.stringify(result)}`,
+                );
                 res.status(200).json(result);
             } else {
                 return res.status(404).json(order);

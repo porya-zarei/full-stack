@@ -51,6 +51,7 @@ export const getGroupMoneyRemaining = (
 export const filterStatusesByUser = (role: ERole, inTransaction: boolean) => {
     if (role === ERole.ADMIN) {
         const options = enumToArray(ETransactionStatus_ADMIN).filter((s) => {
+            console.log("options =>", s.key);
             if (inTransaction) {
                 return s.key.includes("IN");
             } else {
@@ -71,7 +72,14 @@ export const filterStatusesByUser = (role: ERole, inTransaction: boolean) => {
 };
 
 export const isInTransaction = (status: ETransactionStatus) => {
-    return enumToArray(ETransactionStatus)
-        .find((s) => Number(s.value) === status)
-        ?.key.includes("IN") ?? false;
+    const result =
+        enumToArray(ETransactionStatus)
+            .find((s) => Number(s.value) === status)
+            ?.key.includes("IN") ?? false;
+    console.log("is in transaction => ", result);
+    return result;
+};
+
+export const isObjectNotEmpty = (obj: object | undefined | null) => {
+    return obj && Object.keys(obj).length > 0;
 };

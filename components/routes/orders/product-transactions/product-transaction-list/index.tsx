@@ -27,7 +27,7 @@ const ProductTransactionList: FC<ProductTransactionListProps> = ({
     user,
 }) => {
     return (
-        <div className="w-full flex items-center justify-center flex-wrap text-sm">
+        <div className="w-full flex items-center justify-center flex-wrap text-sm pt-3 pb-5">
             <div className="w-full text-base flex items-center justify-center flex-nowrap my-3 p-1 border-b-2 border-secondary">
                 <div className="w-2/12 overflow-x-auto flex items-center justify-center">
                     <span className="font-semibold">نام کالا</span>
@@ -42,10 +42,7 @@ const ProductTransactionList: FC<ProductTransactionListProps> = ({
                     <span className="ml-1">وضعیت</span>
                 </div>
             </div>
-            {!transactions?.length ? (
-                <Loading size={20} />
-            ) : (
-                transactions?.length > 0 &&
+            {transactions?.length > 0 ?
                 transactions.map((transaction, index) => (
                     <ProductTransactionListItem
                         key={index}
@@ -55,8 +52,11 @@ const ProductTransactionList: FC<ProductTransactionListProps> = ({
                         handleChangeStatus={handleChangeStatus}
                         user={user}
                     />
-                ))
-            )}
+                )):(
+                    <div className="w-full flex justify-center items-center">
+                        موردی یافت نشد
+                    </div>
+                )}
         </div>
     );
 };

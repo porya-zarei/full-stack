@@ -1,11 +1,12 @@
 import Card from "@/components/core/card";
 import FrameContainer from "@/components/core/containers/frame-container";
 import RouteContainer from "@/components/core/containers/route-container";
+import Loading from "@/components/core/loadings";
 import {useUserContext} from "@/contexts/user-context";
 import useNotification from "@/hooks/useNotification";
 import {useOrders} from "@/hooks/useOrders";
 import {updateOrderStatus} from "@/services/orders";
-import {ERole, IOrder} from "@/types/data";
+import {ERole, ESTATUS_NAMES, IOrder} from "@/types/data";
 import {useRouter} from "next/router";
 import {FC, MouseEvent} from "react";
 
@@ -15,18 +16,23 @@ const OrdersListRoute: FC<OrdersListRouteProps> = () => {
     const {user} = useUserContext();
     const router = useRouter();
     const {notify} = useNotification();
-    const {orders, error, loading, refetch} = useOrders(user.id, "pending");
+    const {orders, error, loading, refetch} = useOrders(
+        user.id,
+        "pending",
+        true,
+    );
     const handleUpdateStatus =
         (confirmed: boolean, order: IOrder) =>
         async (e: MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
             const result = await updateOrderStatus(order.id, confirmed);
-            if (result.ok && result?.data && result?.data?.status) {
+            if (result.ok && result?.data) {
                 await refetch();
-                notify("Order status updated", {
+                notify("وضعیت اپدیت شد", {
                     type: "success",
                 });
             } else {
-                notify("Error updating order status", {
+                notify(`تغییر وضعیت ناموفق بود`, {
                     type: "error",
                 });
             }
@@ -41,8 +47,7 @@ const OrdersListRoute: FC<OrdersListRouteProps> = () => {
                         </h3>
                     </div>
                     <div className="w-full flex items-center justify-evenly content-center py-3 flex-wrap">
-                        {!loading &&
-                            orders?.length > 0 &&
+                        {!loading ? orders?.length > 0 ? (
                             orders.map((order) => (
                                 <div
                                     key={order.id}
@@ -78,6 +83,9 @@ const OrdersListRoute: FC<OrdersListRouteProps> = () => {
                                         title={order.user.fullName}
                                         titleContainerClassName="bg-white border-y-2 border-solid border-primary py-1 sticky top-0 z-10"
                                         badge={order.user.email}
+                                        status={
+                                            ESTATUS_NAMES[Number(order.status)]
+                                        }
                                         primaryContainerClassName="rounded-xl overflow-hidden shadow-around transition-all hover:scale-105 cursor-pointer"
                                         secondaryContainerClassName="h-full bg-white relative overflow-y-auto custom-scrollbar"
                                         contentClassName="px-3 py-2 text-center"
@@ -101,7 +109,16 @@ const OrdersListRoute: FC<OrdersListRouteProps> = () => {
                                         }}
                                     />
                                 </div>
-                            ))}
+                            ))
+                        ) : (
+                            <div className="w-full flex items-center justify-center">
+                                <h3 className="text-2xl text-center pb-2 border-b-2 border-solid border-secondary">
+                                    سفارشی برای شما یافت نشد
+                                </h3>
+                            </div>
+                        ) : (
+                            <Loading />
+                        )}
                     </div>
                 </div>
             </FrameContainer>

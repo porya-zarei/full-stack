@@ -13,11 +13,10 @@ interface OrderPageProps {
 }
 
 const OrderPage: NextPage<OrderPageProps> = ({id}) => {
-    const {order, loading, error} = useOrder(id);
-    
+
     return (
         <div className="w-full flex justify-start items-start">
-            <OrderRoute loading={loading} error={error} orderData={order} />
+            <OrderRoute id={id} />
         </div>
     );
 };

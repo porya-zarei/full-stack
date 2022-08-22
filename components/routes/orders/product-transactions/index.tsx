@@ -16,6 +16,7 @@ import {isAPIResultOk} from "@/utils/validations";
 import useNotification from "@/hooks/useNotification";
 import {usePendingTransactions} from "@/hooks/usePendingTransactions";
 import ProductTransactionList from "./product-transaction-list";
+import Loading from "@/components/core/loadings";
 
 interface ProductTransactionsRouteProps {}
 
@@ -23,10 +24,16 @@ const ProductTransactionsRoute: FC<ProductTransactionsRouteProps> = () => {
     const {ModalWrapper, handleClose, isOpen, handleOpen} = useModal();
     const {notify} = useNotification();
     const {user} = useUserContext();
-    const {productTransactions} = useProductTransactions(
-        user.role === ERole.CREATOR ? undefined : user.id,
-    );
-    const {pendingTransactions, refetch} = usePendingTransactions();
+    const {
+        productTransactions,
+        loading: prtLoading,
+        refetch: prtRefetch,
+    } = useProductTransactions(user.id, undefined, true);
+    const {
+        pendingTransactions,
+        refetch: petRefetch,
+        loading: petLoading,
+    } = usePendingTransactions();
     const handleChangeKey = async (id: string, key?: string) => {
         try {
             const newKey = prompt(
@@ -42,7 +49,8 @@ const ProductTransactionsRoute: FC<ProductTransactionsRouteProps> = () => {
                     notify(`کلید با موفقیت ${key ? "ویرایش" : "ثبت"} شد`, {
                         type: "success",
                     });
-                    refetch();
+                    petRefetch();
+                    prtRefetch();
                 } else {
                     notify(`خطا در ثبت کلید: ${result?.error}`, {
                         type: "error",
@@ -72,7 +80,8 @@ const ProductTransactionsRoute: FC<ProductTransactionsRouteProps> = () => {
                         type: "success",
                     },
                 );
-                refetch();
+                petRefetch();
+                prtRefetch();
             } else {
                 notify(`خطا در ثبت وضعیت: ${result?.error}`, {
                     type: "error",
@@ -87,7 +96,7 @@ const ProductTransactionsRoute: FC<ProductTransactionsRouteProps> = () => {
     };
     return (
         <RouteContainer>
-            <FrameContainer className="m-2 md:m-4 border-primary">
+            <FrameContainer className="m-2 md:m-4 border-primary min-h-[80vh] h-auto">
                 <div className="w-full flex items-start justify-center flex-wrap p-3">
                     <div className="w-full flex items-center justify-center">
                         <h3 className="text-2xl font-semibold">
@@ -106,7 +115,10 @@ const ProductTransactionsRoute: FC<ProductTransactionsRouteProps> = () => {
                         </button>
                         <ModalWrapper>
                             <AddProductTransaction
-                                refetch={refetch}
+                                refetch={async () => {
+                                    await prtRefetch();
+                                    await petRefetch();
+                                }}
                                 handleClose={handleClose}
                             />
                         </ModalWrapper>
@@ -115,26 +127,34 @@ const ProductTransactionsRoute: FC<ProductTransactionsRouteProps> = () => {
                         <div className="w-full font-bold text-lg flex items-center justify-center">
                             کالا های ثبت شده توسط شما
                         </div>
-                        <ProductTransactionList
-                            user={user}
-                            transactions={productTransactions}
-                            handleChangeKey={handleChangeKey}
-                            handleChangeStatus={handleChangeStatus}
-                            editable={false}
-                        />
+                        {prtLoading ? (
+                            <Loading />
+                        ) : (
+                            <ProductTransactionList
+                                user={user}
+                                transactions={productTransactions}
+                                handleChangeKey={handleChangeKey}
+                                handleChangeStatus={handleChangeStatus}
+                                editable={false}
+                            />
+                        )}
                     </div>
                     {user?.role !== ERole.USER && (
                         <div className="w-full flex items-center justify-center flex-wrap">
                             <div className="w-full font-bold text-lg flex items-center justify-center flex-wrap my-3">
                                 کالا های در انتظار تایید توسط شما
                             </div>
-                            <ProductTransactionList
-                                user={user}
-                                transactions={pendingTransactions}
-                                handleChangeKey={handleChangeKey}
-                                handleChangeStatus={handleChangeStatus}
-                                editable={true}
-                            />
+                            {petLoading ? (
+                                <Loading />
+                            ) : (
+                                <ProductTransactionList
+                                    user={user}
+                                    transactions={pendingTransactions}
+                                    handleChangeKey={handleChangeKey}
+                                    handleChangeStatus={handleChangeStatus}
+                                    editable={true}
+                                />
+                            )}
                         </div>
                     )}
                 </div>

@@ -118,7 +118,7 @@ export const getProductTransactionsByUser = async (userId: string) => {
         const result = await axios_instance.post<
             IAPIResult<IProductTransaction[]>
         >(API_ROUTES.productTransactions.getProductTransactionsByUser, {
-            userId,
+            id: userId,
         });
         return result.data;
     } catch (error) {

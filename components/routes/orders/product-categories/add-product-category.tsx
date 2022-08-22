@@ -27,7 +27,7 @@ const AddProductCategory: FC<AddProductCategoryProps> = ({
 
     const handleSubmit = async () => {
         console.log(group, englishName, persianName);
-        if (isValid([englishName, persianName])) {
+        if (isValid([englishName, persianName]) && group.length > 0) {
             try {
                 setLoading(true);
                 const data: ICreateProductCategory = {
@@ -58,6 +58,10 @@ const AddProductCategory: FC<AddProductCategoryProps> = ({
             } finally {
                 setLoading(false);
             }
+        } else {
+            notify("لطفا فیلدها را به درستی پر کنید", {
+                type: "error",
+            });
         }
     };
 

@@ -60,7 +60,7 @@ const ProductTransactionListItem: FC<ProductTransactionListItemProps> = ({
                 ) : (
                     <CSelectOption
                         options={filterStatusesByUser(
-                            user.role || ERole.USER,
+                            user.role,
                             isInTransaction(transaction.status),
                         ).map(({value}) => ({
                             value: value,

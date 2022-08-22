@@ -110,12 +110,12 @@ const ManageGroupsRoute: FC<ManageGroupsRouteProps> = () => {
                                     <div className="w-8/12 flex items-center justify-between flex-nowrap">
                                         <div className="w-auto flex items-center justify-center text-sm">
                                             محدودیت هزینه :{" "}
-                                            {
+                                            {Number(
                                                 group.moneyLimitYears.find(
                                                     (ml) =>
                                                         ml.year === currentYear,
-                                                )?.limit
-                                            }
+                                                )?.limit,
+                                            ).toLocaleString("fa-IR") + " ریال"}
                                         </div>
                                         <div className="flex justify-center items-center text-lg overflow-hidden rounded-md">
                                             <button

@@ -26,7 +26,7 @@ export const useGroups = () => {
     };
 
     useEffect(() => {
-        getGroupsHandler();
+       groups.length === 0 && getGroupsHandler();
     }, []);
 
     return {groups, loading, error, refetch: getGroupsHandler, changeGroups};

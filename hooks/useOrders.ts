@@ -45,12 +45,12 @@ export const useOrders = (
     useEffect(() => {
         if (force) {
             if (userId) {
-                getOrdersHandler();
+                orders?.length === 0 && getOrdersHandler();
             }
         } else {
-            getOrdersHandler();
+            orders?.length === 0 && getOrdersHandler();
         }
-    }, [userId]);
+    }, [userId, force]);
 
     return {orders, loading, error, refetch: getOrdersHandler};
 };

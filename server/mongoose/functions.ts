@@ -204,7 +204,7 @@ export const updateGroupMDB = async (id: string, group: Partial<IGroup>) => {
     }
 };
 
-export const updateOrderMDB = async (id: string, order: IDBOrder) => {
+export const updateOrderMDB = async (id: string, order: Partial<IDBOrder>) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
@@ -649,6 +649,7 @@ export const getProductTransactionsByUserMDB = async (id: string) => {
                     } as IUser,
                 } as IProductTransaction;
             });
+            logger.log(`product transactions mdb => ${JSON.stringify(productTransactions)} , ${id}`);
             return result;
         }
         return null;
@@ -658,7 +659,9 @@ export const getProductTransactionsByUserMDB = async (id: string) => {
     }
 };
 
-export const getProductTransactionsByStatusMDB = async (status:ETransactionStatus) => {
+export const getProductTransactionsByStatusMDB = async (
+    status: ETransactionStatus,
+) => {
     try {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
@@ -685,4 +688,4 @@ export const getProductTransactionsByStatusMDB = async (status:ETransactionStatu
         logger.error(error);
         return null;
     }
-}
+};

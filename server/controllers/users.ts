@@ -175,7 +175,7 @@ export const registerUserHandler: NextApiHandler = async (req, res) => {
             const result: IAPIResult<string> = {
                 data: "",
                 ok: false,
-                error: "Please do not try to register",
+                error: "کلیذ دسترسی اشتباه است",
             };
             res.status(401).json(result);
         }
@@ -184,7 +184,7 @@ export const registerUserHandler: NextApiHandler = async (req, res) => {
         const result: IAPIResult<IUser | null> = {
             data: null,
             ok: false,
-            error: "Error registering user",
+            error: "ثبت نام با خطا مواجه شد",
         };
         res.status(500).json(result);
     }
@@ -205,7 +205,7 @@ export const loginUserHandler: NextApiHandler = async (req, res) => {
             res.status(401).json({
                 data: "",
                 ok: false,
-                error: "Error logging in user",
+                error: "نام کاربری یا رمز عبور اشتباه است",
             } as IAPIResult<string>);
         }
     } catch (error) {
@@ -213,7 +213,7 @@ export const loginUserHandler: NextApiHandler = async (req, res) => {
         const result: IAPIResult<IUser | null> = {
             data: null,
             ok: false,
-            error: "Error loging user",
+            error: "خطا در ورود",
         };
         res.status(500).json(result);
     }

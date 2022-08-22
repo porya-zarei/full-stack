@@ -1,5 +1,6 @@
 import {EStatus, ESTATUS_NAMES, IOrder} from "@/types/data";
 import {FC, useState} from "react";
+import Loading from "../loadings";
 
 interface OrderProps {
     order: IOrder;
@@ -7,6 +8,8 @@ interface OrderProps {
     renderFooter?: boolean;
     handleConfirm?: () => void;
     handleCancel?: () => void;
+    handleDelete?:() => void
+    loading: boolean;
 }
 
 const Order: FC<OrderProps> = ({
@@ -15,10 +18,12 @@ const Order: FC<OrderProps> = ({
     renderFooter = false,
     handleCancel,
     handleConfirm,
+    handleDelete,
+    loading,
 }) => {
     return (
         <article
-            className={`w-full max-w-sm p-3 md:p-5 rounded-2xl shadow-around flex justify-center items-start flex-wrap ${className}`}>
+            className={`w-full max-w-md p-3 md:p-5 rounded-2xl shadow-around flex justify-center items-start flex-wrap ${className}`}>
             <div className="w-full flex justify-center items-center flex-wrap">
                 <div className="w-full my-2 flex justify-center items-center">
                     <span className="text-xl text-center pb-2 border-b-2 border-solid border-secondary">
@@ -111,23 +116,24 @@ const Order: FC<OrderProps> = ({
                 <div className="w-full mt-2 flex justify-evenly items-center flex-wrap border-t-2 border-gray-light border-dashed py-2">
                     <button
                         type="button"
-                        onClick={
-                            order?.status === EStatus.COMPLETED
-                                ? () => {}
-                                : handleConfirm
-                        }
+                        disabled={loading}
+                        onClick={handleConfirm}
                         className="w-full md:w-auto my-1 md:my-0 bg-primary text-white text-center py-2 px-4 rounded-2xl">
-                        تایید سفارش
+                        {loading ? <Loading size={20} /> : "تایید سفارش"}
                     </button>
                     <button
                         type="button"
-                        onClick={
-                            order?.status === EStatus.CANCELED
-                                ? () => {}
-                                : handleCancel
-                        }
+                        disabled={loading}
+                        onClick={handleCancel}
                         className="w-full md:w-auto my-1 md:my-0 bg-secondary text-white text-center py-2 px-4 rounded-2xl">
-                        رد سفارش
+                        {loading ? <Loading size={20} /> : "رد سفارش"}
+                    </button>
+                    <button
+                        type="button"
+                        disabled={loading}
+                        onClick={handleDelete}
+                        className="w-full md:w-auto my-1 md:my-0 bg-danger text-white text-center py-2 px-4 rounded-2xl">
+                        {loading ? <Loading size={20} /> : "حذف سفارش"}
                     </button>
                 </div>
             )}

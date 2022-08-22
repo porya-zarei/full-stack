@@ -42,11 +42,6 @@ export const useProductTransactions = (
                 if (result.ok && result.data) {
                     setProductTransactions(result.data);
                 }
-            } else {
-                const result = await getProductTransactions();
-                if (result.ok && result.data) {
-                    setProductTransactions(result.data);
-                }
             }
         } catch (error) {
             setError(`error in get productTransactions => ${error}`);
@@ -63,7 +58,7 @@ export const useProductTransactions = (
         } else {
             getProductTransactionsHandler();
         }
-    }, [user, status]);
+    }, [user, status, force]);
 
     return {
         productTransactions,

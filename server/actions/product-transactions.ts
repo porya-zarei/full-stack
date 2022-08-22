@@ -17,6 +17,7 @@ import {
     getProductTransactionsMDB,
     updateProductTransactionMDB,
 } from "../mongoose/functions";
+import { logger } from "../utils/logger";
 
 export const getAllProductTransactions = async () => {
     const productTransactions = await getProductTransactionsMDB();
@@ -180,10 +181,11 @@ export const getProductTransactionsForConfirmation = async (user: IUser) => {
                 .filter(
                     (tr) =>
                         tr?.status ===
-                            ETransactionStatus?.PENDING_FOR_SUPERVISOR_CONFIRM_IN ||
+                            ETransactionStatus.PENDING_FOR_SUPERVISOR_CONFIRM_IN ||
                         tr?.status ===
-                            ETransactionStatus?.PENDING_FOR_SUPERVISOR_CONFIRM_OUT,
+                            ETransactionStatus.PENDING_FOR_SUPERVISOR_CONFIRM_OUT,
                 );
+            logger.log(`confirm transactions => ${data}`);
             const result: IAPIResult<IProductTransaction[]> = {
                 data,
                 ok: true,

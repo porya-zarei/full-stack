@@ -129,3 +129,21 @@ export const checkMoneyLimit = async (id: string,money:string) => {
         return result;
     }
 }
+
+export const deleteOrder = async (id:string) => {
+    try {
+        const result = await axios_instance.post<IAPIResult<boolean>>(
+            API_ROUTES.orders.deleteOrder,
+            {id},
+        );
+        return result.data;
+    } catch (error) {
+        console.log("error in delete => ", error);
+        const result: IAPIResult<boolean> = {
+            data: false,
+            error: "error in delete",
+            ok: false,
+        };
+        return result;
+    }
+}

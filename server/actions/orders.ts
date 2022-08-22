@@ -104,7 +104,10 @@ export const addOrder = async (createOrder: ICreateOrder) => {
             id: id,
             _id: id,
             isExtra,
-            description: createOrder.description.length > 0 ? createOrder.description : "بدون توضیحات",
+            description:
+                createOrder.description.length > 0
+                    ? createOrder.description
+                    : "بدون توضیحات",
         };
         const createdOrder = await createOrderMDB(order);
         if (createdOrder) {
@@ -182,21 +185,25 @@ export const getPendingOrders = async (id: string = "") => {
     }
     const result: IAPIResult<Partial<IOrder>[]> = {
         data: fullOrders
-            .filter(
-                (order) =>
-                    Number(order.user?.group.id) === Number(user?.group.id),
-            )
             .filter((order) => {
                 logger.log(
                     `order status: ${order.status},user role: ${user?.role}`,
                 );
                 if (user?.role === ERole.CREATOR) {
-                    // return (
-                    //     order.status === EStatus.PENDING_FOR_FINANCIAL_MANAGER
-                    // );
                     return true;
                 } else if (user?.role === ERole.ADMIN) {
                     return order.status === EStatus.PENDING_FOR_SUPERVISOR;
+                } else {
+                    return false;
+                }
+            })
+            .filter((order) => {
+                if (user?.role === ERole.ADMIN) {
+                    return (
+                        String(order.user?.group.id) === String(user?.group.id)
+                    );
+                } else if (user?.role === ERole.CREATOR) {
+                    return true;
                 } else {
                     return false;
                 }
@@ -237,8 +244,7 @@ export const getUserOrders = async (id: string = "") => {
 export const changeOrderStatus = async (id: string = "", status: EStatus) => {
     const order = await getOrderMDB(id);
     if (order) {
-        order.status = status;
-        updateOrderMDB(id, order);
+        updateOrderMDB(id, {status});
         const {user, supervisor} = await getUserAndSupervisor(order);
         if (user && supervisor) {
             const newOrder: Partial<IOrder> = {

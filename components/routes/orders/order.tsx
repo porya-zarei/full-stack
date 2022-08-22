@@ -5,49 +5,82 @@ import {ERole, IOrder} from "@/types/data";
 import Order from "@/components/core/order";
 import Image from "next/image";
 import IMAGES from "@/constants/images";
-import {updateOrderStatus} from "@/services/orders";
+import {deleteOrder, updateOrderStatus} from "@/services/orders";
 import useNotification from "@/hooks/useNotification";
 import {useUserContext} from "@/contexts/user-context";
 import {HiOutlineCubeTransparent} from "react-icons/hi";
+import {useOrder} from "@/hooks/useOrder";
+import { useRouter } from "next/router";
 
 interface OrderRouteProps {
-    orderData: IOrder | null;
-    error: string | null;
-    loading: boolean;
+    id: string;
 }
 
-const OrderRoute: FC<OrderRouteProps> = ({orderData, error, loading}) => {
-    const [order, setOrder] = useState<IOrder>(orderData ?? ({} as IOrder));
+const OrderRoute: FC<OrderRouteProps> = ({id}) => {
+    const {order, loading, changeOrder} = useOrder(id);
     const {user} = useUserContext();
     const {notify} = useNotification();
-
+    const [updateLoading, setUpdateLoading] = useState(false);
+    const router = useRouter();
     const handleUpdateStatus = (confirmed: boolean) => async () => {
-        const result = await updateOrderStatus(order.id, confirmed);
-        if (result.ok && result?.data && result?.data?.status) {
-            setOrder({...order, status: result.data.status});
-            notify("Order status updated", {
-                type: "success",
-            });
-        } else {
-            notify("Error updating order status", {
+        try {
+            setUpdateLoading(true);
+            const result = await updateOrderStatus(order.id, confirmed);
+            if (result.ok && result.data) {
+                notify("وضعیت با موفقیت اپدیت شد", {
+                    type: "success",
+                });
+                changeOrder({...order, status: result?.data?.status});
+            } else {
+                notify("به روزرسانی با مشکل رو به رو شد", {
+                    type: "error",
+                });
+            }
+        } catch (error) {
+            console.log("error in update status => ", error);
+            notify("به روزرسانی با مشکل رو به رو شد", {
                 type: "error",
             });
+        } finally {
+            setUpdateLoading(false);
         }
     };
-    useEffect(() => {
-        setOrder(orderData ?? ({} as IOrder));
-    }, [orderData]);
+    const handleDelete = async () => {
+        try {
+            setUpdateLoading(true);
+            const result = await deleteOrder(order.id);
+            if (result.ok && result.data) {
+                notify("وضعیت با موفقیت اپدیت شد", {
+                    type: "success",
+                });
+                router.push("/orders/orders-list")
+            } else {
+                notify("به روزرسانی با مشکل رو به رو شد", {
+                    type: "error",
+                });
+            }
+        } catch (error) {
+            console.log("error in update status => ", error);
+            notify("به روزرسانی با مشکل رو به رو شد", {
+                type: "error",
+            });
+        } finally {
+            setUpdateLoading(false);
+        }
+    };
     return (
         <RouteContainer>
             <FrameContainer className="min-h-[82vh] m-4 border-primary">
                 <div className="w-full flex justify-center items-center flex-wrap">
-                    <div className="w-full md:w-1/3 order-2 md:order-1">
+                    <div className="w-full md:w-2/3 order-2 md:order-1">
                         {!loading ? (
                             <Order
                                 order={order}
                                 handleCancel={handleUpdateStatus(false)}
                                 handleConfirm={handleUpdateStatus(true)}
+                                handleDelete={handleDelete}
                                 renderFooter={user.role !== ERole.USER}
+                                loading={updateLoading}
                             />
                         ) : (
                             <HiOutlineCubeTransparent

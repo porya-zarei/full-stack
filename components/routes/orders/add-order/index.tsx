@@ -104,7 +104,6 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                 .toString(),
         );
         if (!limitCheck) {
-            notify("مبلغ سفارش بیشتر از حد مجاز سالانه است");
             const response = prompt(
                 "مبلغ سفارش بیشتر از حد مجاز سالانه است | ایا ادامه می دهید ؟",
             );
@@ -255,8 +254,9 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                         <button
                             type="button"
                             onClick={handleSendOrder}
-                            className="bg-info text-white px-2 py-2 hover:bg-opacity-90 rounded-md flex justify-center items-center">
-                            {loading ? <Loading /> : "ثبت سفارش"}
+                            disabled={loading}
+                            className="bg-info w-40 text-white px-2 py-2 hover:bg-opacity-90 rounded-md flex justify-center items-center">
+                            {loading ? <Loading size={20} /> : "ثبت سفارش"}
                         </button>
                     </div>
                 </div>

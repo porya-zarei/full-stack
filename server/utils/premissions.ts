@@ -85,9 +85,9 @@ export const isExtraPrice = (
 };
 
 export const isUserCanModifyTransactions = (user: IUser) => {
-    return user.role === ERole.CREATOR;
-}
+    return user.role === ERole.CREATOR || user.role || ERole.ADMIN;
+};
 
 export const isUserCanConfirmTransaction = (user: IUser) => {
     return user.role !== ERole.USER;
-}
+};
