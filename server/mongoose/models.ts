@@ -128,6 +128,10 @@ export const ProductSchema = new Schema<IProduct>({
             name: "",
         },
     },
+    type: {
+        type: Number,
+        default: 0,
+    },
 });
 
 export const OrderSchema = new Schema<IDBOrder>({

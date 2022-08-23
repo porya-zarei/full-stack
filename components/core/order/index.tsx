@@ -1,5 +1,13 @@
-import {EStatus, ESTATUS_NAMES, IOrder} from "@/types/data";
+import {
+    EProductType,
+    EPRODUCT_TYPES_NAMES,
+    EStatus,
+    ESTATUS_NAMES,
+    IOrder,
+} from "@/types/data";
+import {enumToArray} from "@/utils/enums-helper";
 import {FC, useState} from "react";
+import CButton from "../buttons";
 import Loading from "../loadings";
 
 interface OrderProps {
@@ -8,7 +16,7 @@ interface OrderProps {
     renderFooter?: boolean;
     handleConfirm?: () => void;
     handleCancel?: () => void;
-    handleDelete?:() => void
+    handleDelete?: () => void;
     loading: boolean;
 }
 
@@ -21,9 +29,10 @@ const Order: FC<OrderProps> = ({
     handleDelete,
     loading,
 }) => {
+    console.log(order);
     return (
         <article
-            className={`w-full max-w-md p-3 md:p-5 rounded-2xl shadow-around flex justify-center items-start flex-wrap ${className}`}>
+            className={`w-full p-1 md:p-5 rounded-2xl shadow-around flex justify-center items-start flex-wrap ${className}`}>
             <div className="w-full flex justify-center items-center flex-wrap">
                 <div className="w-full my-2 flex justify-center items-center">
                     <span className="text-xl text-center pb-2 border-b-2 border-solid border-secondary">
@@ -50,6 +59,8 @@ const Order: FC<OrderProps> = ({
                             <th className="px-2 py-1">هزینه</th>
                             <th className="px-2 py-1">تعداد</th>
                             <th className="px-2 py-1">تاریخ</th>
+                            <th className="px-2 py-1">نوع</th>
+                            <th className="px-2 py-1">دسته</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -70,6 +81,22 @@ const Order: FC<OrderProps> = ({
                                     {new Date(product.date).toLocaleDateString(
                                         "fa-IR",
                                     )}
+                                </td>
+                                <td className="px-2 py-1">
+                                    {
+                                        EPRODUCT_TYPES_NAMES[
+                                            Number(
+                                                enumToArray(EProductType).find(
+                                                    (t) =>
+                                                        Number(t.value) ===
+                                                        product.type,
+                                                )?.value,
+                                            )
+                                        ]
+                                    }
+                                </td>
+                                <td className="px-2 py-1">
+                                    {product.category.name}
                                 </td>
                             </tr>
                         ))}
@@ -102,8 +129,16 @@ const Order: FC<OrderProps> = ({
                 </table>
             </div>
             <div className="w-full flex justify-center items-center flex-wrap border-t-2 border-gray-light border-dashed py-1">
-                <div className="w-full flex justify-start items-center my-2">
-                    وضعیت : {ESTATUS_NAMES[order?.status]}
+                <div className="w-full flex-wrap flex justify-start items-center my-2 text-sm">
+                    <span className="w-full md:w-auto border-b-2 border-gray-light mx-auto flex justify-center items-center">
+                        وضعیت : {ESTATUS_NAMES[order?.status]}
+                    </span>
+                    <span className="w-full md:w-auto border-b-2 border-gray-light mx-auto flex justify-center items-center">
+                        فاکتور رسمی : {order.officialBill ? "دارد" : "ندارد"}
+                    </span>
+                    <span className="w-full md:w-auto border-b-2 border-gray-light mx-auto flex justify-center items-center">
+                        بیش از حد مجاز : {order.isExtra ? "است" : "نیست"}
+                    </span>
                 </div>
                 <div className="w-full flex justify-start items-center my-2">
                     توضیحات :
@@ -114,27 +149,27 @@ const Order: FC<OrderProps> = ({
             </div>
             {renderFooter && (
                 <div className="w-full mt-2 flex justify-evenly items-center flex-wrap border-t-2 border-gray-light border-dashed py-2">
-                    <button
-                        type="button"
-                        disabled={loading}
+                    <CButton
+                        text={loading ? <Loading size={20} /> : "تایید سفارش"}
                         onClick={handleConfirm}
-                        className="w-full md:w-auto my-1 md:my-0 bg-primary text-white text-center py-2 px-4 rounded-2xl">
-                        {loading ? <Loading size={20} /> : "تایید سفارش"}
-                    </button>
-                    <button
-                        type="button"
                         disabled={loading}
+                        variant="outline"
+                        className="w-full md:w-auto border-primary text-primary my-1 md:my-0 text-center py-2 px-4 rounded-2xl"
+                    />
+                    <CButton
+                        text={loading ? <Loading size={20} /> : "رد سفارش"}
                         onClick={handleCancel}
-                        className="w-full md:w-auto my-1 md:my-0 bg-secondary text-white text-center py-2 px-4 rounded-2xl">
-                        {loading ? <Loading size={20} /> : "رد سفارش"}
-                    </button>
-                    <button
-                        type="button"
+                        disabled={loading}
+                        variant="outline"
+                        className="w-full md:w-auto my-1 md:my-0 border-secondary text-secondary text-center py-2 px-4 rounded-2xl"
+                    />
+                    <CButton
                         disabled={loading}
                         onClick={handleDelete}
-                        className="w-full md:w-auto my-1 md:my-0 bg-danger text-white text-center py-2 px-4 rounded-2xl">
-                        {loading ? <Loading size={20} /> : "حذف سفارش"}
-                    </button>
+                        text={loading ? <Loading size={20} /> : "حذف سفارش"}
+                        variant="outline"
+                        className="w-full md:w-auto my-1 md:my-0 border-danger text-danger text-center py-2 px-4 rounded-2xl"
+                    />
                 </div>
             )}
         </article>

@@ -108,14 +108,34 @@ export enum EProductType {
 
 export const EPRODUCT_TYPES_NAMES = ["مصرفی", "تجهیزات"];
 
-export interface IProduct {
-    _id: string;
+export interface ICreateProduct {
+    id:string;
+    name: string;
+    price: string;
+    date: string;
+    count: number;
+    category: IDBProductCategory;
+    type: EProductType;
+}
+
+export interface IDBProduct {
     id: string;
     name: string;
     price: string;
     date: string;
     count: number;
-    category: IProductCategory;
+    category: IDBProductCategory;
+    type: EProductType;
+}
+
+export interface IProduct {
+    _id?: string;
+    id: string;
+    name: string;
+    price: string;
+    date: string;
+    count: number;
+    category: IDBProductCategory;
     type: EProductType;
 }
 
@@ -134,7 +154,7 @@ export interface IOrder {
 
 export interface ICreateOrder {
     user: string;
-    products: IProduct[];
+    products: ICreateProduct[];
     description: string;
     supervisor: string;
     officialBill: boolean;
@@ -144,7 +164,7 @@ export interface IDBOrder {
     _id: string;
     id: string;
     user: string;
-    products: IProduct[];
+    products: IDBProduct[];
     description: string;
     date: string;
     status: EStatus;

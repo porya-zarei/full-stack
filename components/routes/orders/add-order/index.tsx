@@ -4,7 +4,7 @@ import FrameContainer from "@/components/core/containers/frame-container";
 import CTextArea from "@/components/core/inputs/text-area";
 import CSelectOption from "@/components/core/inputs/select";
 import {useUsers} from "@/hooks/useUsers";
-import {EProductType, ERole, ICreateOrder, IProduct} from "@/types/data";
+import {EProductType, ERole, ICreateOrder, ICreateProduct, IDBProductCategory, IProduct, IProductCategory} from "@/types/data";
 import {useUserContext} from "@/contexts/user-context";
 import {createOrder} from "@/services/orders";
 import useNotification from "@/hooks/useNotification";
@@ -147,11 +147,11 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                         category: productCategories.find(
                                             (c) =>
                                                 c.id === product.valueCategory,
-                                        ),
+                                        ) ?? {} as IDBProductCategory,
                                         type: Number(
                                             product.valueType,
                                         ) as EProductType,
-                                    } as IProduct),
+                                    } as ICreateProduct),
                             ),
                         supervisor: supervisor,
                         user: user.id,

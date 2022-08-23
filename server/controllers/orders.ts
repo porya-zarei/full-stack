@@ -1,5 +1,5 @@
 import {IAPIResult} from "@/types/api";
-import {EStatus, IOrder, IUser, IDBOrder, ERole} from "@/types/data";
+import {EStatus, IOrder, IUser, IDBOrder, ERole, ICreateOrder} from "@/types/data";
 import {NextApiHandler} from "next";
 import {
     addOrder,
@@ -75,7 +75,7 @@ export const addOrderHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
         if (token) {
-            const order = req.body as IDBOrder;
+            const order = req.body as ICreateOrder;
             const result = await addOrder(order);
             res.status(200).json(result);
         } else {
