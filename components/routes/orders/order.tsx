@@ -79,7 +79,7 @@ const OrderRoute: FC<OrderRouteProps> = ({id}) => {
                                 handleCancel={handleUpdateStatus(false)}
                                 handleConfirm={handleUpdateStatus(true)}
                                 handleDelete={handleDelete}
-                                renderFooter={user.role !== ERole.USER}
+                                userRole={user.role}
                                 loading={updateLoading}
                             />
                         ) : (

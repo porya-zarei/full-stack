@@ -4,7 +4,15 @@ import FrameContainer from "@/components/core/containers/frame-container";
 import CTextArea from "@/components/core/inputs/text-area";
 import CSelectOption from "@/components/core/inputs/select";
 import {useUsers} from "@/hooks/useUsers";
-import {EProductType, ERole, ICreateOrder, ICreateProduct, IDBProductCategory, IProduct, IProductCategory} from "@/types/data";
+import {
+    EProductType,
+    ERole,
+    ICreateOrder,
+    ICreateProduct,
+    IDBProductCategory,
+    IProduct,
+    IProductCategory,
+} from "@/types/data";
 import {useUserContext} from "@/contexts/user-context";
 import {createOrder} from "@/services/orders";
 import useNotification from "@/hooks/useNotification";
@@ -56,9 +64,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
     const [description, setDescription] = useState("");
     const [supervisor, setSupervisor] = useState("");
     const [officialBill, setOfficialBill] = useState(false);
-
     const [loading, setLoading] = useState(false);
-
     const handleAddOrderRow = () => {
         const randomId = getRandonId();
         setProductsData([
@@ -105,10 +111,13 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
         );
         if (!limitCheck) {
             const response = prompt(
-                "مبلغ سفارش بیشتر از حد مجاز سالانه است | ایا ادامه می دهید ؟",
+                "مبلغ سفارش بیشتر از حد مجاز سالانه است | ایا ادامه می دهید ؟ بله یا خیر",
             );
-            if (response === "yes") {
-                return true;
+            if (response === "بله") {
+                const text = prompt(
+                    "لطفا مبلغ کلی مورد نیاز برای افزایش را وارد کنید",
+                );
+                return !!text && description + "\n" + text;
             } else {
                 return false;
             }
@@ -126,7 +135,8 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                 if (isOk) {
                     const data: ICreateOrder = {
                         officialBill,
-                        description,
+                        description:
+                            typeof isOk === "string" ? isOk : description,
                         products: productsData
                             .filter(
                                 (product) =>
@@ -144,10 +154,12 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                                             product.valueDate,
                                         ).toString(),
                                         count: Number(product.valueCount),
-                                        category: productCategories.find(
-                                            (c) =>
-                                                c.id === product.valueCategory,
-                                        ) ?? {} as IDBProductCategory,
+                                        category:
+                                            productCategories.find(
+                                                (c) =>
+                                                    c.id ===
+                                                    product.valueCategory,
+                                            ) ?? ({} as IDBProductCategory),
                                         type: Number(
                                             product.valueType,
                                         ) as EProductType,

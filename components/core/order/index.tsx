@@ -1,6 +1,7 @@
 import {
     EProductType,
     EPRODUCT_TYPES_NAMES,
+    ERole,
     EStatus,
     ESTATUS_NAMES,
     IOrder,
@@ -13,7 +14,7 @@ import Loading from "../loadings";
 interface OrderProps {
     order: IOrder;
     className?: string;
-    renderFooter?: boolean;
+    userRole?: ERole;
     handleConfirm?: () => void;
     handleCancel?: () => void;
     handleDelete?: () => void;
@@ -23,7 +24,7 @@ interface OrderProps {
 const Order: FC<OrderProps> = ({
     order,
     className,
-    renderFooter = false,
+    userRole,
     handleCancel,
     handleConfirm,
     handleDelete,
@@ -147,7 +148,7 @@ const Order: FC<OrderProps> = ({
                     {order?.description}
                 </p>
             </div>
-            {renderFooter && (
+            {userRole !== ERole.USER && (
                 <div className="w-full mt-2 flex justify-evenly items-center flex-wrap border-t-2 border-gray-light border-dashed py-2">
                     <CButton
                         text={loading ? <Loading size={20} /> : "تایید سفارش"}
@@ -163,13 +164,15 @@ const Order: FC<OrderProps> = ({
                         variant="outline"
                         className="w-full md:w-auto my-1 md:my-0 border-secondary text-secondary text-center py-2 px-4 rounded-2xl"
                     />
-                    <CButton
-                        disabled={loading}
-                        onClick={handleDelete}
-                        text={loading ? <Loading size={20} /> : "حذف سفارش"}
-                        variant="outline"
-                        className="w-full md:w-auto my-1 md:my-0 border-danger text-danger text-center py-2 px-4 rounded-2xl"
-                    />
+                    {userRole === ERole.CREATOR && (
+                        <CButton
+                            disabled={loading}
+                            onClick={handleDelete}
+                            text={loading ? <Loading size={20} /> : "حذف سفارش"}
+                            variant="outline"
+                            className="w-full md:w-auto my-1 md:my-0 border-danger text-danger text-center py-2 px-4 rounded-2xl"
+                        />
+                    )}
                 </div>
             )}
         </article>
