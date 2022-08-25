@@ -5,6 +5,7 @@ import {useKeyboard} from "@/hooks/useKeyboard";
 import useNotification from "@/hooks/useNotification";
 import {handleLogin} from "@/services/auth";
 import {ILoginData} from "@/types/api";
+import {isValid} from "@/utils/validations";
 import Link from "next/link";
 import {useRouter} from "next/router";
 import {FC, useState} from "react";
@@ -23,7 +24,7 @@ const LoginRoute: FC<LoginRouteProps> = () => {
     const handleSubmit = async () => {
         console.log(userName, password, rememberMe);
         setLoading(true);
-        if (userName.length > 5 && password.length > 5) {
+        if (isValid([userName, password])) {
             const loginData: ILoginData = {
                 userName,
                 password,
@@ -38,16 +39,20 @@ const LoginRoute: FC<LoginRouteProps> = () => {
                 notify("شما با موفقیت وارد شدید.");
                 router.push("/");
             } else {
-                notify("ورود نا موفق : " + result?.error??"");
+                notify("ورود نا موفق : " + result?.error ?? "");
             }
         } else {
             notify("نام کاربری و یا کلمه عبور کوتاه است.");
         }
         setLoading(false);
     };
-    useKeyboard("Enter", () => {
-        handleSubmit();
-    },[userName, password]);
+    useKeyboard(
+        "Enter",
+        () => {
+            handleSubmit();
+        },
+        [userName, password],
+    );
     return (
         <div className="w-full min-h-screen h-full flex items-center justify-center bg-slate-200 p-2">
             <div className="w-96 max-w-md flex flex-wrap items-center justify-center rounded-2xl border-primary border-4 border-dashed p-5">

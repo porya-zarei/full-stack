@@ -70,7 +70,7 @@ const OrderRoute: FC<OrderRouteProps> = ({id}) => {
     };
     return (
         <RouteContainer>
-            <FrameContainer className="min-h-[82vh] m-auto md:m-4 border-primary">
+            <FrameContainer className="min-h-[82vh] h-auto m-auto md:m-4 border-primary">
                 <div className="w-full flex justify-center items-center flex-wrap">
                     <div className="w-full flex justify-center items-center md:w-2/3 order-2 md:order-1 p-2">
                         {!loading ? (

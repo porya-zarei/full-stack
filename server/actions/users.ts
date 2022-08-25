@@ -13,6 +13,7 @@ import {
     getUserMDB,
     getUsersMDB,
     getUserWithUserNamePasswordMDB,
+    isUserExistMDB,
     updateUserMDB,
 } from "../mongoose/functions";
 import {logger} from "../utils/logger";
@@ -96,20 +97,29 @@ export const deleteUser = async (id: string, user: UnCertainData<IUser>) => {
 };
 
 export const registerUser = async (userData: ICreateUser) => {
-    const id = new Types.ObjectId().toString();
-    const user: IDBUser = {
-        ...userData,
-        id: id,
-        _id: id,
-        joinedAt: new Date().toISOString(),
-        role: ERole.USER,
-    };
-    const registeredUser = await createUserMDB(user);
-    const result: IAPIResult<UnCertainData<IUser>> = {
-        data: registeredUser,
-        ok: !!registeredUser,
-        error: "",
-    };
+    const isExist = await isUserExistMDB(userData.userName,userData.email);
+    if(!isExist){
+        const id = new Types.ObjectId().toString();
+        const user: IDBUser = {
+            ...userData,
+            id: id,
+            _id: id,
+            joinedAt: new Date().toString(),
+            role: ERole.USER,
+        };
+        const registeredUser = await createUserMDB(user);
+        const result: IAPIResult<UnCertainData<IUser>> = {
+            data: registeredUser,
+            ok: !!registeredUser,
+            error: "",
+        };
+        return result;
+    }
+    const result:IAPIResult<null> = {
+        data:null,
+        ok:false,
+        error:"کاربری با نام کاربری یا ایمیل شما ثبت نام کرده است"
+    }
     return result;
 };
 

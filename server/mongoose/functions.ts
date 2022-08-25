@@ -113,6 +113,13 @@ export const getOrderMDB = async (id: string) => {
     }
 };
 
+export const isUserExistMDB = async (userName: string, email: string) => {
+    const isExist =
+        (await UserModel.find({userName})).length > 0 ||
+        (await UserModel.find({email})).length > 0;
+    return isExist;
+};
+
 export const createUserMDB = async (user: IDBUser) => {
     try {
         const connection = await getConnection();
@@ -649,7 +656,11 @@ export const getProductTransactionsByUserMDB = async (id: string) => {
                     } as IUser,
                 } as IProductTransaction;
             });
-            logger.log(`product transactions mdb => ${JSON.stringify(productTransactions)} , ${id}`);
+            logger.log(
+                `product transactions mdb => ${JSON.stringify(
+                    productTransactions,
+                )} , ${id}`,
+            );
             return result;
         }
         return null;

@@ -164,6 +164,8 @@ export const registerUserHandler: NextApiHandler = async (req, res) => {
                 result.token = token;
                 res.setHeader("Set-Cookie", `token=${token}; Path=/`);
                 res.status(200).json(result);
+            } else if (result.error) {
+                res.status(400).json(result);
             } else {
                 res.status(500).json({
                     data: "",

@@ -2,20 +2,23 @@ import CInput from "@/components/core/inputs";
 import CRadio from "@/components/core/inputs/radio";
 import CSelectOption from "@/components/core/inputs/select";
 import Loading from "@/components/core/loadings";
-import { useUserContext } from "@/contexts/user-context";
+import {useUserContext} from "@/contexts/user-context";
 import useNotification from "@/hooks/useNotification";
-import { addProductTransaction } from "@/services/product-transactions";
-import { ICreateProductTransaction } from "@/types/data";
-import { isAPIResultOk, isValid } from "@/utils/validations";
+import {addProductTransaction} from "@/services/product-transactions";
+import {ICreateProductTransaction} from "@/types/data";
+import {isAPIResultOk, isValid} from "@/utils/validations";
 import {FC, useState} from "react";
-import { HiOutlineX } from "react-icons/hi";
+import {HiOutlineX} from "react-icons/hi";
 
 interface AddProductTransactionProps {
     handleClose: () => void;
     refetch: () => Promise<void>;
 }
 
-const AddProductTransaction: FC<AddProductTransactionProps> = ({handleClose,refetch}) => {
+const AddProductTransaction: FC<AddProductTransactionProps> = ({
+    handleClose,
+    refetch,
+}) => {
     const {user} = useUserContext();
     const {notify} = useNotification();
     const [product, setProduct] = useState("");
@@ -29,7 +32,7 @@ const AddProductTransaction: FC<AddProductTransactionProps> = ({handleClose,refe
         if (isValid([product, description])) {
             try {
                 setLoading(true);
-                const data :ICreateProductTransaction  = {
+                const data: ICreateProductTransaction = {
                     product,
                     description,
                     key,
@@ -64,7 +67,7 @@ const AddProductTransaction: FC<AddProductTransactionProps> = ({handleClose,refe
                 type: "error",
             });
         }
-    }
+    };
 
     return (
         <div className="relative w-full h-full md:max-w-md bg-light rounded-t-3xl md:rounded-xl flex items-start justify-center flex-wrap content-start p-4">
@@ -124,19 +127,17 @@ const AddProductTransaction: FC<AddProductTransactionProps> = ({handleClose,refe
                         placeholder="......"
                     />
                 </div>
-                {!inTransaction && (
-                    <div className="w-full flex items-center justify-center my-3">
-                        <CInput
-                            containerClassName="rounded-md border-2 border-gray p-2 flex-wrap"
-                            type="text"
-                            value={key}
-                            name="key"
-                            onChange={(e) => setKey(e.target.value)}
-                            title="ایدی کالا"
-                            placeholder="......"
-                        />
-                    </div>
-                )}
+                <div className="w-full flex items-center justify-center my-3">
+                    <CInput
+                        containerClassName="rounded-md border-2 border-gray p-2 flex-wrap"
+                        type="text"
+                        value={key}
+                        name="key"
+                        onChange={(e) => setKey(e.target.value)}
+                        title="ایدی کالا"
+                        placeholder="......"
+                    />
+                </div>
                 <div className="w-full flex items-center justify-center my-3">
                     <button
                         type="button"

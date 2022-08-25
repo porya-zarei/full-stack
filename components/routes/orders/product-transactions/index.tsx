@@ -111,7 +111,7 @@ const ProductTransactionsRoute: FC<ProductTransactionsRouteProps> = () => {
                             <span className="text-lg font-semibold">
                                 <HiOutlinePencilAlt />
                             </span>
-                            <span>افزودن دسته بندی جدید</span>
+                            <span>ورود و خروج کالا جدید</span>
                         </button>
                         <ModalWrapper>
                             <AddProductTransaction

@@ -191,11 +191,7 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
                             )}
                         </button>
                         <Link href="/auth/login" passHref>
-                            <a
-                                className="w-full flex justify-center items-center m-1 text-gray-dark border border-gray-dark font-bold py-2 px-4 rounded-md"
-                                onClick={() => {
-                                    console.log(userName, password);
-                                }}>
+                            <a className="w-full flex justify-center items-center m-1 text-gray-dark border border-gray-dark font-bold py-2 px-4 rounded-md">
                                 ورود
                             </a>
                         </Link>
