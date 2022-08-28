@@ -44,6 +44,7 @@ const DefaultLayoutMeta: FC<DefaultLayoutMetaProps> = () => {
                 rel="apple-touch-icon"
                 href="/assets/images/icons/cropped-namadak-180x180.png"
             />
+            <link rel="manifest" href="/manifest.json" />
         </Head>
     );
 };

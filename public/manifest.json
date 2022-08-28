@@ -1,0 +1,91 @@
+{
+    "short_name": "spaceomid",
+    "name": "spaceomid financial dashboard",
+    "start_url": "/index.html",
+    "scope": "/",
+    "description": "spaceomid financial dashboard for orders and transactions managment",
+    "categories": ["financial", "spaceomid", "dashboard"],
+    "icons": [
+        {
+            "src": "./assets/images/icons/cropped-namadak-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "./assets/images/icons/cropped-namadak-180x180.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "./assets/images/icons/cropped-namadak-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "./assets/images/icons/cropped-namadak-270x270.png",
+            "type": "image/png",
+            "sizes": "270x270"
+        }
+    ],
+    "display": "standalone",
+    "orientation": "any",
+    "theme_color": "#000000",
+    "background_color": "#000000",
+    "dir": "rtl",
+    "lang": "fa-IR",
+    "shortcuts": [
+        {
+            "name": "Register",
+            "url": "/auth/register",
+            "description": "Register Page",
+            "icons": [
+                {
+                    "src": "./assets/images/icons/cropped-namadak-180x180.png",
+                    "sizes": "180x180",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Login",
+            "url": "/auth/login",
+            "description": "Login Page",
+            "icons": [
+                {
+                    "src": "./assets/images/icons/cropped-namadak-180x180.png",
+                    "sizes": "180x180",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Home",
+            "url": "/",
+            "description": "Home Page",
+            "icons": [
+                {
+                    "src": "./assets/images/icons/cropped-namadak-180x180.png",
+                    "sizes": "180x180",
+                    "type": "image/png"
+                }
+            ]
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/assets/images/screenshots/screenshot-1.png",
+            "type": "image/png",
+            "sizes": "1920x976"
+        },
+        {
+            "src": "/assets/images/screenshots/screenshot-2.png",
+            "type": "image/png",
+            "sizes": "1920x975"
+        },
+        {
+            "src": "/assets/images/screenshots/screenshot-3.png",
+            "type": "image/png",
+            "sizes": "1284x616"
+        }
+    ]
+}

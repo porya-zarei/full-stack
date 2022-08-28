@@ -1,5 +1,6 @@
 import { useUserContext } from "@/contexts/user-context";
 import { autoLoginClient } from "@/utils/auth";
+import { registerServiceWorker } from "@/utils/sw-helper";
 import {FC, useEffect} from "react";
 import Sidebar from "../../core/sidebar";
 
@@ -15,8 +16,10 @@ const DefaultLayoutMain: FC<DefaultLayoutMainProps> = ({children}) => {
             if (result) {
                 changeToken(result.token);
                 changeUser(result.user);
+                
             }
         }
+        registerServiceWorker();
     }, []);
     return (
         <main className="w-full h-auto flex justify-center items-start">
