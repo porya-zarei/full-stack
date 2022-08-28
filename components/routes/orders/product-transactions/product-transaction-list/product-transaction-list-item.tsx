@@ -25,18 +25,18 @@ const ProductTransactionListItem: FC<ProductTransactionListItemProps> = ({
     user,
 }) => {
     return (
-        <div className="w-full flex items-center justify-center flex-nowrap my-1 p-1 rounded-lg hover:bg-secondary-light hover:bg-opacity-30 bg-secondary-light bg-opacity-20">
-            <div className="w-2/12 overflow-x-auto flex items-center justify-center">
+        <div className="w-full text-xs md:text-base overflow-x-auto flex items-center justify-center flex-nowrap my-1 p-1 rounded-lg hover:bg-secondary-light hover:bg-opacity-30 bg-secondary-light bg-opacity-20">
+            <div className="flex-1 md:w-2/12 overflow-x-auto flex items-center justify-center">
                 <span className="font-semibold">{transaction.product}</span>
             </div>
             <div
                 title={transaction.description}
-                className="w-3/12 flex items-center justify-center">
+                className="md:w-3/12 hidden md:flex items-center justify-center">
                 <span className="">
                     {transaction?.description?.split(" ")[0] + " ..."}
                 </span>
             </div>
-            <div className="w-2/12 flex items-center justify-center">
+            <div className="flex-1 md:w-2/12 flex items-center justify-center">
                 <button
                     type="button"
                     onClick={() =>
@@ -49,12 +49,12 @@ const ProductTransactionListItem: FC<ProductTransactionListItemProps> = ({
                         : "بدون ایدی"}
                 </button>
             </div>
-            <div className="w-2/12 flex items-center justify-center">
+            <div className="flex-1 md:w-2/12 flex items-center justify-center">
                 <span className="flex justify-center items-center">
-                    {(new Date(transaction.date)).toLocaleString("fa-IR")}
+                    {new Date(transaction.date).toLocaleString("fa-IR")}
                 </span>
             </div>
-            <div className="w-3/12 flex items-center justify-center">
+            <div className="flex-1 md:w-3/12 flex items-center justify-center">
                 {!editable ? (
                     <span className="">
                         {ETRANSACTION_STATUS_NAMES[Number(transaction.status)]}

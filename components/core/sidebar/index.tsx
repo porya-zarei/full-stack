@@ -6,7 +6,7 @@ interface SidebarProps {}
 
 const Sidebar: FC<SidebarProps> = () => {
     return (
-        <div className="flex justify-start items-start w-full h-full p-1 md:p-2">
+        <div className="flex justify-start items-start w-full h-full px-0 py-1 md:p-2">
             <aside className="flex items-start justify-start flex-wrap w-full">
                 <div className="w-full flex justify-center md:justify-start items-center mb-4">
                     <div className="flex items-center justify-center w-auto relative px-0 md:px-2">

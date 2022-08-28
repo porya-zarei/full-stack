@@ -26,14 +26,13 @@ const CButton: FC<CButtonProps> = ({
     const getClasses = () => {
         const classes:string[] = [];
         if(variant==="default"){
-            classes.push(`text-light`);
             classes.push(`border-transparent`);
             classes.push(`border-2`);
         } else if (variant === "outline") {
             classes.push(`border-2`);
-            classes.push(`bg-light`);
         } else if (variant === "animate") {
-
+            classes.push(`border-2`);
+            classes.push("animate-border-btn");
         }
         return classes.join(" ");
     }

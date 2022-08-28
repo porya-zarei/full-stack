@@ -16,7 +16,7 @@ const SidebarList: FC<SidebarListProps> = () => {
                     <>
                         <li
                             key={item.name}
-                            className="flex items-center justify-center w-full p-1">
+                            className="flex items-center justify-center w-full px-0 py-1 md:p-1">
                             <SidebarListItem isSubPath={false} item={item} />
                         </li>
                         {item.subPaths &&

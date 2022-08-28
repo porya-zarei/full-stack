@@ -6,6 +6,7 @@ import {
     ESTATUS_NAMES,
     IOrder,
 } from "@/types/data";
+import { getDaysBetween } from "@/utils/date-helper";
 import {enumToArray} from "@/utils/enums-helper";
 import {FC, useState} from "react";
 import CButton from "../buttons";
@@ -53,81 +54,88 @@ const Order: FC<OrderProps> = ({
                 </div>
             </div>
             <div className="w-full flex justify-center items-center flex-wrap my-3">
-                <table className="w-full relative text-sm table-auto border-solid border-2 border-gray-400 rounded-md max-h-[150px]">
-                    <thead className="bg-gray-200">
-                        <tr className="text-center">
-                            <th className="px-2 py-1">نام محصول</th>
-                            <th className="px-2 py-1">هزینه</th>
-                            <th className="px-2 py-1">تعداد</th>
-                            <th className="px-2 py-1">تاریخ</th>
-                            <th className="px-2 py-1">نوع</th>
-                            <th className="px-2 py-1">دسته</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {order?.products?.map((product, index) => (
-                            <tr key={index} className="text-center">
-                                <td className="px-2 py-1">{product.name}</td>
-                                <td className="px-2 py-1">
-                                    {Number(product.price).toLocaleString(
-                                        "fa-IR",
-                                    )}
+                <div className="w-full overflow-x-auto">
+                    <table className="w-full relative text-sm bg-light border-solid border-2 border-gray-400 rounded-md max-h-[150px]">
+                        <thead className="bg-gray-200">
+                            <tr className="text-center w-auto">
+                                <th className="px-2 py-1">نام محصول</th>
+                                <th className="px-2 py-1">هزینه</th>
+                                <th className="px-2 py-1">تعداد</th>
+                                <th className="px-2 py-1">تاریخ</th>
+                                <th className="px-2 py-1">نوع</th>
+                                <th className="px-2 py-1">دسته</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {order?.products?.map((product, index) => (
+                                <tr key={index} className="text-center">
+                                    <td className="px-2 py-1">
+                                        {product.name}
+                                    </td>
+                                    <td className="px-2 py-1">
+                                        {Number(product.price).toLocaleString(
+                                            "fa-IR",
+                                        )}
+                                    </td>
+                                    <td className="px-2 py-1">
+                                        {Number(product.count).toLocaleString(
+                                            "fa-IR",
+                                        )}
+                                    </td>
+                                    <td title={`${getDaysBetween(order.date,product.date)} روز پس از ثبت سفارش`} className="px-2 py-1">
+                                        {new Date(
+                                            product.date,
+                                        ).toLocaleDateString("fa-IR")}
+                                    </td>
+                                    <td className="px-2 py-1">
+                                        {
+                                            EPRODUCT_TYPES_NAMES[
+                                                Number(
+                                                    enumToArray(
+                                                        EProductType,
+                                                    ).find(
+                                                        (t) =>
+                                                            Number(t.value) ===
+                                                            product.type,
+                                                    )?.value,
+                                                )
+                                            ]
+                                        }
+                                    </td>
+                                    <td className="px-2 py-1">
+                                        {product.category.name}
+                                    </td>
+                                </tr>
+                            ))}
+                            <tr
+                                key={"sum"}
+                                className="text-center border-t-2 border-primary">
+                                <td className="px-2 py-1 w-auto whitespace-nowrap">
+                                    تعداد کل :{" "}
+                                    {order?.products
+                                        ?.reduce?.(
+                                            (sum, product) =>
+                                                sum + product.count,
+                                            0,
+                                        )
+                                        .toLocaleString("fa-IR")}
                                 </td>
-                                <td className="px-2 py-1">
-                                    {Number(product.count).toLocaleString(
-                                        "fa-IR",
-                                    )}
-                                </td>
-                                <td className="px-2 py-1">
-                                    {new Date(product.date).toLocaleDateString(
-                                        "fa-IR",
-                                    )}
-                                </td>
-                                <td className="px-2 py-1">
-                                    {
-                                        EPRODUCT_TYPES_NAMES[
-                                            Number(
-                                                enumToArray(EProductType).find(
-                                                    (t) =>
-                                                        Number(t.value) ===
-                                                        product.type,
-                                                )?.value,
-                                            )
-                                        ]
-                                    }
-                                </td>
-                                <td className="px-2 py-1">
-                                    {product.category.name}
+                                <td className="px-2 py-1 w-auto whitespace-nowrap">جمع کل :</td>
+                                <td className="px-2 py-1 w-auto whitespace-nowrap">
+                                    {order?.products
+                                        ?.reduce(
+                                            (sum, product) =>
+                                                sum +
+                                                Number(product.price) *
+                                                    Number(product.count),
+                                            0,
+                                        )
+                                        .toLocaleString("fa-IR")}
                                 </td>
                             </tr>
-                        ))}
-                        <tr
-                            key={"sum"}
-                            className="text-center border-t-2 border-primary">
-                            <td className="px-2 py-1">
-                                تعداد :{" "}
-                                {order?.products
-                                    ?.reduce?.(
-                                        (sum, product) => sum + product.count,
-                                        0,
-                                    )
-                                    .toLocaleString("fa-IR")}
-                            </td>
-                            <td className="px-2 py-1">جمع کل :</td>
-                            <td className="px-2 py-1">
-                                {order?.products
-                                    ?.reduce(
-                                        (sum, product) =>
-                                            sum +
-                                            Number(product.price) *
-                                                Number(product.count),
-                                        0,
-                                    )
-                                    .toLocaleString("fa-IR")}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div className="w-full flex justify-center items-center flex-wrap border-t-2 border-gray-light border-dashed py-1">
                 <div className="w-full flex-wrap flex justify-start items-center my-2 text-sm">

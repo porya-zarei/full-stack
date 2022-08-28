@@ -22,6 +22,7 @@ import {useProductCategories} from "@/hooks/useProductCategories";
 import AddProduct from "./add-product";
 import {useCheckMoneyLimit} from "@/hooks/useCheckMoneyLimit";
 import Loading from "@/components/core/loadings";
+import CButton from "@/components/core/buttons";
 interface AddOrderRouteProps {}
 export interface OrderDataProduct {
     id: number;
@@ -217,12 +218,13 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                         ))}
                     </div>
                     <div className="w-full flex items-center justify-start p-3 flex-wrap">
-                        <button
-                            type="button"
+                        <CButton
+                            text="اضافه کردن سطر"
                             onClick={handleAddOrderRow}
-                            className="bg-primary text-white px-2 py-2 hover:bg-opacity-90 rounded-md">
-                            اضافه کردن سطر
-                        </button>
+                            disabled={loading}
+                            variant="outline"
+                            className="w-full md:w-auto border-info text-info my-1 md:my-0 text-center py-2 px-4 rounded-2xl"
+                        />
                     </div>
                     <div className="w-full flex items-center justify-start p-3 flex-wrap">
                         <CSelectOption
@@ -263,13 +265,13 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                         />
                     </div>
                     <div className="w-full flex items-center justify-start p-3 flex-wrap">
-                        <button
-                            type="button"
+                        <CButton
+                            text={loading ? <Loading size={20} /> : "ثبت سفارش"}
                             onClick={handleSendOrder}
                             disabled={loading}
-                            className="bg-info w-40 text-white px-2 py-2 hover:bg-opacity-90 rounded-md flex justify-center items-center">
-                            {loading ? <Loading size={20} /> : "ثبت سفارش"}
-                        </button>
+                            variant="outline"
+                            className="w-full md:w-auto border-primary text-primary my-1 md:my-0 text-center py-2 px-4 rounded-2xl"
+                        />
                     </div>
                 </div>
             </FrameContainer>

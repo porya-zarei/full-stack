@@ -103,3 +103,11 @@ export const getCurrentJalaliYear = () => {
     const year = date.toLocaleDateString("fa-IR").split("/")[0];
     return toEnglishDigits(year);
 };
+
+export const getDaysBetween = (start:string,end:string) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    console.log(start,end)
+    console.log(startDate.getTime(),endDate.getTime())
+    return (((endDate.getTime()-startDate.getTime())/(24*60*60*1000)+1).toFixed())
+}

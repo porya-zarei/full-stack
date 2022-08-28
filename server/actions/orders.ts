@@ -30,7 +30,10 @@ export const getUserAndSupervisor = async (
 ) => {
     const user = await getUserMDB(data.user);
     const supervisor = await getUserMDB(data.supervisor);
+
     if (user && supervisor) {
+        user.password = "";
+        supervisor.password = "";
         return {user, supervisor};
     }
     return {user: null, supervisor: null};

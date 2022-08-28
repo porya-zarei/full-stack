@@ -27,21 +27,21 @@ const ProductTransactionList: FC<ProductTransactionListProps> = ({
     user,
 }) => {
     return (
-        <div className="w-full flex items-center justify-center flex-wrap text-sm pt-3 pb-5">
-            <div className="w-full text-base flex items-center justify-center flex-nowrap my-3 p-1 border-b-2 border-secondary">
-                <div className="w-2/12 overflow-x-auto flex items-center justify-center">
+        <div className="w-full flex items-center justify-center flex-wrap pt-3 pb-5">
+            <div className="w-full overflow-x-auto min-w-full text-base flex items-center justify-center flex-nowrap my-3 p-1 border-b-2 border-secondary">
+                <div className="flex-1 md:w-2/12 overflow-x-auto flex items-center justify-center">
                     <span className="font-semibold">نام کالا</span>
                 </div>
-                <div className="w-3/12 flex items-center justify-center">
+                <div className="flex-1 md:w-3/12 hidden md:flex items-center justify-center">
                     <span className="">توضیحات</span>
                 </div>
-                <div className="w-2/12 flex items-center justify-center">
+                <div className="flex-1 md:w-2/12 flex items-center justify-center">
                     <span className="">ایدی کالا</span>
                 </div>
-                <div className="w-2/12 flex items-center justify-center">
+                <div className="flex-1 md:w-2/12 flex items-center justify-center">
                     <span className="">تاریخ ثبت</span>
                 </div>
-                <div className="w-3/12 flex items-center justify-center">
+                <div className="flex-1 md:w-3/12 flex items-center justify-center">
                     <span className="ml-1">وضعیت</span>
                 </div>
             </div>

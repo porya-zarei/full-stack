@@ -1,4 +1,5 @@
 import {FC, MouseEvent, ReactElement} from "react";
+import CButton from "../buttons";
 
 interface CardProps {
     onClick?: (e: MouseEvent<HTMLDivElement>) => void;
@@ -33,7 +34,7 @@ interface CardProps {
     onSuccessBtnClick?: (e: MouseEvent<HTMLButtonElement>) => void;
     titleContainerClassName?: string;
     renderFooter?: boolean;
-    status?:string;
+    status?: string;
 }
 
 const Card: FC<CardProps> = ({
@@ -59,7 +60,7 @@ const Card: FC<CardProps> = ({
     onDangerBtnClick,
     onSuccessBtnClick,
     titleContainerClassName,
-    renderFooter=false,
+    renderFooter = false,
     status,
 }) => {
     return (
@@ -119,18 +120,18 @@ const Card: FC<CardProps> = ({
                 {renderFooter && (
                     <div
                         className={`w-full flex justify-center items-center ${btnsContainerClassName}`}>
-                        <button
-                            type="button"
-                            className={`w-full m-1 flex justify-center items-center ${successBtnClassName}`}
-                            onClick={onSuccessBtnClick}>
-                            {successBtnText}
-                        </button>
-                        <button
-                            type="button"
-                            className={`w-full m-1 flex justify-center items-center ${dangerBtnClassName}`}
-                            onClick={onDangerBtnClick}>
-                            {dangerBtnText}
-                        </button>
+                        <CButton
+                            text={successBtnText}
+                            onClick={onSuccessBtnClick}
+                            variant="outline"
+                            className={`w-full z-10 m-1 md:my-0 text-center py-2 px-4 rounded-2xl flex justify-center items-center ${successBtnClassName}`}
+                        />
+                        <CButton
+                            className={`w-full z-10 m-1 md:my-0 text-center py-2 px-4 rounded-2xl flex justify-center items-center ${dangerBtnClassName}`}
+                            onClick={onDangerBtnClick}
+                            variant="outline"
+                            text={dangerBtnText}
+                        />
                     </div>
                 )}
             </article>

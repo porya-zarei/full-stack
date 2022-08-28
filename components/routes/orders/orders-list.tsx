@@ -86,19 +86,19 @@ const OrdersListRoute: FC<OrdersListRouteProps> = () => {
                                         status={
                                             ESTATUS_NAMES[Number(order.status)]
                                         }
-                                        primaryContainerClassName="rounded-xl overflow-hidden shadow-around transition-all hover:scale-105 cursor-pointer"
+                                        primaryContainerClassName="rounded-xl overflow-hidden shadow-around transition-all hover:scale-110 z-0 hover:z-20 cursor-pointer"
                                         secondaryContainerClassName="h-full bg-white relative overflow-y-auto custom-scrollbar"
                                         contentClassName="px-3 py-2 text-center"
                                         renderFooter={user.role !== ERole.USER}
                                         dangerBtnText="برگشت"
                                         btnsContainerClassName="sticky bottom-0 z-10 bg-white"
-                                        dangerBtnClassName="bg-white hover:bg-warning hover:text-white transition-all border-2 border-warning text-warning font-bold py-2 px-4 rounded-md"
+                                        dangerBtnClassName="bg-white hover:bg-warning hover:text-white transition-all border-warning text-warning font-bold"
                                         onDangerBtnClick={handleUpdateStatus(
                                             false,
                                             order,
                                         )}
                                         successBtnText="تایید"
-                                        successBtnClassName="bg-white hover:bg-info  hover:text-white transition-all border-2 border-info text-info font-bold py-2 px-4 rounded-md"
+                                        successBtnClassName="bg-white hover:bg-info  hover:text-white transition-all border-info text-info font-bold"
                                         onSuccessBtnClick={handleUpdateStatus(
                                             true,
                                             order,
