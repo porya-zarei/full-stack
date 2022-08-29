@@ -44,6 +44,7 @@ const ProductTransactionList: FC<ProductTransactionListProps> = ({
                 <div className="flex-1 md:w-3/12 flex items-center justify-center">
                     <span className="ml-1">وضعیت</span>
                 </div>
+                
                 <div className="flex-1 md:w-1/12 flex items-center justify-center">
                     <span className="ml-1">نوع</span>
                 </div>

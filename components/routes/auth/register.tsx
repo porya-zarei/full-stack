@@ -83,13 +83,6 @@ const RegisterRoute: FC<RegisterRouteProps> = () => {
             <div className="w-96 max-w-md flex flex-wrap items-center justify-center rounded-2xl border-primary border-4 border-dashed p-5">
                 <div className="w-full mb-5 pb-1 flex justify-center items-center">
                     <h4
-                        onClick={() => {
-                            window.open(
-                                "https://emn178.github.io/online-tools/sha256.html",
-                                "_blank",
-                                "noopener noreferrer",
-                            );
-                        }}
                         className="text-3xl font-bold inline border-b-2 border-secondary">
                         ثبت نام در داشبورد
                     </h4>

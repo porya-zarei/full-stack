@@ -83,6 +83,7 @@ const ProductTransactionListItem: FC<ProductTransactionListItemProps> = ({
                     />
                 )}
             </div>
+            
             <div className="flex-1 md:w-1/12 flex items-center justify-center">
                 <span className="">
                     {ETRANSACTION_TYPE_NAMES[Number(transaction.type)]}
