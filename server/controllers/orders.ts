@@ -243,9 +243,11 @@ export const updateOrderStatusHandler: NextApiHandler = async (req, res) => {
                         user?.role === ERole.CREATOR
                     ) {
                         status = EStatus.COMPLETED;
+                    } else {
+                        status = order.data?.status;
                     }
                 } else {
-                    status = EStatus.REJECTED;
+                    status = order.data?.status ?? EStatus.REJECTED;
                 }
                 const result = await changeOrderStatus(id, status);
                 logger.log(

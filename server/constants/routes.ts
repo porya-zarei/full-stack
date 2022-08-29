@@ -56,4 +56,11 @@ export const API_ROUTES = {
         checkGroupMoneyLimit: "/groups/checkGroupMoneyLimit",
         deleteGroupLimitYear: "/groups/deleteGroupLimitYear",
     },
+    accessKeys: {
+        getAllAccessKeys: "/access-keys/getAllAccessKeys",
+        getAccessKey: "/access-keys/getAccessKey",
+        addAccessKey: "/access-keys/addAccessKey",
+        deleteAccessKey: "/access-keys/deleteAccessKey",
+        updateAccessKey: "/access-keys/updateAccessKey",
+    },
 };

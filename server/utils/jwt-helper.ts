@@ -1,9 +1,9 @@
 import {ERole, IUser} from "@/types/data";
 import {sign, verify} from "jsonwebtoken";
-import { NextApiRequest } from "next";
-import { getUser } from "../actions/users";
+import {NextApiRequest} from "next";
+import {getUser} from "../actions/users";
 import {JWT_SECRET} from "../constants/configs";
-import { logger } from "./logger";
+import {logger} from "./logger";
 
 export const getToken = (user?: IUser) => {
     const payload = {
@@ -25,10 +25,13 @@ export const isTokenValid = (token: string) => {
     }
 };
 
-export const getUserFromToken = async (token: string) => {
-    const decoded = isTokenValid(token);
-    if (decoded && typeof decoded === "object") {
-        return (await getUser(decoded?.user?.id)).data;
+export const getUserFromToken = async (token: string | null | undefined) => {
+    if (token) {
+        const decoded = isTokenValid(token);
+        if (decoded && typeof decoded === "object") {
+            return (await getUser(decoded?.user?.id)).data;
+        }
+        return null;
     }
     return null;
 };
@@ -48,4 +51,4 @@ export const getTokenFromRequest = (req: NextApiRequest) => {
         return cookies.token;
     }
     return null;
-}
+};

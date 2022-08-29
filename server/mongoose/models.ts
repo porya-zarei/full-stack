@@ -9,6 +9,7 @@ import {
     IMoneyLimitYear,
     IDBProductTransaction,
     ETransactionStatus,
+    IDBAccessKey,
 } from "@/types/data";
 
 import mongoose, {Schema} from "mongoose";
@@ -206,6 +207,15 @@ export const ProductTransactionSchema = new Schema<IDBProductTransaction>({
     },
 });
 
+export const AccessKeySchema = new Schema<IDBAccessKey>({
+    key: {
+        type: String,
+    },
+    value: {
+        type: String,
+    },
+});
+
 export const UserModel = (mongoose?.models?.User ||
     mongoose.model<IDBUser>("User", UserSchema)) as mongoose.Model<IDBUser>;
 export const OrderModel = (mongoose?.models?.Order ||
@@ -224,3 +234,9 @@ export const ProductTransactionModel = (mongoose?.models?.ProductTransaction ||
         "ProductTransaction",
         ProductTransactionSchema,
     )) as mongoose.Model<IDBProductTransaction>;
+
+export const AccessKeyModel = (mongoose?.models?.AccessKey ||
+    mongoose.model<IDBAccessKey>(
+        "AccessKey",
+        AccessKeySchema,
+    )) as mongoose.Model<IDBAccessKey>;

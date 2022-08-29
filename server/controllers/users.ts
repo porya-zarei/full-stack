@@ -1,6 +1,7 @@
 import {IAPIResult, ILoginData} from "@/types/api";
-import {ERole, ICreateUser, IDBUser, IUser} from "@/types/data";
+import {ERole, IAccessKey, ICreateUser, IDBUser, IUser} from "@/types/data";
 import {NextApiHandler} from "next";
+import {isAccessKeyCorrect} from "../actions/access-keys";
 import {
     addUser,
     changeUserGroup,
@@ -152,12 +153,16 @@ export const deleteUserHandler: NextApiHandler = async (req, res) => {
         res.status(500).json(result);
     }
 };
-const SECRET_KEY =
-    "94c2a5aaa35c259469a3d050a4d51e2df931113cf977bde8cdd377156038980c";
 export const registerUserHandler: NextApiHandler = async (req, res) => {
     try {
         const userData = req.body as ICreateUser;
-        if (userData.key === SECRET_KEY) {
+        const rowAccessKey = userData.key.split("-");
+        const accessKey: Omit<IAccessKey, "_id"> = {
+            key: rowAccessKey?.[0] ?? "",
+            value: rowAccessKey?.[1] ?? "",
+        };
+        const isCorrect = await isAccessKeyCorrect(accessKey);
+        if (isCorrect) {
             const result = await registerUser(userData);
             if (result.data) {
                 const token = getToken(result.data);

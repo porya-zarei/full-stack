@@ -91,3 +91,7 @@ export const isUserCanModifyTransactions = (user: IUser) => {
 export const isUserCanConfirmTransaction = (user: IUser) => {
     return user.role !== ERole.USER;
 };
+
+export const isUserCanManageAccessKeys = (user: IUser) => {
+    return user.role === ERole.CREATOR;
+};

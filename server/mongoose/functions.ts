@@ -1,5 +1,8 @@
 import {
     ETransactionStatus,
+    IAccessKey,
+    ICreateAccessKey,
+    IDBAccessKey,
     IDBOrder,
     IDBProductCategory,
     IDBProductTransaction,
@@ -13,6 +16,7 @@ import {Types} from "mongoose";
 import {logger} from "../utils/logger";
 import {getConnection} from "./connection";
 import {
+    AccessKeyModel,
     GroupModel,
     OrderModel,
     ProductCategoryModel,
@@ -527,6 +531,7 @@ export const getProductTransactionsMDB = async () => {
                     ...transaction?.toObject(),
                     user: {
                         ...user?.toObject(),
+                        password: "",
                         group: group?.toObject(),
                     } as IUser,
                 } as IProductTransaction;
@@ -553,7 +558,11 @@ export const getProductTransactionMDB = async (id: string) => {
             const group = await GroupModel.findById(user?.group).exec();
             return {
                 ...productTransaction?.toObject(),
-                user: {...user?.toObject(), group: group?.toObject()} as IUser,
+                user: {
+                    ...user?.toObject(),
+                    password: "",
+                    group: group?.toObject(),
+                } as IUser,
             } as IProductTransaction;
         }
         return null;
@@ -578,7 +587,11 @@ export const createProductTransactionMDB = async (
             const group = await GroupModel.findById(user?.group).exec();
             return {
                 ...newProductTransaction?.toObject(),
-                user: {...user?.toObject(), group: group?.toObject()} as IUser,
+                user: {
+                    ...user?.toObject(),
+                    password: "",
+                    group: group?.toObject(),
+                } as IUser,
             } as IProductTransaction;
         }
         return null;
@@ -611,7 +624,11 @@ export const updateProductTransactionMDB = async (
             const group = await GroupModel.findById(user?.group).exec();
             return {
                 ...updatedProductTransaction?.toObject(),
-                user: {...user?.toObject(), group: group?.toObject()} as IUser,
+                user: {
+                    ...user?.toObject(),
+                    password: "",
+                    group: group?.toObject(),
+                } as IUser,
             } as IProductTransaction;
         }
         return null;
@@ -652,6 +669,7 @@ export const getProductTransactionsByUserMDB = async (id: string) => {
                     ...transaction?.toObject(),
                     user: {
                         ...user?.toObject(),
+                        password: "",
                         group: group?.toObject(),
                     } as IUser,
                 } as IProductTransaction;
@@ -688,11 +706,128 @@ export const getProductTransactionsByStatusMDB = async (
                     ...transaction?.toObject(),
                     user: {
                         ...user?.toObject(),
+                        password: "",
                         group: group?.toObject(),
                     } as IUser,
                 } as IProductTransaction;
             });
             return result;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+// access keys
+
+export const getAccessKeysMDB = async () => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const accessKeys = await AccessKeyModel.find().exec();
+            logger.log(
+                `accessKeys in getAccessKeysMDB ${JSON.stringify(accessKeys)}`,
+            );
+            return accessKeys.map((ak) => ({...ak.toObject()} as IAccessKey));
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getAccessKeyMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const accessKey = await AccessKeyModel.findById(id).exec();
+            return {
+                ...accessKey?.toObject(),
+            } as IAccessKey;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const createAccessKeyMDB = async (accessKey: ICreateAccessKey) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const newAccessKey = await AccessKeyModel.create(accessKey);
+            return {
+                ...newAccessKey?.toObject(),
+            } as IAccessKey;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const updateAccessKeyMDB = async (
+    id: string,
+    accessKey: Partial<IDBAccessKey>,
+) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const updatedAccessKey = await AccessKeyModel.findOneAndUpdate(
+                {_id: new Types.ObjectId(id)},
+                {
+                    ...accessKey,
+                },
+                {
+                    new: true,
+                },
+            ).exec();
+            return {
+                ...updatedAccessKey?.toObject(),
+            } as IAccessKey;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const deleteAccessKeyMDB = async (id: string) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const deletedAccessKey = await AccessKeyModel.findOneAndDelete({
+                _id: new Types.ObjectId(id),
+            }).exec();
+            return deletedAccessKey?.toObject();
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getAccessKeyByKeyValueMDB = async ({
+    key,
+    value,
+}: Omit<IAccessKey, "_id">) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const accessKey = await AccessKeyModel.findOne({
+                key,
+                value,
+            });
+            return {
+                ...accessKey?.toObject(),
+            } as IAccessKey;
         }
         return null;
     } catch (error) {

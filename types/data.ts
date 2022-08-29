@@ -109,7 +109,7 @@ export enum EProductType {
 export const EPRODUCT_TYPES_NAMES = ["مصرفی", "تجهیزات"];
 
 export interface ICreateProduct {
-    id:string;
+    id: string;
     name: string;
     price: string;
     date: string;
@@ -266,5 +266,14 @@ export interface IDBProductTransaction {
     key: string;
     status: ETransactionStatus;
 }
+
+export interface IAccessKey {
+    _id:string;
+    key: string;
+    value: string;
+}
+
+export type IDBAccessKey = IAccessKey;
+export type ICreateAccessKey = Omit<IAccessKey,"_id">;
 
 export type UnCertainData<T> = T | undefined | null;

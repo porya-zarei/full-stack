@@ -3,6 +3,7 @@ import {APP_ROUTES, ROUTES_STATE} from "@/constants/routes";
 import {useViewContext} from "@/contexts/view-context";
 import NavbarListItem from "./navbar-list-item";
 import {useUserContext} from "@/contexts/user-context";
+import {ERole} from "@/types/data";
 
 interface NavbarListProps {}
 
@@ -30,10 +31,28 @@ const NavbarList: FC<NavbarListProps> = () => {
             )}
             {APP_ROUTES.filter((route) => {
                 if (logedIn) {
-                    return (
+                    if (user.role === ERole.CREATOR) {
+                        return (
+                            route.renderState === ROUTES_STATE.GENERAL ||
+                            route.renderState === ROUTES_STATE.USER_LOGED_IN ||
+                            route.renderState === ROUTES_STATE.USER_IS_ADMIN ||
+                            route.renderState ===
+                                ROUTES_STATE.USER_IS_CREATOR ||
+                            route.renderState ===
+                                ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN
+                        );
+                    } else if (user.role === ERole.ADMIN) {
+                        return (
+                            route.renderState === ROUTES_STATE.GENERAL ||
+                            route.renderState === ROUTES_STATE.USER_LOGED_IN ||
+                            route.renderState === ROUTES_STATE.USER_IS_ADMIN ||
+                            route.renderState ===
+                                ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN
+                        );
+                    } else {
                         route.renderState === ROUTES_STATE.GENERAL ||
-                        route.renderState === ROUTES_STATE.USER_LOGED_IN
-                    );
+                            route.renderState === ROUTES_STATE.USER_LOGED_IN;
+                    }
                 } else {
                     return (
                         route.renderState === ROUTES_STATE.GENERAL ||

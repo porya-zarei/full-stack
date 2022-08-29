@@ -19,7 +19,7 @@ export const getAllGroupsHandler: NextApiHandler = async (req, res) => {
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
-        const result: IAPIResult<IUser | null> = {
+        const result: IAPIResult<null> = {
             data: null,
             ok: false,
             error: "Error getting all groups",
@@ -35,7 +35,7 @@ export const getGroupHandler: NextApiHandler = async (req, res) => {
         res.status(200).json(result);
     } catch (error) {
         logger.error(error);
-        const result: IAPIResult<IUser | null> = {
+        const result: IAPIResult<null> = {
             data: null,
             ok: false,
             error: "Error getting group",
@@ -55,7 +55,7 @@ export const addGroupHandler: NextApiHandler = async (req, res) => {
                 const result = await createGroup(data);
                 res.status(200).json(result);
             } else {
-                const result: IAPIResult<IUser | null> = {
+                const result: IAPIResult<null> = {
                     data: null,
                     ok: false,
                     error: "UnAuthorized",
@@ -72,7 +72,7 @@ export const addGroupHandler: NextApiHandler = async (req, res) => {
         }
     } catch (error) {
         logger.error(error);
-        const result: IAPIResult<IUser | null> = {
+        const result: IAPIResult<null> = {
             data: null,
             ok: false,
             error: "Error adding group",
@@ -108,7 +108,7 @@ export const deleteGroupHandler: NextApiHandler = async (req, res) => {
         }
     } catch (error) {
         logger.error(error);
-        const result: IAPIResult<IUser | null> = {
+        const result: IAPIResult<null> = {
             data: null,
             ok: false,
             error: "Error deleting group",
@@ -147,7 +147,7 @@ export const deleteGroupLimitYearHandler: NextApiHandler = async (req, res) => {
         }
     } catch (error) {
         logger.error(error);
-        const result: IAPIResult<IUser | null> = {
+        const result: IAPIResult<null> = {
             data: null,
             ok: false,
             error: "Error deleting group",
@@ -184,7 +184,7 @@ export const updateGroupHandler: NextApiHandler = async (req, res) => {
         }
     } catch (error) {
         logger.error(error);
-        const result: IAPIResult<IUser | null> = {
+        const result: IAPIResult<null> = {
             data: null,
             ok: false,
             error: "Error updating group",
