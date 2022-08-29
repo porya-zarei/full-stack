@@ -1,5 +1,5 @@
-import {FC} from "react";
-import {APP_ROUTES, ROUTES_STATE} from "@/constants/routes";
+import {FC, useEffect, useState} from "react";
+import {APP_ROUTES, IRoute, ROUTES_STATE} from "@/constants/routes";
 import {useViewContext} from "@/contexts/view-context";
 import NavbarListItem from "./navbar-list-item";
 import {useUserContext} from "@/contexts/user-context";
@@ -11,6 +11,43 @@ const NavbarList: FC<NavbarListProps> = () => {
     const {showNavbar} = useViewContext();
     const {user, isUserLoggedIn} = useUserContext();
     const logedIn = isUserLoggedIn();
+    const [renderRoutes, setRenderRoutes] = useState<IRoute[]>([]);
+    useEffect(() => {
+        const filtered = APP_ROUTES.filter((route) => {
+            if (logedIn) {
+                if (user.role === ERole.CREATOR) {
+                    return (
+                        route.renderState === ROUTES_STATE.GENERAL ||
+                        route.renderState === ROUTES_STATE.USER_LOGED_IN ||
+                        route.renderState === ROUTES_STATE.USER_IS_ADMIN ||
+                        route.renderState === ROUTES_STATE.USER_IS_CREATOR ||
+                        route.renderState ===
+                            ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN
+                    );
+                } else if (user.role === ERole.ADMIN) {
+                    return (
+                        route.renderState === ROUTES_STATE.GENERAL ||
+                        route.renderState === ROUTES_STATE.USER_LOGED_IN ||
+                        route.renderState === ROUTES_STATE.USER_IS_ADMIN ||
+                        route.renderState ===
+                            ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN
+                    );
+                } else if (user.role === ERole.USER) {
+                    return (
+                        route.renderState === ROUTES_STATE.GENERAL ||
+                        route.renderState === ROUTES_STATE.USER_LOGED_IN
+                    );
+                }
+            } else {
+                return (
+                    route.renderState === ROUTES_STATE.GENERAL ||
+                    route.renderState === ROUTES_STATE.USER_LOGED_OUT
+                );
+            }
+        });
+        console.log(APP_ROUTES, filtered);
+        setRenderRoutes(filtered);
+    }, [logedIn]);
     return (
         <ul
             className={`w-full md:w-10/12  ${
@@ -29,37 +66,7 @@ const NavbarList: FC<NavbarListProps> = () => {
                     />
                 </li>
             )}
-            {APP_ROUTES.filter((route) => {
-                if (logedIn) {
-                    if (user.role === ERole.CREATOR) {
-                        return (
-                            route.renderState === ROUTES_STATE.GENERAL ||
-                            route.renderState === ROUTES_STATE.USER_LOGED_IN ||
-                            route.renderState === ROUTES_STATE.USER_IS_ADMIN ||
-                            route.renderState ===
-                                ROUTES_STATE.USER_IS_CREATOR ||
-                            route.renderState ===
-                                ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN
-                        );
-                    } else if (user.role === ERole.ADMIN) {
-                        return (
-                            route.renderState === ROUTES_STATE.GENERAL ||
-                            route.renderState === ROUTES_STATE.USER_LOGED_IN ||
-                            route.renderState === ROUTES_STATE.USER_IS_ADMIN ||
-                            route.renderState ===
-                                ROUTES_STATE.USER_IS_CREATOR_OR_ADMIN
-                        );
-                    } else {
-                        route.renderState === ROUTES_STATE.GENERAL ||
-                            route.renderState === ROUTES_STATE.USER_LOGED_IN;
-                    }
-                } else {
-                    return (
-                        route.renderState === ROUTES_STATE.GENERAL ||
-                        route.renderState === ROUTES_STATE.USER_LOGED_OUT
-                    );
-                }
-            }).map((route) => (
+            {renderRoutes?.map((route) => (
                 <li
                     key={route.name}
                     className="flex justify-center items-center p-2 w-full md:w-auto">
