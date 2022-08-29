@@ -232,6 +232,22 @@ export const ETRANSACTION_STATUS_NAMES = [
     "رد شده خروج",
 ];
 
+export enum EProductTransactionType {
+    TYPE1,
+    TYPE2,
+    TYPE3,
+    TYPE4,
+    TYPE5,
+}
+
+export const ETRANSACTION_TYPE_NAMES = [
+    "انبار اصلی",
+    "امانی",
+    "انبار 1",
+    "انبار 2",
+    "انبار 3",
+];
+
 export interface IProductTransaction {
     _id: string;
     id: string;
@@ -241,6 +257,7 @@ export interface IProductTransaction {
     date: string;
     key: string;
     status: ETransactionStatus;
+    type: EProductTransactionType;
 }
 
 export interface ICreateProductTransaction {
@@ -248,6 +265,7 @@ export interface ICreateProductTransaction {
     product: string;
     description: string;
     key?: string;
+    type: EProductTransactionType;
 }
 
 export interface IConfirmProductTransaction {
@@ -265,15 +283,16 @@ export interface IDBProductTransaction {
     date: string;
     key: string;
     status: ETransactionStatus;
+    type: EProductTransactionType;
 }
 
 export interface IAccessKey {
-    _id:string;
+    _id: string;
     key: string;
     value: string;
 }
 
 export type IDBAccessKey = IAccessKey;
-export type ICreateAccessKey = Omit<IAccessKey,"_id">;
+export type ICreateAccessKey = Omit<IAccessKey, "_id">;
 
 export type UnCertainData<T> = T | undefined | null;

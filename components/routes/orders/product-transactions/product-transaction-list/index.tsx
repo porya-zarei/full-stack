@@ -32,17 +32,20 @@ const ProductTransactionList: FC<ProductTransactionListProps> = ({
                 <div className="flex-1 md:w-2/12 overflow-x-auto flex items-center justify-center">
                     <span className="font-semibold">نام کالا</span>
                 </div>
-                <div className="flex-1 md:w-3/12 hidden md:flex items-center justify-center">
+                <div className="flex-1 md:w-2/12 hidden md:flex items-center justify-center">
                     <span className="">توضیحات</span>
                 </div>
-                <div className="flex-1 md:w-2/12 flex items-center justify-center">
+                <div className="flex-1 md:w-1/12 flex items-center justify-center">
                     <span className="">ایدی کالا</span>
                 </div>
-                <div className="flex-1 md:w-2/12 flex items-center justify-center">
+                <div className="flex-1 md:w-1/12 flex items-center justify-center">
                     <span className="">تاریخ ثبت</span>
                 </div>
                 <div className="flex-1 md:w-3/12 flex items-center justify-center">
                     <span className="ml-1">وضعیت</span>
+                </div>
+                <div className="flex-1 md:w-1/12 flex items-center justify-center">
+                    <span className="ml-1">نوع</span>
                 </div>
             </div>
             {transactions?.length > 0 ? (

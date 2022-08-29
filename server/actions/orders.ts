@@ -102,7 +102,9 @@ export const addOrder = async (createOrder: ICreateOrder) => {
             status:
                 user.role === ERole.USER
                     ? EStatus.PENDING_FOR_SUPERVISOR
-                    : EStatus.PENDING_FOR_FINANCIAL_MANAGER,
+                    : supervisor.group.id === user.group.id
+                    ? EStatus.PENDING_FOR_FINANCIAL_MANAGER
+                    : EStatus.PENDING_FOR_SUPERVISOR,
             date: new Date().toISOString(),
             id: id,
             _id: id,

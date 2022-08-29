@@ -205,6 +205,10 @@ export const ProductTransactionSchema = new Schema<IDBProductTransaction>({
         type: String,
         default: "",
     },
+    type: {
+        type: Number,
+        default: 0,
+    },
 });
 
 export const AccessKeySchema = new Schema<IDBAccessKey>({
