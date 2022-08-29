@@ -158,6 +158,7 @@ const AddProduct: FC<AddProductProps> = ({
             <div className="w-full flex items-center justify-start flex-wrap">
                 <fieldset className="w-full md:w-5/12 flex items-center justify-center">
                     <CRadio
+                        value={productData.valueType}
                         name={`product-type-${productData.id}`}
                         title="نوع کالا : "
                         options={enumToArray(EProductType).map((type) => ({
