@@ -298,7 +298,8 @@ const ProfileRoute: FC<ProfileRouteProps> = ({slug}) => {
                                         disabled={
                                             !inUpdate ||
                                             loading ||
-                                            updateLoading
+                                            updateLoading ||
+                                            user.role !== ERole.CREATOR
                                         }
                                     />
                                 </div>
@@ -328,7 +329,8 @@ const ProfileRoute: FC<ProfileRouteProps> = ({slug}) => {
                                         disabled={
                                             !inUpdate ||
                                             loading ||
-                                            updateLoading
+                                            updateLoading ||
+                                            user.role !== ERole.CREATOR
                                         }
                                     />
                                 </div>
