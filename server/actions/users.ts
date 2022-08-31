@@ -62,8 +62,8 @@ export const addUser = async (userData: ICreateUser) => {
     return result;
 };
 
-export const updateUser = async (userData: Partial<IDBUser> & {id: string}) => {
-    const updatedUser = await updateUserMDB(userData.id, userData);
+export const updateUser = async (id: string,userData: Partial<IDBUser>) => {
+    const updatedUser = await updateUserMDB(id, userData);
     const result: IAPIResult<UnCertainData<IUser>> = {
         data: updatedUser,
         ok: !!updatedUser,

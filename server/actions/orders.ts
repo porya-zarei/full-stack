@@ -6,6 +6,7 @@ import {
     IDBOrder,
     ICreateOrder,
     ERole,
+    ESTATUS_NAMES,
 } from "@/types/data";
 import {Types} from "mongoose";
 import {
@@ -14,11 +15,85 @@ import {
     getGroupMDB,
     getOrderMDB,
     getOrdersMDB,
+    getUserByRoleMDB,
     getUserMDB,
     updateOrderMDB,
 } from "../mongoose/functions";
+import {sendSms} from "../sms";
 import {logger} from "../utils/logger";
 import {isExtraPrice} from "../utils/premissions";
+
+const sendSmsOnAddOrder = (user: IUser, supervisor: IUser, status: EStatus) => {
+    sendSms(
+        `سفارش شما با وضعیت ${ESTATUS_NAMES[Number(status)]} ثبت شد`,
+        user.fullName,
+        user.phoneNumber,
+        (_, st, msg) => {
+            logger.log(`sms sended, ${st}, ${msg}`);
+        },
+    );
+    if (status === EStatus.PENDING_FOR_SUPERVISOR) {
+        sendSms(
+            `سفارشی برای تایید شما با وضعیت ${
+                ESTATUS_NAMES[Number(status)]
+            } از طرف ${user.fullName} ثبت شد.`,
+            supervisor.fullName,
+            supervisor.phoneNumber,
+            (_, st, msg) => {
+                logger.log(`sms sended, ${st}, ${msg}`);
+            },
+        );
+    } else if (status === EStatus.PENDING_FOR_FINANCIAL_MANAGER) {
+        getUserByRoleMDB(ERole.CREATOR)
+            .then((creator) => {
+                if (creator) {
+                    sendSms(
+                        `سفارشی برای تایید شما با وضعیت ${
+                            ESTATUS_NAMES[Number(status)]
+                        } از طرف ${user.fullName} ثبت شد.`,
+                        creator.fullName,
+                        creator.phoneNumber,
+                        (_, st, msg) => {
+                            logger.log(`sms sended, ${st}, ${msg}`);
+                        },
+                    );
+                }
+            })
+            .catch((error) => {
+                logger.log(`error in send sms to creator => ${error}`);
+            });
+    }
+};
+
+const sendSmsOnUpdateOrder = (user: IUser, status: EStatus) => {
+    logger.log("in send sms");
+    sendSms(
+        `سفارش شما با وضعیت ${ESTATUS_NAMES[Number(status)]} اپدیت شد`,
+        user.fullName,
+        user.phoneNumber,
+        (_, st, msg) => {
+            logger.log(`sms sended, ${st}, ${msg}`);
+        },
+    );
+    getUserByRoleMDB(ERole.CREATOR)
+        .then((creator) => {
+            if (creator) {
+                sendSms(
+                    `سفارشی برای تایید شما با وضعیت ${
+                        ESTATUS_NAMES[Number(status)]
+                    } از طرف ${user.fullName} وجود دارد.`,
+                    creator.fullName,
+                    creator.phoneNumber,
+                    (_, st, msg) => {
+                        logger.log(`sms sended, ${st}, ${msg}`);
+                    },
+                );
+            }
+        })
+        .catch((error) => {
+            logger.log(`error in send sms to creator => ${error}`);
+        });
+};
 
 export const getUserAndSupervisor = async (
     data:
@@ -90,6 +165,14 @@ export const getOrder = async (id: string = "") => {
     return result;
 };
 
+const getAddOrderStatus = (user: IUser, supervisor: IUser) => {
+    return user.role === ERole.USER
+        ? EStatus.PENDING_FOR_SUPERVISOR
+        : supervisor.group.id === user.group.id
+        ? EStatus.PENDING_FOR_FINANCIAL_MANAGER
+        : EStatus.PENDING_FOR_SUPERVISOR;
+};
+
 export const addOrder = async (createOrder: ICreateOrder) => {
     const {user, supervisor} = await getUserAndSupervisor(createOrder);
     const orders = await getAllOrders();
@@ -97,14 +180,10 @@ export const addOrder = async (createOrder: ICreateOrder) => {
         const id = new Types.ObjectId().toString();
         const group = user.group;
         const isExtra = isExtraPrice(orders.data, createOrder, group);
+        const status = getAddOrderStatus(user, supervisor);
         const order: IDBOrder = {
             ...createOrder,
-            status:
-                user.role === ERole.USER
-                    ? EStatus.PENDING_FOR_SUPERVISOR
-                    : supervisor.group.id === user.group.id
-                    ? EStatus.PENDING_FOR_FINANCIAL_MANAGER
-                    : EStatus.PENDING_FOR_SUPERVISOR,
+            status,
             date: new Date().toISOString(),
             id: id,
             _id: id,
@@ -126,6 +205,7 @@ export const addOrder = async (createOrder: ICreateOrder) => {
                 ok: true,
                 error: "",
             };
+            sendSmsOnAddOrder(user, supervisor, status);
             return result;
         }
     }
@@ -138,9 +218,12 @@ export const addOrder = async (createOrder: ICreateOrder) => {
 };
 
 export const updateOrder = async (order: IDBOrder) => {
+    logger.log("in update order");
     const updatedOrder = await updateOrderMDB(order.id, order);
     const {user, supervisor} = await getUserAndSupervisor(order);
     if (user && supervisor && updatedOrder) {
+        logger.log("before send sms");
+        sendSmsOnUpdateOrder(user, updatedOrder.status);
         const newOrder: IOrder = {
             ...updatedOrder,
             user,
@@ -252,6 +335,7 @@ export const changeOrderStatus = async (id: string = "", status: EStatus) => {
         updateOrderMDB(id, {status});
         const {user, supervisor} = await getUserAndSupervisor(order);
         if (user && supervisor) {
+            sendSmsOnUpdateOrder(user, status);
             const newOrder: Partial<IOrder> = {
                 ...order,
                 user,

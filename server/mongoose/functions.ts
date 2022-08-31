@@ -1,4 +1,5 @@
 import {
+    ERole,
     ETransactionStatus,
     IAccessKey,
     ICreateAccessKey,
@@ -79,6 +80,23 @@ export const getUserMDB = async (id: string) => {
         const connection = await getConnection();
         if (connection.connection.readyState === 1) {
             const user = await UserModel.findById(id).exec();
+            const group = await GroupModel.findById(user?.group ?? "").exec();
+            return {...user?.toObject(), group: group?.toObject()} as IUser;
+        }
+        return null;
+    } catch (error) {
+        logger.error(error);
+        return null;
+    }
+};
+
+export const getUserByRoleMDB = async (role: ERole) => {
+    try {
+        const connection = await getConnection();
+        if (connection.connection.readyState === 1) {
+            const user = await UserModel.findOne({
+                role,
+            }).exec();
             const group = await GroupModel.findById(user?.group ?? "").exec();
             return {...user?.toObject(), group: group?.toObject()} as IUser;
         }

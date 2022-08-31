@@ -173,7 +173,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                     const result = await createOrder(data);
                     if (result && result.ok && result.ok) {
                         resetProductsData();
-                        notify("محصول با موفقیت ثبت شد", {
+                        notify("سفارش شما با موفقیت ثبت شد", {
                             type: "success",
                         });
                     } else {

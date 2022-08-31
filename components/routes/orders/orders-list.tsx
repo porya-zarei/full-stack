@@ -6,7 +6,7 @@ import {useUserContext} from "@/contexts/user-context";
 import useNotification from "@/hooks/useNotification";
 import {useOrders} from "@/hooks/useOrders";
 import {updateOrderStatus} from "@/services/orders";
-import {ERole, ESTATUS_NAMES, IOrder} from "@/types/data";
+import {ERole, EStatus, ESTATUS_NAMES, IOrder} from "@/types/data";
 import {useRouter} from "next/router";
 import {FC, MouseEvent} from "react";
 
@@ -89,7 +89,7 @@ const OrdersListRoute: FC<OrdersListRouteProps> = () => {
                                         primaryContainerClassName="rounded-xl overflow-hidden shadow-around transition-all hover:scale-110 z-0 hover:z-20 cursor-pointer"
                                         secondaryContainerClassName="h-full bg-white relative overflow-y-auto custom-scrollbar"
                                         contentClassName="px-3 py-2 text-center"
-                                        renderFooter={user.role !== ERole.USER}
+                                        renderFooter={(user.role !== ERole.USER) && (order.status !== EStatus.COMPLETED )}
                                         dangerBtnText="برگشت"
                                         btnsContainerClassName="sticky bottom-0 z-10 bg-white"
                                         dangerBtnClassName="bg-white hover:bg-warning hover:text-white transition-all border-warning text-warning font-bold"

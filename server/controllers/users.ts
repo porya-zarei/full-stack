@@ -51,10 +51,27 @@ export const getAllUsersHandler: NextApiHandler = async (req, res) => {
 export const getUserHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
-        if (token) {
+        const user = await getUserFromToken(token);
+        if (user) {
             const {id} = req.body as {id: string};
-            const result = await getUser(id);
-            res.status(200).json(result);
+            if (id?.length > 0 && user.role === ERole.CREATOR) {
+                const result = await getUser(id);
+                res.status(200).json(result);
+            } else if (id?.length > 0 && user.role !== ERole.CREATOR) {
+                const result: IAPIResult<null> = {
+                    data: null,
+                    error: "",
+                    ok: false,
+                };
+                res.status(200).json(result);
+            } else {
+                const result: IAPIResult<IUser> = {
+                    data: user,
+                    error: "",
+                    ok: true,
+                };
+                res.status(200).json(result);
+            }
         } else {
             const result: IAPIResult<string> = {
                 data: "",
@@ -104,8 +121,8 @@ export const updateUserHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
         if (token) {
-            const user = req.body as Partial<IDBUser> & {id: string};
-            const result = await updateUser(user);
+            const {user, id} = req.body as {user: Partial<IDBUser>; id: string};
+            const result = await updateUser(id, user);
             res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {

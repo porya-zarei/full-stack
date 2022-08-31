@@ -6,12 +6,15 @@ import useNotification from "@/hooks/useNotification";
 import {useUsers} from "@/hooks/useUsers";
 import {changeGroup, changeRole, deleteUser} from "@/services/users";
 import {ERole, IUser} from "@/types/data";
+import {enumToArray} from "@/utils/enums-helper";
+import {useRouter} from "next/router";
 import {FC, useTransition} from "react";
 import {HiTrash} from "react-icons/hi";
 
 interface ChangeUsersRouteProps {}
 
 const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
+    const router = useRouter();
     const [isPending, startTranstion] = useTransition();
     const {users, loading, refetch} = useUsers();
     const {groups} = useGroups();
@@ -86,7 +89,13 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                         <td className="px-4 py-2">
                                             {index + 1}
                                         </td>
-                                        <td className="px-4 py-2">
+                                        <td
+                                            onClick={() => {
+                                                router.push(
+                                                    `/users/profile/${user.id}`,
+                                                );
+                                            }}
+                                            className="px-4 py-2 cursor-pointer">
                                             {user.fullName}
                                         </td>
                                         <td className="px-4 py-2">
@@ -98,7 +107,7 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                                     value: g.id,
                                                     label: g.name,
                                                 }))}
-                                                value={user?.group?.id??""}
+                                                value={user?.group?.id ?? ""}
                                                 name="group"
                                                 placeholder="گروه"
                                                 onChange={handleChangeUserGroup(
@@ -109,15 +118,15 @@ const ChangeUsersRoute: FC<ChangeUsersRouteProps> = () => {
                                         </td>
                                         <td className="px-4 py-2">
                                             <CSelectOption
-                                                options={Object.entries(ERole)
-                                                    .filter(([key]) =>
-                                                        key?.match(/^[A-Z]/),
-                                                    )
-                                                    .map(([key, value]) => ({
+                                                options={enumToArray(ERole).map(
+                                                    ({key, value}) => ({
                                                         value: value?.toString(),
                                                         label: key,
-                                                    }))}
-                                                value={user?.role?.toString()??""}
+                                                    }),
+                                                )}
+                                                value={
+                                                    user?.role?.toString() ?? ""
+                                                }
                                                 name="role"
                                                 placeholder="نقش"
                                                 onChange={handleChangeUserRole(

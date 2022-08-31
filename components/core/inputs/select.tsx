@@ -12,6 +12,7 @@ interface CSelectOptionProps {
     iconClassName?: string;
     title?: string;
     titleClassName?: string;
+    disabled?:boolean;
 }
 
 const CSelectOption: FC<CSelectOptionProps> = ({
@@ -26,12 +27,13 @@ const CSelectOption: FC<CSelectOptionProps> = ({
     iconClassName,
     title,
     titleClassName,
+    disabled=false
 }) => {
     return (
         <div
             className={`w-full flex items-center justify-center ${containerClassName}`}>
             {title && (
-                <div className="w-full flex items-center justify-center">
+                <div className="w-auto whitespace-nowrap flex items-center justify-center">
                     {title && (
                         <div
                             className={`flex items-center justify-center ${titleClassName}`}>
@@ -52,6 +54,7 @@ const CSelectOption: FC<CSelectOptionProps> = ({
                     name={name}
                     title={placeholder}
                     value={value}
+                    disabled={disabled}
                     onChange={onChange}>
                     <option
                         disabled

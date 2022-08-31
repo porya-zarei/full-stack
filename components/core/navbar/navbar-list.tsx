@@ -58,7 +58,7 @@ const NavbarList: FC<NavbarListProps> = () => {
                     <NavbarListItem
                         route={{
                             name: user.fullName,
-                            path: "#",
+                            path: "/users/profile/me",
                             renderState: ROUTES_STATE.USER_LOGED_IN,
                         }}
                         className="hover:bg-light hover:bg-opacity-10 py-2 px-4 m-1 rounded-md"

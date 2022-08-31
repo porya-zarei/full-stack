@@ -12,6 +12,7 @@ interface CInputProps {
     iconClassName?: string;
     title?: string;
     titleClassName?: string;
+    disabled?: boolean;
 }
 
 const CInput: FC<CInputProps> = ({
@@ -26,12 +27,13 @@ const CInput: FC<CInputProps> = ({
     iconClassName,
     title,
     titleClassName,
+    disabled = false,
 }) => {
     return (
         <div
             className={`w-full flex items-center justify-center ${containerClassName}`}>
             {title && (
-                <div className="w-full flex items-center justify-center">
+                <div className="w-auto whitespace-nowrap flex items-center justify-center">
                     {title && (
                         <div
                             className={`flex items-center justify-center ${titleClassName}`}>
@@ -54,6 +56,7 @@ const CInput: FC<CInputProps> = ({
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
+                    disabled={disabled}
                 />
             </div>
         </div>
