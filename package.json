@@ -1,7 +1,7 @@
 {
   "name": "full-stack",
   "private": true,
-  "version": "0.9",
+  "version": "0.99",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
