@@ -1,14 +1,14 @@
-import {FC} from "react";
+import {FC, ChangeEvent, ReactNode} from "react";
 
 interface CInputProps {
     type: string;
     name: string;
     placeholder: string;
     value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     className?: string;
     containerClassName?: string;
-    icon?: React.ReactElement;
+    icon?: ReactNode;
     iconClassName?: string;
     title?: string;
     titleClassName?: string;

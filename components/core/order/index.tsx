@@ -1,3 +1,4 @@
+import {BASE_URL} from "@/constants/api";
 import {
     EProductType,
     EPRODUCT_TYPES_NAMES,
@@ -6,10 +7,12 @@ import {
     ESTATUS_NAMES,
     IOrder,
 } from "@/types/data";
-import { getDaysBetween } from "@/utils/date-helper";
+import {getDaysBetween} from "@/utils/date-helper";
 import {enumToArray} from "@/utils/enums-helper";
-import {FC, useState} from "react";
+import {FC, Dispatch, SetStateAction} from "react";
+import {HiOutlineDocumentText} from "react-icons/hi";
 import CButton from "../buttons";
+import CFile from "../inputs/file";
 import Loading from "../loadings";
 
 interface OrderProps {
@@ -19,7 +22,11 @@ interface OrderProps {
     handleConfirm?: () => void;
     handleCancel?: () => void;
     handleDelete?: () => void;
+    handleUploadInvoice?: (file: File[] | File) => Promise<void>;
+    upload?: boolean;
     loading: boolean;
+    invoiceFile: File | File[] | null;
+    setInvoiceFile: Dispatch<SetStateAction<File | File[] | null>>;
 }
 
 const Order: FC<OrderProps> = ({
@@ -29,9 +36,12 @@ const Order: FC<OrderProps> = ({
     handleCancel,
     handleConfirm,
     handleDelete,
+    handleUploadInvoice,
     loading,
+    upload = false,
+    invoiceFile,
+    setInvoiceFile,
 }) => {
-    console.log(order);
     return (
         <article
             className={`w-full p-1 md:p-5 rounded-2xl shadow-around flex justify-center items-start flex-wrap ${className}`}>
@@ -82,7 +92,12 @@ const Order: FC<OrderProps> = ({
                                             "fa-IR",
                                         )}
                                     </td>
-                                    <td title={`${getDaysBetween(order.date,product.date)} روز پس از ثبت سفارش`} className="px-2 py-1">
+                                    <td
+                                        title={`${getDaysBetween(
+                                            order.date,
+                                            product.date,
+                                        )} روز پس از ثبت سفارش`}
+                                        className="px-2 py-1">
                                         {new Date(
                                             product.date,
                                         ).toLocaleDateString("fa-IR")}
@@ -120,7 +135,9 @@ const Order: FC<OrderProps> = ({
                                         )
                                         .toLocaleString("fa-IR")}
                                 </td>
-                                <td className="px-2 py-1 w-auto whitespace-nowrap">جمع کل :</td>
+                                <td className="px-2 py-1 w-auto whitespace-nowrap">
+                                    جمع کل :
+                                </td>
                                 <td className="px-2 py-1 w-auto whitespace-nowrap">
                                     {order?.products
                                         ?.reduce(
@@ -149,12 +166,52 @@ const Order: FC<OrderProps> = ({
                         بیش از حد مجاز : {order.isExtra ? "است" : "نیست"}
                     </span>
                 </div>
-                <div className="w-full flex justify-start items-center my-2">
-                    توضیحات :
+                <div className="w-full flex justify-center items-center flex-wrap py-2 my-2 border-y-2 border-secondary-dark">
+                    <div className="w-full flex justify-start items-center mb-1">
+                        توضیحات :
+                    </div>
+                    <p className="w-full flex justify-center items-center flex-wrap">
+                        {order?.description}
+                    </p>
                 </div>
-                <p className="w-full flex justify-center items-center flex-wrap">
-                    {order?.description}
-                </p>
+                {order.status === EStatus.REJECTED && (
+                    <div className="w-full flex justify-center items-center flex-wrap">
+                        <span className="mx-2 p-2">دلیل رد سفارش : </span>
+                        <p className="">{order?.responseText}</p>
+                    </div>
+                )}
+                {order?.invoice && order?.invoice?.length > 0 ? (
+                    <div className="w-full flex justify-center items-center my-2">
+                        <a
+                            className="p-2 w-auto flex justify-center items-center border-y-2 border-transparent transition-all hover:border-y-2 hover:border-dark"
+                            download={true}
+                            target="_blank"
+                            rel="noreferrer"
+                            href={`${BASE_URL}/assets/files/${
+                                order.invoice ?? ""
+                            }`}>
+                            دانلود فاکتور
+                        </a>
+                    </div>
+                ) : upload ? (
+                    <CFile
+                        file={invoiceFile}
+                        setFile={setInvoiceFile}
+                        text={`فایل خود را اپلود کنید ${
+                            !Array.isArray(invoiceFile) &&
+                            ` - ${invoiceFile?.name}`
+                        }`}
+                        className="p-2 border-2 border-dark rounded-md"
+                        iconClassName="mx-2"
+                        textClassName="mx-2"
+                        icon={<HiOutlineDocumentText />}
+                        name="invoice"
+                        title="فایل پیش فاکتور خود را انتخاب کنید"
+                        onGetFile={handleUploadInvoice}
+                    />
+                ) : (
+                    ""
+                )}
             </div>
             {userRole !== ERole.USER && (
                 <div className="w-full mt-2 flex justify-evenly items-center flex-wrap border-t-2 border-gray-light border-dashed py-2">

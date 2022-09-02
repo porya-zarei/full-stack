@@ -22,7 +22,7 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
         async (e: MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
             const result = await updateOrderStatus(order.id, confirmed);
-            console.log("order status update => ",result);
+            console.log("order status update => ", result);
             if (result.ok && result?.data) {
                 await refetch();
                 notify("وضعیت اپدیت شد", {
@@ -94,9 +94,7 @@ const OrdersRoute: FC<OrdersRouteProps> = () => {
                                             primaryContainerClassName="rounded-xl overflow-hidden shadow-around transition-all hover:scale-110 z-0 hover:z-20 cursor-pointer"
                                             secondaryContainerClassName="h-full bg-white relative overflow-y-auto custom-scrollbar"
                                             contentClassName="px-3 py-2 text-center"
-                                            renderFooter={
-                                                user.role !== ERole.USER
-                                            }
+                                            renderFooter={false}
                                             dangerBtnText="برگشت"
                                             btnsContainerClassName="sticky bottom-0 z-10 bg-white"
                                             dangerBtnClassName="bg-white hover:bg-warning hover:text-white transition-all border-warning text-warning font-bold"

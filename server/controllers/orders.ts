@@ -1,5 +1,12 @@
 import {IAPIResult} from "@/types/api";
-import {EStatus, IOrder, IUser, IDBOrder, ERole, ICreateOrder} from "@/types/data";
+import {
+    EStatus,
+    IOrder,
+    IUser,
+    IDBOrder,
+    ERole,
+    ICreateOrder,
+} from "@/types/data";
 import {NextApiHandler} from "next";
 import {
     addOrder,
@@ -101,8 +108,11 @@ export const updateOrderHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
         if (token) {
-            const order = req.body as IDBOrder;
-            const result = await updateOrder(order);
+            const {id, order} = req.body as {
+                id: string;
+                order: Partial<IDBOrder>;
+            };
+            const result = await updateOrder(id, order);
             res.status(200).json(result);
         } else {
             const result: IAPIResult<string> = {
@@ -208,20 +218,16 @@ export const updateOrderStatusHandler: NextApiHandler = async (req, res) => {
     try {
         const token = getTokenFromRequest(req);
         if (token) {
-            const {id, confirmed} = req.body as {
+            const {id, confirmed, responseText} = req.body as {
                 id: string;
                 confirmed: boolean;
+                responseText: string;
             };
             const order = await getOrder(id);
             const user = await getUserFromToken(token);
             let status = EStatus.PENDING_FOR_SUPERVISOR;
-            logger.log(
-                `in update status => ${JSON.stringify(order)} ${JSON.stringify(
-                    user,
-                )} ${confirmed}`,
-            );
-            if (order) {
-                if (confirmed && order.data) {
+            if (order && order.data) {
+                if (confirmed) {
                     if (
                         order.data.status === EStatus.PENDING_FOR_SUPERVISOR &&
                         user?.role === ERole.CREATOR
@@ -247,11 +253,17 @@ export const updateOrderStatusHandler: NextApiHandler = async (req, res) => {
                         status = order.data?.status;
                     }
                 } else {
-                    status = order.data?.status ?? EStatus.REJECTED;
+                    status = EStatus.REJECTED;
                 }
-                const result = await changeOrderStatus(id, status);
+                const result = await changeOrderStatus(
+                    id,
+                    status,
+                    responseText,
+                );
                 logger.log(
-                    `order ${status} update => ${JSON.stringify(result)}`,
+                    `order ${status} update => ${JSON.stringify(
+                        result?.data?.status,
+                    )}`,
                 );
                 res.status(200).json(result);
             } else {

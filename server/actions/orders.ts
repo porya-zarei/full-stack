@@ -217,24 +217,26 @@ export const addOrder = async (createOrder: ICreateOrder) => {
     return result;
 };
 
-export const updateOrder = async (order: IDBOrder) => {
+export const updateOrder = async (id: string, order: Partial<IDBOrder>) => {
     logger.log("in update order");
-    const updatedOrder = await updateOrderMDB(order.id, order);
-    const {user, supervisor} = await getUserAndSupervisor(order);
-    if (user && supervisor && updatedOrder) {
-        logger.log("before send sms");
-        sendSmsOnUpdateOrder(user, updatedOrder.status);
-        const newOrder: IOrder = {
-            ...updatedOrder,
-            user,
-            supervisor,
-        };
-        const result: IAPIResult<Partial<IOrder>> = {
-            data: newOrder,
-            ok: true,
-            error: "",
-        };
-        return result;
+    const updatedOrder = await updateOrderMDB(id, order);
+    if (updatedOrder) {
+        const {user, supervisor} = await getUserAndSupervisor(updatedOrder);
+        if (user && supervisor && updatedOrder) {
+            logger.log("before send sms");
+            sendSmsOnUpdateOrder(user, updatedOrder.status);
+            const newOrder: IOrder = {
+                ...updatedOrder,
+                user,
+                supervisor,
+            };
+            const result: IAPIResult<Partial<IOrder>> = {
+                data: newOrder,
+                ok: true,
+                error: "",
+            };
+            return result;
+        }
     }
     const result: IAPIResult<IOrder | null> = {
         data: null,
@@ -329,15 +331,23 @@ export const getUserOrders = async (id: string = "") => {
     return result;
 };
 
-export const changeOrderStatus = async (id: string = "", status: EStatus) => {
+export const changeOrderStatus = async (
+    id: string = "",
+    status: EStatus,
+    responseText: string = "",
+) => {
     const order = await getOrderMDB(id);
     if (order) {
-        updateOrderMDB(id, {status});
+        const updates: Partial<IDBOrder> = {status};
+        if (responseText && responseText?.length > 0) {
+            updates["responseText"] = responseText;
+        }
+        const updatedOrder = await updateOrderMDB(id, {...updates});
         const {user, supervisor} = await getUserAndSupervisor(order);
-        if (user && supervisor) {
+        if (user && supervisor && updatedOrder) {
             sendSmsOnUpdateOrder(user, status);
             const newOrder: Partial<IOrder> = {
-                ...order,
+                ...updatedOrder,
                 user,
                 supervisor,
             };

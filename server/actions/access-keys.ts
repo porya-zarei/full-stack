@@ -8,6 +8,7 @@ import {
     getAccessKeysMDB,
     updateAccessKeyMDB,
 } from "../mongoose/functions";
+import {logger} from "../utils/logger";
 
 export const getAccessKeys = async () => {
     const accessKeys = await getAccessKeysMDB();
@@ -73,5 +74,5 @@ export const getAccessKeyByKeyValue = async (data: Omit<IAccessKey, "_id">) => {
 
 export const isAccessKeyCorrect = async (data: Omit<IAccessKey, "_id">) => {
     const accessKey = await getAccessKeyByKeyValueMDB(data);
-    return !!accessKey;
+    return accessKey && Object.keys(accessKey).length > 0;
 };

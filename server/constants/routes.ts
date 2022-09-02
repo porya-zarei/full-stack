@@ -63,4 +63,7 @@ export const API_ROUTES = {
         deleteAccessKey: "/access-keys/deleteAccessKey",
         updateAccessKey: "/access-keys/updateAccessKey",
     },
+    uploads: {
+        uploadOrderFile: "/uploads/uploadOrderFile",
+    },
 };

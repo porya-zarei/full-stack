@@ -150,6 +150,8 @@ export interface IOrder {
     supervisor: IUser;
     officialBill: boolean;
     isExtra: boolean;
+    invoice?: string;
+    responseText?: string;
 }
 
 export interface ICreateOrder {
@@ -158,6 +160,7 @@ export interface ICreateOrder {
     description: string;
     supervisor: string;
     officialBill: boolean;
+    invoice?: string;
 }
 
 export interface IDBOrder {
@@ -171,6 +174,8 @@ export interface IDBOrder {
     supervisor: string;
     officialBill: boolean;
     isExtra: boolean;
+    invoice?: string;
+    responseText?: string;
 }
 
 export interface IMoneyLimitYear {

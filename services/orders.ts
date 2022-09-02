@@ -1,6 +1,6 @@
 import {API_ROUTES} from "@/server/constants/routes";
 import {IAPIResult} from "@/types/api";
-import {ICreateOrder, IOrder} from "@/types/data";
+import {ICreateOrder, IDBOrder, IOrder} from "@/types/data";
 import {axios_instance} from "./axios";
 
 export const createOrder = async (order: ICreateOrder) => {
@@ -60,6 +60,7 @@ export const getOrder = async (id: string) => {
 
 export const getPendingOrders = async (userId: string) => {
     try {
+        console.log("id => ", userId);
         const result = await axios_instance.post<IAPIResult<IOrder[]>>(
             API_ROUTES.orders.getPendingOrders,
             {id: userId},
@@ -94,11 +95,14 @@ export const getUserOrders = async (userId: string) => {
     }
 };
 
-export const updateOrderStatus = async (id: string, confirmed: boolean) => {
+export const updateOrder = async (
+    id: string,
+    updatedOrder?: Partial<IDBOrder>,
+) => {
     try {
         const result = await axios_instance.post<IAPIResult<IOrder>>(
-            API_ROUTES.orders.updateOrderStatus,
-            {id, confirmed},
+            API_ROUTES.orders.updateOrder,
+            {id, order: updatedOrder},
         );
         return result.data;
     } catch (error) {
@@ -112,11 +116,33 @@ export const updateOrderStatus = async (id: string, confirmed: boolean) => {
     }
 };
 
-export const checkMoneyLimit = async (id: string,money:string) => {
+export const updateOrderStatus = async (
+    id: string,
+    confirmed: boolean,
+    responseText: string = "",
+) => {
+    try {
+        const result = await axios_instance.post<IAPIResult<IOrder>>(
+            API_ROUTES.orders.updateOrderStatus,
+            {id, confirmed, responseText},
+        );
+        return result.data;
+    } catch (error) {
+        console.log("error in update order status => ", error);
+        const result: IAPIResult<IOrder | null> = {
+            data: null,
+            error: "error in update order status",
+            ok: false,
+        };
+        return result;
+    }
+};
+
+export const checkMoneyLimit = async (id: string, money: string) => {
     try {
         const result = await axios_instance.post<IAPIResult<boolean>>(
             API_ROUTES.orders.checkMoneyLimit,
-            {id,money},
+            {id, money},
         );
         return result.data;
     } catch (error) {
@@ -128,9 +154,9 @@ export const checkMoneyLimit = async (id: string,money:string) => {
         };
         return result;
     }
-}
+};
 
-export const deleteOrder = async (id:string) => {
+export const deleteOrder = async (id: string) => {
     try {
         const result = await axios_instance.post<IAPIResult<boolean>>(
             API_ROUTES.orders.deleteOrder,
@@ -146,4 +172,4 @@ export const deleteOrder = async (id:string) => {
         };
         return result;
     }
-}
+};

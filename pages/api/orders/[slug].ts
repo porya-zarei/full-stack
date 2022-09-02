@@ -11,6 +11,7 @@ import {
     updateOrderStatusHandler,
 } from "@/server/controllers/orders";
 import {IAPIResult} from "@/types/api";
+import { logger } from "@/server/utils/logger";
 
 const HANDLERS: Record<string, NextApiHandler> = {
     addOrder: addOrderHandler,
@@ -26,8 +27,7 @@ const HANDLERS: Record<string, NextApiHandler> = {
 
 const handler: NextApiHandler = async (req, res) => {
     const {slug} = req.query;
-    console.log("slug => ",slug);
-    console.log("body => ",req.body);
+    logger.log(`slug => ${slug}`);
     if (typeof slug === "string" && slug in HANDLERS) {
         await HANDLERS[slug](req, res);
     } else {

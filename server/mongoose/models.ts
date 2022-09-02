@@ -172,6 +172,18 @@ export const OrderSchema = new Schema<IDBOrder>({
         required: true,
         default: [],
     },
+    isExtra: {
+        type: Boolean,
+        default: false,
+    },
+    invoice: {
+        type: String,
+        default: "",
+    },
+    responseText: {
+        type: String,
+        default: "",
+    },
 });
 
 export const ProductTransactionSchema = new Schema<IDBProductTransaction>({

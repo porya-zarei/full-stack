@@ -1,4 +1,4 @@
-import {FC, useState} from "react";
+import {FC, useState, useRef} from "react";
 import RouteContainer from "@/components/core/containers/route-container";
 import FrameContainer from "@/components/core/containers/frame-container";
 import CTextArea from "@/components/core/inputs/text-area";
@@ -10,8 +10,6 @@ import {
     ICreateOrder,
     ICreateProduct,
     IDBProductCategory,
-    IProduct,
-    IProductCategory,
 } from "@/types/data";
 import {useUserContext} from "@/contexts/user-context";
 import {createOrder} from "@/services/orders";
@@ -23,6 +21,9 @@ import AddProduct from "./add-product";
 import {useCheckMoneyLimit} from "@/hooks/useCheckMoneyLimit";
 import Loading from "@/components/core/loadings";
 import CButton from "@/components/core/buttons";
+import {uploadFile} from "@/services/uploads";
+import CFile from "@/components/core/inputs/file";
+import {HiOutlineDocumentText} from "react-icons/hi";
 interface AddOrderRouteProps {}
 export interface OrderDataProduct {
     id: number;
@@ -65,6 +66,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
     const [description, setDescription] = useState("");
     const [supervisor, setSupervisor] = useState("");
     const [officialBill, setOfficialBill] = useState(false);
+    const [invoiceFile, setInvoiceFile] = useState<File | File[] | null>(null);
     const [loading, setLoading] = useState(false);
     const handleAddOrderRow = () => {
         const randomId = getRandonId();
@@ -97,6 +99,8 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
         );
         setDescription("");
         setSupervisor("");
+        setInvoiceFile(null);
+        setOfficialBill(false);
     };
 
     const checkMoneyLimitForOrder = async () => {
@@ -134,6 +138,17 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                 setLoading(true);
                 const isOk = await checkMoneyLimitForOrder();
                 if (isOk) {
+                    let fileName = "";
+                    if (
+                        invoiceFile &&
+                        !Array.isArray(invoiceFile) &&
+                        invoiceFile.name?.length > 0
+                    ) {
+                        const uploadResult = await uploadFile(invoiceFile);
+                        if (uploadResult.ok && uploadResult.data) {
+                            fileName = uploadResult.data;
+                        }
+                    }
                     const data: ICreateOrder = {
                         officialBill,
                         description:
@@ -168,6 +183,7 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                             ),
                         supervisor: supervisor,
                         user: user.id,
+                        invoice: fileName,
                     };
                     console.log("data => ", data);
                     const result = await createOrder(data);
@@ -251,6 +267,22 @@ const AddOrderRoute: FC<AddOrderRouteProps> = () => {
                             value={officialBill}
                             onChange={(e) => setOfficialBill(e.target.checked)}
                             containerClassName="rounded-md p-2"
+                        />
+                    </div>
+                    <div className="w-full flex items-center justify-start p-3 flex-wrap">
+                        <CFile
+                            file={invoiceFile}
+                            setFile={setInvoiceFile}
+                            text={`فایل خود را اپلود کنید ${
+                                !Array.isArray(invoiceFile) &&
+                                ` - ${invoiceFile?.name}`
+                            }`}
+                            className="p-2 border-2 border-dark rounded-md"
+                            iconClassName="mx-2"
+                            textClassName="mx-2"
+                            icon={<HiOutlineDocumentText />}
+                            name="invoice"
+                            title="فایل پیش فاکتور خود را انتخاب کنید"
                         />
                     </div>
                     <div className="w-full flex items-center justify-start p-3 flex-wrap">
