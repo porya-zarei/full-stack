@@ -187,7 +187,7 @@ const Order: FC<OrderProps> = ({
                             download={true}
                             target="_blank"
                             rel="noreferrer"
-                            href={`${BASE_URL}/assets/files/${
+                            href={`${BASE_URL}assets/files/${
                                 order.invoice ?? ""
                             }`}>
                             دانلود فاکتور

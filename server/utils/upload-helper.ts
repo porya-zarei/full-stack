@@ -8,7 +8,14 @@ type ProcessedFiles = Array<[string, File]>;
 
 const getNewPath = (targetPath: string, file: File): [string, string] => {
     const newName = Date.now().toString() + "_" + file.originalFilename;
+    logger.log(`in new path => ${targetPath} , ${newName} , ${process.cwd()}`);
     return [`${targetPath}\\${newName}`, newName];
+};
+
+const saveFile = async (file: File, path: string) => {
+    const data = await fs.readFile(file.filepath);
+    fs.writeFile(path, data);
+    await fs.unlink(file.filepath);
 };
 
 export const uploadFiles = async (req: NextApiRequest) => {
@@ -47,7 +54,8 @@ export const uploadFiles = async (req: NextApiRequest) => {
                 const [newPath, newName] = getNewPath(targetPath, file[1]);
                 fileNames.push(newName);
                 logger.log(`in copy => ${newPath} , ${newName}`);
-                await fs.copyFile(tempPath, newPath);
+                // await fs.copyFile(tempPath, newPath);
+                await saveFile(file[1], newPath);
             }
             return fileNames;
         } else {
@@ -94,7 +102,8 @@ export const uploadFile = async (req: NextApiRequest) => {
                 const [newPath, newName] = getNewPath(targetPath, file[1]);
                 fileNames.push(newName);
                 logger.log(`in copy => ${tempPath} ${newPath} , ${newName}`);
-                await fs.copyFile(tempPath, newPath);
+                // await fs.copyFile(tempPath, newPath);
+                await saveFile(file[1], newPath);
             }
             return fileNames[0];
         } else {

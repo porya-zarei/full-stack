@@ -274,30 +274,21 @@ export const getPendingOrders = async (id: string = "") => {
         }
     }
     const result: IAPIResult<Partial<IOrder>[]> = {
-        data: fullOrders
-            .filter((order) => {
-                logger.log(
-                    `order status: ${order.status},user role: ${user?.role}`,
+        data: fullOrders.filter((order) => {
+            // logger.log(
+            //     `order status: ${order.status},user role: ${user?.role}`,
+            // );
+            if (user?.role === ERole.CREATOR) {
+                return true;
+            } else if (user?.role === ERole.ADMIN) {
+                return (
+                    order.status === EStatus.PENDING_FOR_SUPERVISOR &&
+                    String(order.user?.group.id) === String(user?.group.id)
                 );
-                if (user?.role === ERole.CREATOR) {
-                    return true;
-                } else if (user?.role === ERole.ADMIN) {
-                    return order.status === EStatus.PENDING_FOR_SUPERVISOR;
-                } else {
-                    return false;
-                }
-            })
-            .filter((order) => {
-                if (user?.role === ERole.ADMIN) {
-                    return (
-                        String(order.user?.group.id) === String(user?.group.id)
-                    );
-                } else if (user?.role === ERole.CREATOR) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }),
+            } else {
+                return false;
+            }
+        }),
         ok: true,
         error: "",
     };

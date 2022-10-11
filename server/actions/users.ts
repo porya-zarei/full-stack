@@ -138,7 +138,7 @@ export const loginUser = async (loginData: ILoginData) => {
     );
     const result: IAPIResult<UnCertainData<IUser>> = {
         data: user,
-        ok: true,
+        ok: !!user,
         error: "",
     };
     return result;

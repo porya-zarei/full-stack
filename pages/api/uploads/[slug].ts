@@ -1,7 +1,9 @@
 import {NextApiHandler} from "next";
 import {IAPIResult} from "@/types/api";
-import { uploadOrderFileHandler } from "@/server/controllers/uploads";
-import { logger } from "@/server/utils/logger";
+import {uploadOrderFileHandler} from "@/server/controllers/uploads";
+import {logger} from "@/server/utils/logger";
+
+// github.com/codeBelt/my-next.js-starter/blob/upload/src/pages/api/uploads/index.ts
 
 const HANDLERS: Record<string, NextApiHandler> = {
     uploadOrderFile: uploadOrderFileHandler,
